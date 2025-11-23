@@ -1,0 +1,117 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Volunteer Login – PetPal</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+        body {
+            background: linear-gradient(135deg, #e8ecff, #ffd9ef);
+            font-family: "Poppins", sans-serif;
+            overflow-x: hidden;
+        }
+
+        .bg-hero {
+            background-image: url("https://images.unsplash.com/photo-1505628346881-b72b27e84530?auto=format&fit=crop&w=1200&q=80");
+            background-size: cover;
+            background-position: center;
+        }
+
+        .glass {
+            background: rgba(255, 255, 255, 0.78);
+            backdrop-filter: blur(20px);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-12px); }
+        }
+
+        .fade-in { animation: fadeIn 0.7s ease-out forwards; }
+        .float { animation: float 5s ease-in-out infinite; }
+    </style>
+</head>
+
+<body class="min-h-screen flex">
+
+    <!-- LEFT IMAGE SECTION -->
+    <div class="hidden lg:block w-1/2 bg-hero relative">
+        <div class="absolute inset-0 bg-black/30"></div>
+
+        <div class="absolute bottom-10 left-10 text-white fade-in">
+            <h1 class="text-5xl font-extrabold drop-shadow-xl">Become a Volunteer</h1>
+            <p class="text-lg mt-3 opacity-90 drop-shadow-xl">
+                Help us care for animals who deserve love and support.
+            </p>
+        </div>
+    </div>
+
+    <!-- LOGIN FORM -->
+    <div class="w-full lg:w-1/2 flex items-center justify-center p-10">
+        <div class="glass p-10 rounded-3xl shadow-2xl w-full max-w-md fade-in border border-white/40">
+
+            <!-- Icon -->
+            <div class="flex justify-center mb-6">
+                <div class="w-20 h-20 rounded-full bg-indigo-600 flex items-center justify-center text-4xl text-white shadow-xl float">
+                    ❤️
+                </div>
+            </div>
+
+            <h2 class="text-3xl font-bold text-center text-gray-800">Volunteer Login</h2>
+            <p class="text-center text-gray-600 mt-1 mb-8">
+                Access your volunteer dashboard
+            </p>
+
+            <form action = "{% url 'volunteerHome' %}" class="space-y-6">
+
+                <!-- Username -->
+                <div>
+                    <label class="text-gray-700 font-medium text-sm">Volunteer ID / Email</label>
+                    <input type="text" name="username" required
+                        class="w-full mt-1 px-4 py-3 rounded-xl bg-gray-100 border border-gray-300 focus:ring-2 
+                               focus:ring-indigo-400 outline-none"
+                        placeholder="Enter volunteer ID or email">
+                </div>
+
+                <!-- Password -->
+                <div>
+                    <label class="text-gray-700 font-medium text-sm">Password</label>
+                    <input type="password" name="password" required
+                        class="w-full mt-1 px-4 py-3 rounded-xl bg-gray-100 border border-gray-300 focus:ring-2 
+                               focus:ring-indigo-400 outline-none"
+                        placeholder="Enter password">
+                </div>
+
+                <!-- Login Button -->
+                <button type="submit"
+                    class="w-full py-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold 
+                           shadow-md transition">
+                    Login
+                </button>
+
+                <!-- Forgot password -->
+                <div class="text-right">
+                    <a href="#" class="text-sm text-indigo-600 hover:underline">Forgot Password?</a>
+                </div>
+
+                <p class="text-center text-sm mt-4 text-gray-600">
+                    New volunteer?
+                    <a href="#" class="text-indigo-700 hover:underline font-medium">Register here</a>
+                </p>
+            </form>
+
+        </div>
+    </div>
+
+</body>
+</html>

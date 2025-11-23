@@ -1,0 +1,153 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pet History – Volunteer</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+        body {
+            background: #f5f7fb;
+            font-family: "Poppins", sans-serif;
+        }
+         .sidebar {
+            background: #1e2a5e;
+        }
+
+        .sidebar a:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+        .glass {
+            background: rgba(255, 255, 255, 0.88);
+            backdrop-filter: blur(14px);
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(16px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .fade-in { animation: fadeIn .6s ease-out; }
+        .nav-glass {
+            background: rgba(255,255,255,0.6);
+            backdrop-filter: blur(12px);
+        }
+    </style>
+</head>
+
+<body class="flex">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar w-64 min-h-screen text-white p-6">
+        <h2 class="text-3xl font-extrabold mb-8">PetPal</h2>
+
+        <div class="mb-10 text-center">
+            <img src="https://cdn-icons-png.flaticon.com/512/1946/1946429.png"
+                 class="w-20 h-20 rounded-full mx-auto shadow-lg" />
+            <h3 class="mt-3 text-xl font-semibold">Volunteer Name</h3>
+            <p class="text-sm opacity-75">Animal Care Volunteer</p>
+        </div>
+
+        <nav class="flex flex-col gap-3 text-[15px]">
+            <a href="{% url 'volunteerAppointments' %}" class="px-4 py-3 rounded-lg">📅 Appointments</a>
+            <a href="{% url 'volunteerPets' %}" class="px-4 py-3 rounded-lg">🐶 Assigned Pets History</a>
+            <a href="{% url 'volunteerNotification' %}" class="px-4 py-3 rounded-lg">📨 Messages</a>
+            <a href="{% url 'volunteerLogin' %}" class="px-4 py-3 rounded-lg mt-6 bg-red-600 hover:bg-red-700 text-white">
+                🔓 Logout
+            </a>
+        </nav>
+    </aside>
+
+    <!-- MAIN SECTION -->
+    <div class="flex-1">
+
+       
+
+        <!-- PAGE TITLE -->
+        <div class="px-10 py-10">
+            <h1 class="text-3xl font-bold text-gray-800 mb-8">Pet Service History</h1>
+
+            <div class="space-y-8">
+
+                <!-- ITEM 1 -->
+                <div class="glass fade-in p-6 rounded-2xl shadow border border-gray-200">
+                    <div class="flex gap-6">
+                        <img src=""
+                             class="w-32 h-32 rounded-xl object-cover shadow">
+
+                        <div class="flex-1">
+                            <h2 class="text-xl font-bold text-gray-800">Charlie</h2>
+                            <p class="text-sm text-gray-600 mb-2">Beagle • Male • 3 Years</p>
+
+                            <div class="grid grid-cols-1 md:grid-cols-2 text-sm gap-1 text-gray-700">
+                                <p><b>Duty:</b> Feeding</p>
+                                <p><b>Date:</b> 20 Oct 2025</p>
+                                <p><b>Time:</b> 1:00 PM</p>
+                                <p><b>Status:</b> ✔ Completed</p>
+                            </div>
+
+                            <p class="text-sm text-gray-600 mt-3">
+                                <b>Notes:</b> Finished full meal. Very calm & friendly.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ITEM 2 -->
+                <div class="glass fade-in p-6 rounded-2xl shadow border border-gray-200">
+                    <div class="flex gap-6">
+                        <img src="https://images.unsplash.com/photo-1596495577886-d920f1fb7238?auto=format&w=600"
+                             class="w-32 h-32 rounded-xl object-cover shadow">
+
+                        <div class="flex-1">
+                            <h2 class="text-xl font-bold text-gray-800">Luna</h2>
+                            <p class="text-sm text-gray-600 mb-2">Siberian Husky • Female • 2 Years</p>
+
+                            <div class="grid grid-cols-1 md:grid-cols-2 text-sm gap-1 text-gray-700">
+                                <p><b>Duty:</b> Evening Walk</p>
+                                <p><b>Date:</b> 18 Oct 2025</p>
+                                <p><b>Time:</b> 5:00 PM</p>
+                                <p><b>Status:</b> ✔ Completed</p>
+                            </div>
+
+                            <p class="text-sm text-gray-600 mt-3">
+                                <b>Notes:</b> Walked 3km. Very active and playful.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ITEM 3 -->
+                <div class="glass fade-in p-6 rounded-2xl shadow border border-gray-200">
+                    <div class="flex gap-6">
+                        <img src="https://images.unsplash.com/photo-1543852786-1cf6624b9987?auto=format&w=600"
+                             class="w-32 h-32 rounded-xl object-cover shadow">
+
+                        <div class="flex-1">
+                            <h2 class="text-xl font-bold text-gray-800">Whiskers</h2>
+                            <p class="text-sm text-gray-600 mb-2">Persian Cat • Female • 1 Year</p>
+
+                            <div class="grid grid-cols-1 md:grid-cols-2 text-sm gap-1 text-gray-700">
+                                <p><b>Duty:</b> Grooming Support</p>
+                                <p><b>Date:</b> 16 Oct 2025</p>
+                                <p><b>Time:</b> 11:00 AM</p>
+                                <p><b>Status:</b> ✔ Completed</p>
+                            </div>
+
+                            <p class="text-sm text-gray-600 mt-3">
+                                <b>Notes:</b> Quiet and cooperative during grooming.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+</body>
+
+</html>

@@ -1,0 +1,172 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PetPal – Premium Adoption</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+        body {
+            background: linear-gradient(135deg, #eef1ff, #ffe6f5);
+            font-family: "Poppins", sans-serif;
+        }
+
+        .glass {
+            background: rgba(255, 255, 255, 0.78);
+            backdrop-filter: blur(18px);
+        }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .card {
+            animation: fadeUp 0.7s ease forwards;
+        }
+
+        .zoom:hover img {
+            transform: scale(1.1);
+        }
+
+        .modal-bg {
+            background: rgba(0, 0, 0, 0.55);
+        }
+    </style>
+</head>
+
+<body class="py-16 px-6 md:px-20 relative">
+
+    <!-- Header -->
+    <div class="text-center mb-14">
+        <h1 class="text-5xl font-extrabold text-indigo-800">Adopt Your Perfect Companion</h1>
+        <p class="text-gray-600 text-lg mt-3">Discover loving pets carefully cared for by us</p>
+    </div>
+
+    <!-- Search + Filters -->
+    <div class="max-w-5xl mx-auto mb-12 p-6 glass rounded-2xl shadow-xl">
+        <div class="grid md:grid-cols-4 gap-5">
+
+           
+
+            <select class="px-4 py-3 rounded-xl border bg-white shadow-sm">
+                <option>Type</option>
+                <option>Dog</option>
+                <option>Cat</option>
+                <option>Bird</option>
+                <option>Rabbit</option>
+            </select>
+
+            <select class="px-4 py-3 rounded-xl border bg-white shadow-sm">
+                <option>Age</option>
+                <option>Puppy / Kitten</option>
+                <option>Young</option>
+                <option>Adult</option>
+                <option>Senior</option>
+            </select>
+
+        </div>
+
+        <div class="text-right mt-4">
+            <button class="px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl shadow">
+                Apply Filters
+            </button>
+        </div>
+    </div>
+
+    <!-- Pet Grid -->
+    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-10">
+
+        <!-- EXAMPLE CARD — Replace with Django Loop -->
+        {% comment %} Example data, remove when dynamic {% endcomment %}
+        {% for i in "123" %}
+        <div class="glass rounded-3xl shadow-xl overflow-hidden card hover:shadow-2xl transition zoom relative">
+
+            <!-- Ribbon Tag -->
+            <div class="absolute top-4 left-4 bg-green-600 text-white px-3 py-1 rounded-full text-sm shadow">
+                Vaccinated
+            </div>
+
+            <!-- Favorite Heart -->
+            <button class="absolute top-4 right-4 text-gray-600 text-2xl hover:text-red-500 transition">
+                ♥
+            </button>
+
+            <div class="overflow-hidden">
+                <img src="https://images.unsplash.com/photo-1619983081633-8f6f1fb0bd58"
+                     class="w-full h-64 object-cover transition">
+            </div>
+
+            <div class="p-6">
+                <h3 class="text-xl font-bold text-gray-800">Bella</h3>
+                <p class="text-gray-500 text-sm">Golden Retriever • 2 Years • Female</p>
+
+                <!-- Stats -->
+                <div class="flex items-center gap-5 mt-4 text-sm text-gray-700">
+                    <div class="flex items-center gap-1"><span>💖</span> Friendly</div>
+                    <div class="flex items-center gap-1"><span>🏃‍♂️</span> Active</div>
+                    <div class="flex items-center gap-1"><span>🍗</span> Healthy</div>
+                </div>
+
+                <div class="flex gap-3 mt-6">
+                    <button onclick="openModal()"
+                        class="w-1/2 py-3 bg-indigo-50 border border-indigo-200 text-indigo-700 font-semibold rounded-xl hover:bg-indigo-100">
+                        View
+                    </button>
+
+                    <button
+                        class="w-1/2 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl">
+                        Adopt
+                    </button>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+
+    </div>
+
+    <!-- Modal -->
+    <div id="petModal"
+        class="hidden fixed inset-0 flex items-center justify-center modal-bg backdrop-blur-sm z-50">
+        
+        <div class="glass p-8 rounded-3xl shadow-2xl max-w-lg w-full">
+
+            <button onclick="closeModal()" class="float-right text-gray-600 text-xl hover:text-red-500">✕</button>
+
+            <h2 class="text-3xl font-bold text-gray-800 mb-4">Bella</h2>
+
+            <img src="https://images.unsplash.com/photo-1619983081633-8f6f1fb0bd58"
+                 class="w-full h-64 object-cover rounded-xl shadow mb-4">
+
+            <p class="text-gray-700 mb-3">
+                Bella is a sweet, gentle and playful Golden Retriever who loves attention and outdoor walks.
+            </p>
+
+            <ul class="text-gray-600 mb-4">
+                <li>• 2 Years Old</li>
+                <li>• Fully Vaccinated</li>
+                <li>• Friendly with kids & other pets</li>
+                <li>• Training: Basic Commands</li>
+            </ul>
+
+            <button class="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-semibold">
+                Proceed to Adopt
+            </button>
+        </div>
+    </div>
+
+    <script>
+        function openModal() {
+            document.getElementById("petModal").classList.remove("hidden");
+        }
+        function closeModal() {
+            document.getElementById("petModal").classList.add("hidden");
+        }
+    </script>
+</body>
+
+</html>

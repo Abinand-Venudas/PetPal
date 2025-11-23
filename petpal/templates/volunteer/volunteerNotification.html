@@ -1,0 +1,176 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Volunteer Notifications – PetPal</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+        body {
+            background: #f4f6fc;
+            font-family: "Poppins", sans-serif;
+        }
+        .sidebar {
+            background: #1e2a5e;
+        }
+
+        .sidebar a:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+        .glass {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(15px);
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .fade-in { animation: fadeIn .4s ease-out; }
+    </style>
+</head>
+
+<body class="flex">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar w-64 min-h-screen text-white p-6">
+        <h2 class="text-3xl font-extrabold mb-8">PetPal</h2>
+
+        <div class="mb-10 text-center">
+            <img src="https://cdn-icons-png.flaticon.com/512/1946/1946429.png"
+                 class="w-20 h-20 rounded-full mx-auto shadow-lg" />
+            <h3 class="mt-3 text-xl font-semibold">Volunteer Name</h3>
+            <p class="text-sm opacity-75">Animal Care Volunteer</p>
+        </div>
+
+        <nav class="flex flex-col gap-3 text-[15px]">
+            <a href="{% url 'volunteerAppointments' %}" class="px-4 py-3 rounded-lg">📅 Appointments</a>
+            <a href="{% url 'volunteerPets' %}" class="px-4 py-3 rounded-lg">🐶 Assigned Pets History</a>
+            <a href="{% url 'volunteerNotification' %}" class="px-4 py-3 rounded-lg">📨 Messages</a>
+            <a href="{% url 'volunteerLogin' %}" class="px-4 py-3 rounded-lg mt-6 bg-red-600 hover:bg-red-700 text-white">
+                🔓 Logout
+            </a>
+        </nav>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="flex-1 p-10 fade-in">
+
+        <!-- Top Bar -->
+        <div class="flex items-center justify-between mb-10">
+            <h1 class="text-3xl font-bold text-gray-800">Messages & Notifications</h1>
+
+            <!-- Notification Bell -->
+            <div class="relative cursor-pointer">
+                <span class="text-3xl">🔔</span>
+                <span class="absolute -top-1 -right-1 bg-red-600 text-white text-xs px-2 py-1 rounded-full">4</span>
+            </div>
+        </div>
+
+
+        <!-- NOTIFICATIONS PANEL -->
+        <section class="mb-12">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-xl font-semibold">Notifications</h2>
+                <button class="px-4 py-1 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 text-sm">
+                    Mark all as read
+                </button>
+            </div>
+
+            <div class="space-y-4">
+
+                <!-- Notification 1 -->
+                <div class="glass border rounded-xl p-4 shadow flex items-center gap-4">
+                    <span class="text-2xl">📅</span>
+                    <div>
+                        <p class="font-semibold text-gray-800">New Appointment Assigned</p>
+                        <p class="text-gray-600 text-sm">You have been assigned to walk *Bruno* tomorrow at 10 AM.</p>
+                    </div>
+                </div>
+
+                <!-- Notification 2 -->
+                <div class="glass border rounded-xl p-4 shadow flex items-center gap-4">
+                    <span class="text-2xl">💬</span>
+                    <div>
+                        <p class="font-semibold text-gray-800">Admin sent a message</p>
+                        <p class="text-gray-600 text-sm">“Please update Luna’s feeding report.”</p>
+                    </div>
+                </div>
+
+                <!-- Notification 3 -->
+                <div class="glass border rounded-xl p-4 shadow flex items-center gap-4">
+                    <span class="text-2xl">🐾</span>
+                    <div>
+                        <p class="font-semibold text-gray-800">Pet Update</p>
+                        <p class="text-gray-600 text-sm">Whiskers has a new grooming session scheduled.</p>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+
+
+
+
+
+        <!-- CHAT / MESSAGES -->
+        <section>
+            <h2 class="text-xl font-semibold mb-4">Chat with Admin</h2>
+
+            <div class="glass p-6 rounded-2xl shadow border h-[420px] flex flex-col">
+
+                <!-- CHAT AREA -->
+                <div class="flex-1 overflow-y-auto pr-2 space-y-4">
+
+                    <!-- Received Message -->
+                    <div class="flex items-start gap-3">
+                        <div class="w-10 h-10 bg-indigo-500 rounded-full flex items-center justify-center text-white text-lg">A</div>
+                        <div>
+                            <div class="bg-gray-200 text-gray-800 px-4 py-2 rounded-xl shadow max-w-xs">
+                                Hi, please confirm today’s appointment report.
+                            </div>
+                            <p class="text-xs text-gray-500 mt-1">Admin • 10:32 AM</p>
+                        </div>
+                    </div>
+
+                    <!-- Sent Message -->
+                    <div class="flex items-start gap-3 justify-end">
+                        <div>
+                            <div class="bg-indigo-600 text-white px-4 py-2 rounded-xl shadow max-w-xs">
+                                Sure, I will update it in 20 minutes.
+                            </div>
+                            <p class="text-xs text-gray-500 mt-1 text-right">You • 10:34 AM</p>
+                        </div>
+                        <div class="w-10 h-10 bg-gray-600 rounded-full flex items-center justify-center text-white text-lg">V</div>
+                    </div>
+
+                </div>
+
+                <!-- INPUT AREA -->
+                <div class="mt-4 flex items-center gap-3">
+                    <input type="text" placeholder="Type your message..."
+                           class="flex-1 px-4 py-3 rounded-xl border border-gray-300 outline-none focus:ring-2 focus:ring-indigo-400">
+                    <button class="px-5 py-3 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700">
+                        Send
+                    </button>
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- Footer -->
+        <footer class="text-center text-gray-500 text-sm mt-12 py-6">
+            © 2025 PetPal — Volunteer Messaging
+        </footer>
+
+    </main>
+
+</body>
+
+</html>

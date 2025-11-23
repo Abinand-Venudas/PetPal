@@ -1,0 +1,206 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pet Grooming</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .bg-hero {
+            background-image: url("{% static 'img/cat.jpeg' %}");
+            background-size: cover;
+            background-position: center;
+        }
+        .glass {
+            background: rgba(255, 255, 255, 0.88);
+            backdrop-filter: blur(18px);
+        }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+        .fade-in { animation: fadeIn 0.6s ease-out forwards; }
+        .float { animation: float 5s ease-in-out infinite; }
+    </style>
+</head>
+<body class="min-h-screen flex bg-hero relative">
+    <div class="absolute inset-0 bg-black/20"></div>
+    <div class="w-full flex items-center justify-center p-6 md:p-10 relative fade-in">
+        <div class="glass shadow-2xl rounded-3xl p-6 md:p-10 w-full max-w-4xl border border-white/30">
+            <div class="flex justify-center mb-6 float">
+                <div class="w-16 h-16 rounded-full bg-indigo-600 flex items-center justify-center text-3xl text-white shadow-xl">🐾</div>
+            </div>
+            <h2 class="text-3xl md:text-4xl font-bold text-center text-gray-800">Luxury Grooming</h2>
+            <p class="text-center text-gray-600 mb-8">Spa-grade care for a clean, comfy, happy pet</p>
+
+            <form id="groom-form">
+                <div>
+                    <h3 class="text-xl font-semibold text-gray-800 mb-4">Select Services</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                        <label class="flex items-center gap-3 p-4 rounded-2xl border border-gray-200 bg-gray-50 hover:bg-white hover:shadow transition cursor-pointer">
+                            <input type="checkbox" name="services" value="Bath & Brush" data-price="699" class="w-5 h-5 text-indigo-600 focus:ring-indigo-500">
+                            <div>
+                                <div class="font-semibold text-gray-800">Bath & Brush</div>
+                                <div class="text-sm text-gray-500">₹699</div>
+                            </div>
+                        </label>
+                        <label class="flex items-center gap-3 p-4 rounded-2xl border border-gray-200 bg-gray-50 hover:bg-white hover:shadow transition cursor-pointer">
+                            <input type="checkbox" name="services" value="Full Groom" data-price="1299" class="w-5 h-5 text-indigo-600 focus:ring-indigo-500">
+                            <div>
+                                <div class="font-semibold text-gray-800">Full Groom</div>
+                                <div class="text-sm text-gray-500">₹1299</div>
+                            </div>
+                        </label>
+                        <label class="flex items-center gap-3 p-4 rounded-2xl border border-gray-200 bg-gray-50 hover:bg-white hover:shadow transition cursor-pointer">
+                            <input type="checkbox" name="services" value="Nail Trim" data-price="299" class="w-5 h-5 text-indigo-600 focus:ring-indigo-500">
+                            <div>
+                                <div class="font-semibold text-gray-800">Nail Trim</div>
+                                <div class="text-sm text-gray-500">₹299</div>
+                            </div>
+                        </label>
+                        <label class="flex items-center gap-3 p-4 rounded-2xl border border-gray-200 bg-gray-50 hover:bg-white hover:shadow transition cursor-pointer">
+                            <input type="checkbox" name="services" value="Ear Cleaning" data-price="249" class="w-5 h-5 text-indigo-600 focus:ring-indigo-500">
+                            <div>
+                                <div class="font-semibold text-gray-800">Ear Cleaning</div>
+                                <div class="text-sm text-gray-500">₹249</div>
+                            </div>
+                        </label>
+                        <label class="flex items-center gap-3 p-4 rounded-2xl border border-gray-200 bg-gray-50 hover:bg-white hover:shadow transition cursor-pointer">
+                            <input type="checkbox" name="services" value="Teeth Brushing" data-price="349" class="w-5 h-5 text-indigo-600 focus:ring-indigo-500">
+                            <div>
+                                <div class="font-semibold text-gray-800">Teeth Brushing</div>
+                                <div class="text-sm text-gray-500">₹349</div>
+                            </div>
+                        </label>
+                        <label class="flex items-center gap-3 p-4 rounded-2xl border border-gray-200 bg-gray-50 hover:bg-white hover:shadow transition cursor-pointer">
+                            <input type="checkbox" name="services" value="De-shedding" data-price="499" class="w-5 h-5 text-indigo-600 focus:ring-indigo-500">
+                            <div>
+                                <div class="font-semibold text-gray-800">De-shedding</div>
+                                <div class="text-sm text-gray-500">₹499</div>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+                <div>
+                    <h3 class="text-xl font-semibold text-gray-800 mb-4">Pet Details</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                        <div>
+                            <label class="text-gray-700 font-medium text-sm">Pet Name</label>
+                            <input type="text" name="pet_name" required class="w-full mt-1 px-4 py-3 rounded-xl bg-gray-50 border border-gray-300 focus:ring-2 focus:ring-indigo-400 outline-none" placeholder="e.g., Bella">
+                        </div>
+                        <div>
+                            <label class="text-gray-700 font-medium text-sm">Breed</label>
+                            <input type="text" name="breed" class="w-full mt-1 px-4 py-3 rounded-xl bg-gray-50 border border-gray-300 focus:ring-2 focus:ring-indigo-400 outline-none" placeholder="e.g., Golden Retriever">
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-5 mt-5">
+                        <div>
+                            <label class="text-gray-700 font-medium text-sm">Pet Type</label>
+                            <select name="pet_type" required class="w-full mt-1 px-4 py-3 rounded-xl bg-gray-50 border border-gray-300 focus:ring-2 focus:ring-indigo-400 outline-none">
+                                <option>Dog</option>
+                                <option>Cat</option>
+                                <option>Other</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="text-gray-700 font-medium text-sm">Size</label>
+                            <select name="size" required class="w-full mt-1 px-4 py-3 rounded-xl bg-gray-50 border border-gray-300 focus:ring-2 focus:ring-indigo-400 outline-none">
+                                <option>Small</option>
+                                <option>Medium</option>
+                                <option>Large</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="text-gray-700 font-medium text-sm">Coat Type</label>
+                            <select name="coat" class="w-full mt-1 px-4 py-3 rounded-xl bg-gray-50 border border-gray-300 focus:ring-2 focus:ring-indigo-400 outline-none">
+                                <option>Short</option>
+                                <option>Medium</option>
+                                <option>Long</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <h3 class="text-xl font-semibold text-gray-800 mb-4">Appointment</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+                        <div>
+                            <label class="text-gray-700 font-medium text-sm">Date</label>
+                            <input type="date" name="date" required class="w-full mt-1 px-4 py-3 rounded-xl bg-gray-50 border border-gray-300 focus:ring-2 focus:ring-indigo-400 outline-none">
+                        </div>
+                        <div>
+                            <label class="text-gray-700 font-medium text-sm">Time</label>
+                            <select name="time" required class="w-full mt-1 px-4 py-3 rounded-xl bg-gray-50 border border-gray-300 focus:ring-2 focus:ring-indigo-400 outline-none">
+                                <option>10:00 AM</option>
+                                <option>12:00 PM</option>
+                                <option>02:00 PM</option>
+                                <option>04:00 PM</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="text-gray-700 font-medium text-sm">Contact Number</label>
+                            <input type="text" name="phone" required class="w-full mt-1 px-4 py-3 rounded-xl bg-gray-50 border border-gray-300 focus:ring-2 focus:ring-indigo-400 outline-none" placeholder="Enter phone">
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <h3 class="text-xl font-semibold text-gray-800 mb-4">Add-ons</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+                        <label class="flex items-center gap-3 p-4 rounded-2xl border border-gray-200 bg-gray-50 hover:bg-white transition cursor-pointer">
+                            <input type="checkbox" name="addons" value="Medicated Shampoo" data-price="199" class="w-5 h-5 text-indigo-600 focus:ring-indigo-500">
+                            <span class="text-gray-700">Medicated Shampoo</span>
+                            <span class="ml-auto text-sm text-gray-500">₹199</span>
+                        </label>
+                        <label class="flex items-center gap-3 p-4 rounded-2xl border border-gray-200 bg-gray-50 hover:bg-white transition cursor-pointer">
+                            <input type="checkbox" name="addons" value="Conditioner" data-price="149" class="w-5 h-5 text-indigo-600 focus:ring-indigo-500">
+                            <span class="text-gray-700">Conditioner</span>
+                            <span class="ml-auto text-sm text-gray-500">₹149</span>
+                        </label>
+                        <label class="flex items-center gap-3 p-4 rounded-2xl border border-gray-200 bg-gray-50 hover:bg-white transition cursor-pointer">
+                            <input type="checkbox" name="addons" value="Fragrance" data-price="99" class="w-5 h-5 text-indigo-600 focus:ring-indigo-500">
+                            <span class="text-gray-700">Fragrance</span>
+                            <span class="ml-auto text-sm text-gray-500">₹99</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="text-gray-700 font-medium text-sm">Notes</label>
+                    <textarea name="notes" rows="3" class="w-full mt-1 px-4 py-3 rounded-xl bg-gray-50 border border-gray-300 focus:ring-2 focus:ring-indigo-400 outline-none" placeholder="Anything we should know"></textarea>
+                </div>
+
+                <div class="flex items-center justify-between p-5 rounded-2xl bg-indigo-50 border border-indigo-200">
+                    <div>
+                        <div class="text-sm text-indigo-800">Estimated Total</div>
+                        <div class="text-2xl font-bold text-indigo-900" id="total">₹0</div>
+                    </div>
+                    <button type="submit" class="px-6 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold shadow-md transition">Book Grooming</button>
+                </div>
+
+                <p class="text-center text-sm mt-2 text-gray-700">Want other services? <a href="/" class="text-indigo-700 hover:underline font-medium">Go Home</a></p>
+            </form>
+        </div>
+    </div>
+
+  <script>
+        const form = document.getElementById("groom-form");
+        const totalEl = document.getElementById("total");
+
+        function computeTotal() {
+            let total = 0;
+
+            document.querySelectorAll('input[name="services"]:checked')
+                .forEach(el => total += Number(el.dataset.price));
+
+            document.querySelectorAll('input[name="addons"]:checked')
+                .forEach(el => total += Number(el.dataset.price));
+
+            totalEl.textContent = "₹" + total;
+        }
+
+        form.addEventListener("change", computeTotal);
+        computeTotal();
+    </script>
+</body>
+</html>

@@ -1,0 +1,465 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>PetPal — Premium Daycare</title>
+
+  <!-- Tailwind CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <style>
+    :root{
+      --soft-indigo: #7b8cff;
+      --soft-pink: #ffb4da;
+      --muted: #6b7280;
+      --glass-bg: rgba(255,255,255,0.78);
+    }
+
+    body{
+      font-family: "Poppins", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      background: linear-gradient(180deg, #f7f8ff 0%, #fff6fb 100%);
+      color: #0f172a;
+    }
+
+    /* subtle floating effect used on hero art and icons */
+    @keyframes floatSlow {
+      0% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+      100% { transform: translateY(0); }
+    }
+
+    .glass {
+      background: var(--glass-bg);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255,255,255,0.6);
+    }
+
+    .soft-shadow {
+      box-shadow: 0 10px 30px rgba(16,24,40,0.06);
+    }
+
+    .accent-gradient {
+      background: linear-gradient(135deg, var(--soft-indigo), var(--soft-pink));
+    }
+
+    .pill {
+      border-radius: 9999px;
+    }
+
+    /* subtle card entrance */
+    .card-appear { animation: cardIn .45s ease both; }
+    @keyframes cardIn {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* styled scroll for chat/long lists */
+    .nice-scroll::-webkit-scrollbar { height: 8px; width: 8px; }
+    .nice-scroll::-webkit-scrollbar-thumb { background: rgba(16,24,40,0.12); border-radius: 9999px; }
+  </style>
+</head>
+<body>
+
+  <!-- NAVBAR -->
+<header class="sticky top-0 z-40 bg-white/70 backdrop-blur-xl border-b border-gray-200">
+  <nav class="max-w-7xl mx-auto px-8 py-4 flex items-center justify-between">
+
+    <!-- LEFT: LOGO -->
+    <div class="flex items-center gap-3">
+      <div class="text-3xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-indigo-500 to-pink-500">
+        PetPal
+      </div>
+    </div>
+
+    <!-- CENTER: MENU -->
+    <ul class="hidden md:flex items-center gap-10 text-[16px] font-medium text-gray-700">
+      <li><a class="hover:text-indigo-600" href="{% url 'home' %}">Home</a></li>
+      <li><a class="hover:text-indigo-600" href="{% url 'grooming' %}">Grooming</a></li>
+      <li><a class="hover:text-indigo-600 text-indigo-600 font-semibold" href="{% url 'daycare' %}">Daycare</a></li>
+      <li><a class="hover:text-indigo-600" href="{% url 'consultation' %}">Consultation</a></li>
+             <li><a href="{% url 'adoptionlist' %}">adoption</a></li>
+
+    </ul>
+
+    <!-- RIGHT: BUTTONS -->
+    <div class="flex items-center gap-4">
+      <a href="{% url 'login' %}"
+         class="px-6 py-2 rounded-xl border border-indigo-300 text-indigo-600 font-medium hover:bg-indigo-50 transition">
+         Login
+      </a>
+
+      <a href="{% url 'register' %}"
+         class="px-6 py-2 rounded-xl font-medium text-white bg-gradient-to-r from-indigo-500 to-pink-500 shadow-md hover:opacity-90 transition">
+         Register
+      </a>
+    </div>
+
+  </nav>
+</header>
+
+
+  <!-- HERO -->
+  <section class="max-w-7xl mx-auto px-6 mt-8 grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
+    <div class="space-y-6">
+      <h1 class="text-4xl md:text-5xl font-extrabold leading-tight">
+        Premium Pet Daycare — safe, playful & loved
+      </h1>
+      <p class="text-lg text-gray-600 max-w-xl">
+        Full-day & half-day packages, live CCTV access, trained caretakers, and curated play-zones. Book a slot in seconds.
+      </p>
+
+      <div class="flex gap-4 items-center">
+        <a href="#book" class="px-6 py-3 pill text-white accent-gradient shadow-md hover:opacity-95 transition">Book a slot</a>
+        <a href="#packages" class="px-6 py-3 pill border border-gray-200 text-gray-700 hover:bg-white transition">See packages</a>
+      </div>
+
+      <div class="mt-4 flex flex-wrap gap-4">
+        <div class="glass px-4 py-3 rounded-2xl soft-shadow flex items-center gap-3">
+          <div class="w-10 h-10 rounded-full flex items-center justify-center bg-indigo-50">🛡️</div>
+          <div>
+            <div class="text-sm font-semibold">Health & Safety</div>
+            <div class="text-xs text-gray-500">Vaccinated staff & on-call vet</div>
+          </div>
+        </div>
+
+        <div class="glass px-4 py-3 rounded-2xl soft-shadow flex items-center gap-3">
+          <div class="w-10 h-10 rounded-full flex items-center justify-center bg-pink-50">🎾</div>
+          <div>
+            <div class="text-sm font-semibold">Play Design</div>
+            <div class="text-xs text-gray-500">Zones by size & energy level</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+   <!-- hero image with soft floating pets -->
+<div class="relative">
+  <div class="rounded-2xl overflow-hidden soft-shadow">
+    <img src="{% static 'img/pets.jpg' %}"
+         alt="pets playing" class="w-full h-[420px] object-cover">
+  </div>
+
+  <!-- playful paw stamps -->
+  <div class="absolute -left-6 -bottom-6 w-32 h-32 rounded-full bg-white/80 flex items-center justify-center soft-shadow" style="animation:floatSlow 5s ease-in-out infinite">
+    <div class="text-3xl">🐶</div>
+  </div>
+
+  <div class="absolute -right-6 top-6 w-28 h-28 rounded-full bg-white/85 flex items-center justify-center soft-shadow" style="animation:floatSlow 6s ease-in-out infinite">
+    <div class="text-2xl">🐱</div>
+  </div>
+</div>
+
+  </section>
+
+  <!-- FEATURES -->
+  <section class="max-w-7xl mx-auto px-6 mt-12">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div class="glass p-6 rounded-2xl soft-shadow card-appear">
+        <div class="flex items-start gap-4">
+          <div class="w-12 h-12 rounded-lg flex items-center justify-center bg-indigo-50">📹</div>
+          <div>
+            <h3 class="font-semibold text-lg">Live CCTV Monitoring</h3>
+            <p class="text-sm text-gray-500">Secure live-feed you can watch anytime.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="glass p-6 rounded-2xl soft-shadow card-appear">
+        <div class="flex items-start gap-4">
+          <div class="w-12 h-12 rounded-lg flex items-center justify-center bg-pink-50">⚽</div>
+          <div>
+            <h3 class="font-semibold text-lg">Play Zones & Activities</h3>
+            <p class="text-sm text-gray-500">Separate areas for big/small and calm/active pets.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="glass p-6 rounded-2xl soft-shadow card-appear">
+        <div class="flex items-start gap-4">
+          <div class="w-12 h-12 rounded-lg flex items-center justify-center bg-yellow-50">🩺</div>
+          <div>
+            <h3 class="font-semibold text-lg">Medical Supervision</h3>
+            <p class="text-sm text-gray-500">On-call vets & immediate care if needed.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PACKAGES -->
+  <section id="packages" class="max-w-7xl mx-auto px-6 mt-12">
+    <h2 class="text-2xl font-extrabold text-indigo-800 mb-4">Daycare Packages</h2>
+    <p class="text-gray-600 mb-8 max-w-2xl">Pick the experience that fits your pet — flexible, secure, and fun.</p>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <!-- Basic -->
+      <div class="glass p-6 rounded-2xl soft-shadow">
+        <div class="flex justify-between items-start">
+          <div>
+            <h3 class="text-2xl font-bold text-indigo-700">Basic</h3>
+            <p class="text-sm text-gray-500">Half-day care</p>
+          </div>
+          <div class="text-3xl font-extrabold text-indigo-900">₹499</div>
+        </div>
+        <ul class="mt-4 text-sm text-gray-700 space-y-2">
+          <li>✔ Supervised play</li>
+          <li>✔ Live CCTV access</li>
+          <li>✔ Dedicated caretaker</li>
+        </ul>
+        <button class="mt-6 w-full py-3 pill text-white accent-gradient rounded-xl">Choose Basic</button>
+      </div>
+
+      <!-- Standard (featured) -->
+      <div class="glass p-6 rounded-2xl soft-shadow border-2 border-indigo-100 transform scale-[1.02]">
+        <div class="flex justify-between items-start">
+          <div>
+            <h3 class="text-2xl font-bold text-indigo-700">Standard</h3>
+            <p class="text-sm text-gray-500">Full-day fun</p>
+          </div>
+          <div class="text-3xl font-extrabold text-indigo-900">₹899</div>
+        </div>
+        <ul class="mt-4 text-sm text-gray-700 space-y-2">
+          <li>✔ Everything in Basic</li>
+          <li>✔ Extra play sessions</li>
+          <li>✔ Priority pickup</li>
+        </ul>
+        <button class="mt-6 w-full py-3 pill text-white accent-gradient rounded-xl">Choose Standard</button>
+      </div>
+
+      <!-- Premium -->
+      <div class="glass p-6 rounded-2xl soft-shadow">
+        <div class="flex justify-between items-start">
+          <div>
+            <h3 class="text-2xl font-bold text-indigo-700">Premium</h3>
+            <p class="text-sm text-gray-500">VIP treatment</p>
+          </div>
+          <div class="text-3xl font-extrabold text-indigo-900">₹1499</div>
+        </div>
+        <ul class="mt-4 text-sm text-gray-700 space-y-2">
+          <li>✔ Everything in Standard</li>
+          <li>✔ Luxury grooming add-ons</li>
+          <li>✔ Personalized care report</li>
+        </ul>
+        <button class="mt-6 w-full py-3 pill text-white accent-gradient rounded-xl">Choose Premium</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- BOOKING -->
+  <section id="book" class="max-w-4xl mx-auto px-6 mt-12 mb-16">
+    <div class="glass rounded-3xl p-8 soft-shadow">
+      <h2 class="text-2xl font-extrabold text-indigo-800 mb-2">Book a Daycare Slot</h2>
+      <p class="text-gray-600 mb-6">Select date & time — our smart picker lets you choose any slot during operating hours.</p>
+
+      <form id="daycare-booking" class="space-y-6">
+
+        <!-- Pet details -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="text-sm font-medium text-gray-700">Pet name</label>
+            <input name="pet_name" required class="mt-2 px-4 py-3 rounded-xl w-full border border-gray-200 bg-white/90" placeholder="e.g., Bella">
+          </div>
+
+          <div>
+            <label class="text-sm font-medium text-gray-700">Breed</label>
+            <input name="breed" class="mt-2 px-4 py-3 rounded-xl w-full border border-gray-200 bg-white/90" placeholder="e.g., Labrador">
+          </div>
+        </div>
+
+        <!-- package select -->
+        <div>
+          <label class="text-sm font-medium text-gray-700">Package</label>
+          <select name="package" class="mt-2 px-4 py-3 rounded-xl w-full border border-gray-200 bg-white/90">
+            <option value="basic">Basic — ₹499</option>
+            <option value="standard" selected>Standard — ₹899</option>
+            <option value="premium">Premium — ₹1499</option>
+          </select>
+        </div>
+
+        <!-- date + time -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-end">
+          <div>
+            <label class="text-sm font-medium text-gray-700">Select date</label>
+            <input id="daycare-date" name="date" type="date" required class="mt-2 px-4 py-3 rounded-xl w-full border border-gray-200 bg-white/90 cursor-pointer">
+          </div>
+
+          <div>
+            <label class="text-sm font-medium text-gray-700">Select time</label>
+            <div class="flex gap-3 mt-2">
+              <select id="hour-select" name="hour" class="px-4 py-3 rounded-xl w-1/3 border border-gray-200 bg-white/90"></select>
+              <select id="minute-select" name="minute" class="px-4 py-3 rounded-xl w-1/3 border border-gray-200 bg-white/90"></select>
+              <select id="ampm-select" name="ampm" class="px-4 py-3 rounded-xl w-1/3 border border-gray-200 bg-white/90">
+                <option>AM</option>
+                <option>PM</option>
+              </select>
+            </div>
+            <p class="text-xs text-gray-500 mt-2">Operating hours: 7:00 AM — 8:00 PM</p>
+          </div>
+        </div>
+
+        <!-- contact & notes -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="text-sm font-medium text-gray-700">Contact number</label>
+            <input name="phone" required class="mt-2 px-4 py-3 rounded-xl w-full border border-gray-200 bg-white/90" placeholder="+91 98765 43210">
+          </div>
+
+          <div>
+            <label class="text-sm font-medium text-gray-700">Special notes (optional)</label>
+            <input name="notes" class="mt-2 px-4 py-3 rounded-xl w-full border border-gray-200 bg-white/90" placeholder="Allergies, medications...">
+          </div>
+        </div>
+
+        <!-- summary & submit -->
+        <div class="flex flex-col md:flex-row gap-4 items-center md:justify-between mt-4">
+          <div class="text-sm text-gray-600">
+            Selected slot:
+            <span id="slot-summary" class="font-semibold text-gray-800">—</span>
+          </div>
+
+          <div class="flex gap-3">
+            <button id="preview-btn" type="button" class="px-5 py-3 pill border border-gray-200 text-gray-700">Preview</button>
+            <button type="submit" class="px-6 py-3 pill text-white accent-gradient">Confirm Booking</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="max-w-7xl mx-auto px-6 pb-12 text-center text-gray-600">
+    © 2025 PetPal — Your pet’s second home 💙
+  </footer>
+
+  <!-- JS: populate time selects, clamp date, show summary & basic validation -->
+  <script>
+    (function(){
+      const hourSelect = document.getElementById('hour-select');
+      const minuteSelect = document.getElementById('minute-select');
+      const ampmSelect = document.getElementById('ampm-select');
+      const dateInput = document.getElementById('daycare-date');
+      const slotSummary = document.getElementById('slot-summary');
+      const bookingForm = document.getElementById('daycare-booking');
+      const previewBtn = document.getElementById('preview-btn');
+
+      // fill hours 1-12
+      for(let h=1; h<=12; h++){
+        const o = document.createElement('option');
+        o.value = h.toString().padStart(2,'0');
+        o.textContent = h.toString().padStart(2,'0');
+        hourSelect.appendChild(o);
+      }
+
+      // fill minutes every 5 minutes
+      for(let m=0; m<60; m+=5){
+        const o = document.createElement('option');
+        o.value = m.toString().padStart(2,'0');
+        o.textContent = m.toString().padStart(2,'0');
+        minuteSelect.appendChild(o);
+      }
+
+      // clamp date: min = today, max = today + 180 days
+      const today = new Date();
+      const yyyy = today.getFullYear();
+      const mm = String(today.getMonth()+1).padStart(2,'0');
+      const dd = String(today.getDate()).padStart(2,'0');
+      const minDate = `${yyyy}-${mm}-${dd}`;
+      const maxDateObj = new Date();
+      maxDateObj.setDate(maxDateObj.getDate() + 180);
+      const maxY = maxDateObj.getFullYear();
+      const maxM = String(maxDateObj.getMonth()+1).padStart(2,'0');
+      const maxD = String(maxDateObj.getDate()).padStart(2,'0');
+      const maxDate = `${maxY}-${maxM}-${maxD}`;
+
+      dateInput.setAttribute('min', minDate);
+      dateInput.setAttribute('max', maxDate);
+      dateInput.value = minDate;
+
+      function updateSummary(){
+        const dateVal = dateInput.value;
+        const hour = hourSelect.value;
+        const minute = minuteSelect.value;
+        const ampm = ampmSelect.value;
+        if(!dateVal || !hour || !minute || !ampm){
+          slotSummary.textContent = "—";
+          return;
+        }
+        const d = new Date(dateVal);
+        const day = d.toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' });
+        slotSummary.textContent = `${day}, ${hour}:${minute} ${ampm}`;
+      }
+
+      // update on changes
+      [dateInput, hourSelect, minuteSelect, ampmSelect].forEach(el => el.addEventListener('change', updateSummary));
+      updateSummary();
+
+      // preview button shows a toast-like temporary overlay
+      previewBtn.addEventListener('click', () => {
+        updateSummary();
+        const txt = slotSummary.textContent;
+        if(txt === "—"){
+          alert('Please pick a date and time first.');
+          return;
+        }
+        // small inline preview modal
+        const overlay = document.createElement('div');
+        overlay.className = 'fixed inset-0 flex items-center justify-center bg-black/30 z-50';
+        const box = document.createElement('div');
+        box.className = 'glass rounded-xl p-6 max-w-sm text-center soft-shadow';
+        box.innerHTML = `<h3 class="text-lg font-bold mb-2">Preview slot</h3>
+                         <p class="text-sm text-gray-700 mb-4">You selected: <span class="font-semibold">${txt}</span></p>
+                         <button id="close-prev" class="px-4 py-2 pill bg-indigo-600 text-white">Close</button>`;
+        overlay.appendChild(box);
+        document.body.appendChild(overlay);
+        document.getElementById('close-prev').onclick = ()=> overlay.remove();
+      });
+
+      // simple client-side booking handler
+      bookingForm.addEventListener('submit', (e)=>{
+        e.preventDefault();
+        // basic validation
+        const pet = bookingForm.pet_name.value.trim();
+        const phone = bookingForm.phone.value.trim();
+        if(!pet || !phone){
+          alert('Please enter pet name and contact number.');
+          return;
+        }
+        updateSummary();
+        if(slotSummary.textContent === "—"){
+          alert('Select a slot.');
+          return;
+        }
+        // fake success flow (replace with real POST in Django)
+        const successBox = document.createElement('div');
+        successBox.className = 'fixed bottom-6 right-6 bg-white rounded-xl p-4 shadow-lg z-50';
+        successBox.innerHTML = `<div class="font-semibold text-gray-800">Booking confirmed</div>
+                                <div class="text-sm text-gray-600">Slot: ${slotSummary.textContent}</div>`;
+        document.body.appendChild(successBox);
+        setTimeout(()=> successBox.remove(), 4200);
+
+        // reset minimal fields (optional)
+        // bookingForm.reset();
+      });
+
+      // set sensible default time (next hour)
+      const now = new Date();
+      let nextHour = now.getHours()+1;
+      let ampm = 'AM';
+      if(nextHour === 0) { nextHour = 12; ampm = 'AM'; }
+      else if(nextHour >= 12){
+        ampm = 'PM';
+        if(nextHour > 12) nextHour = nextHour - 12;
+      }
+      hourSelect.value = String(nextHour).padStart(2,'0');
+      minuteSelect.value = '00';
+      ampmSelect.value = ampm;
+      updateSummary();
+
+    })();
+  </script>
+
+</body>
+</html>

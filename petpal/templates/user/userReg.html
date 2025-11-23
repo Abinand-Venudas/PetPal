@@ -1,0 +1,114 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PetCare Signup</title>
+
+    <!-- Tailwind -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+        .bg-hero {
+            background-image: url("{% static 'img/cat.jpeg' %}");
+            background-size: cover;
+            background-position: center;
+        }
+
+        .glass {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(20px);
+        }
+
+        /* ANIMATIONS */
+        @keyframes fadeIn {
+            0% { opacity: 0; transform: translateY(20px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .fade-in { animation: fadeIn 0.7s ease-out forwards; }
+        .float { animation: float 5s ease-in-out infinite; }
+    </style>
+</head>
+
+<body class="min-h-screen flex bg-hero relative">
+
+    <!-- DARK OVERLAY -->
+    <div class="absolute inset-0 bg-black/20"></div>
+
+    <!-- SIGNUP CARD -->
+    <div class="w-full flex items-center justify-center p-10 relative fade-in">
+
+        <div class="glass shadow-2xl rounded-3xl p-10 w-full max-w-md border border-white/30">
+
+            <!-- Floating Logo -->
+            <div class="flex justify-center mb-6 float">
+                <div class="w-16 h-16 rounded-full bg-indigo-600 flex items-center justify-center text-3xl text-white shadow-xl">
+                    🐾
+                </div>
+            </div>
+
+            <h2 class="text-3xl font-bold text-center text-gray-800 fade-in">Create Account</h2>
+            <p class="text-center text-gray-600 mb-8 fade-in">Join PetCare today 🐾</p>
+
+            <form method="POST" class="space-y-6 fade-in">
+                {% csrf_token %}
+                {% for msg in messages %}
+                <h3> {{msg}} </h3>
+                {% endfor %}
+                <div>
+                    <label class="text-gray-700 font-medium text-sm">Full Name</label>
+                    <input type="text" name="name" required
+                        class="w-full mt-1 px-4 py-3 rounded-xl bg-gray-50 border border-gray-300 focus:ring-2 focus:ring-indigo-400 outline-none"
+                        placeholder="Enter your full name">
+                </div>
+
+                <div>
+                    <label class="text-gray-700 font-medium text-sm">Email</label>
+                    <input type="email" name="email" required
+                        class="w-full mt-1 px-4 py-3 rounded-xl bg-gray-50 border border-gray-300 focus:ring-2 focus:ring-indigo-400 outline-none"
+                        placeholder="Enter your email">
+                </div>
+
+                <div>
+                    <label class="text-gray-700 font-medium text-sm">Username</label>
+                    <input type="text" name="username" required
+                        class="w-full mt-1 px-4 py-3 rounded-xl bg-gray-50 border border-gray-300 focus:ring-2 focus:ring-indigo-400 outline-none"
+                        placeholder="Choose a username">
+                </div>
+
+                <div>
+                    <label class="text-gray-700 font-medium text-sm">Password</label>
+                    <input type="password" name="password" required
+                        class="w-full mt-1 px-4 py-3 rounded-xl bg-gray-50 border border-gray-300 focus:ring-2 focus:ring-indigo-400 outline-none"
+                        placeholder="Create a password">
+                </div>
+
+                <div>
+                    <label class="text-gray-700 font-medium text-sm">Confirm Password</label>
+                    <input type="password" name="password2" required
+                        class="w-full mt-1 px-4 py-3 rounded-xl bg-gray-50 border border-gray-300 focus:ring-2 focus:ring-indigo-400 outline-none"
+                        placeholder="Confirm your password">
+                </div>
+
+                <button type="submit"
+                    class="w-full py-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold shadow-md transition">
+                    Sign Up
+                </button>
+
+                <p class="text-center text-sm mt-4 text-gray-700">
+                    Already have an account?
+                    <a href="userLogin" class="text-indigo-700 hover:underline font-medium">Login</a>
+                </p>
+            </form>
+        </div>
+    </div>
+
+</body>
+</html>

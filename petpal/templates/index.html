@@ -1,0 +1,348 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PetPal – Next-Gen Pet Care</title>
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        /* Global Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "Poppins", sans-serif;
+            background: #f4f6fb;
+            color: #333;
+            overflow-x: hidden;
+        }
+
+        /* Floating Decorative Circles */
+        .circle {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.55;
+            z-index: -1;
+        }
+
+        .circle1 {
+            width: 300px;
+            height: 300px;
+            background: #7b8cff;
+            top: -80px;
+            left: -60px;
+        }
+
+        .circle2 {
+            width: 350px;
+            height: 350px;
+            background: #ff7ac5;
+            bottom: -100px;
+            right: -40px;
+        }
+
+        /* Navbar – Glassmorphism */
+        nav {
+            padding: 18px 70px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            backdrop-filter: blur(15px);
+            background: rgba(255, 255, 255, 0.35);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            z-index: 100;
+        }
+
+        .logo {
+            font-size: 32px;
+            font-weight: 800;
+            background: linear-gradient(45deg, #4a5fc1, #ff77b7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        nav ul {
+            list-style: none;
+            display: flex;
+            gap: 35px;
+        }
+
+        nav ul li a {
+            text-decoration: none;
+            font-size: 17px;
+            font-weight: 500;
+            color: #333;
+            transition: 0.25s;
+        }
+
+        nav ul li a:hover {
+            color: #4a5fc1;
+            letter-spacing: 1px;
+        }
+
+        /* Login/Register Buttons */
+        .auth-btns a {
+            padding: 10px 22px;
+            border-radius: 10px;
+            font-size: 16px;
+            text-decoration: none;
+            margin-left: 10px;
+            transition: 0.3s ease;
+        }
+
+        .login-btn {
+            border: 2px solid #4a5fc1;
+            color: #4a5fc1;
+        }
+
+        .login-btn:hover {
+            background: #4a5fc1;
+            color: white;
+        }
+
+        .register-btn {
+            background: linear-gradient(135deg, #4a5fc1, #ff7ac5);
+            color: white;
+            box-shadow: 0 0 12px rgba(255, 122, 197, 0.5);
+        }
+
+        .register-btn:hover {
+            transform: scale(1.05);
+        }
+
+        /* Hero Section */
+        .hero {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 120px 70px;
+            flex-wrap: wrap;
+            background: linear-gradient(135deg, #eef1ff, #ffe6f5);
+        }
+
+        .hero-text {
+            max-width: 550px;
+        }
+
+        .hero-text h1 {
+            font-size: 70px;
+            font-weight: 800;
+            line-height: 1.1;
+            background: linear-gradient(45deg, #2636a5, #ff5898);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero-text p {
+            font-size: 20px;
+            margin: 25px 0 40px;
+            color: #555;
+        }
+
+        .cta-btn {
+            background: linear-gradient(135deg, #4a5fc1, #ff7ac5);
+            padding: 18px 33px;
+            border-radius: 12px;
+            font-size: 20px;
+            font-weight: 600;
+            text-decoration: none;
+            color: #fff;
+            box-shadow: 0 10px 25px rgba(255, 122, 197, 0.5);
+            transition: 0.3s;
+        }
+
+        .cta-btn:hover {
+            transform: translateY(-5px);
+        }
+
+        .hero img {
+            width: 470px;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+            animation: float 5s infinite ease-in-out;
+        }
+
+        /* Floating Animation */
+        @keyframes float {
+            0% { transform: translateY(0); }
+            50% { transform: translateY(-18px); }
+            100% { transform: translateY(0); }
+        }
+
+        /* Features Section */
+        .features {
+            padding: 100px 60px;
+            text-align: center;
+        }
+
+        .features h2 {
+            font-size: 48px;
+            font-weight: 700;
+            margin-bottom: 60px;
+            color: #293b8d;
+        }
+
+        .features-grid {
+            display: flex;
+            justify-content: center;
+            gap: 35px;
+            flex-wrap: wrap;
+        }
+
+        .feature-card {
+            width: 320px;
+            background: #fff;
+            padding: 30px;
+            border-radius: 18px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            transition: 0.3s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-12px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+        }
+
+        .feature-card h3 {
+            font-size: 22px;
+            margin-bottom: 10px;
+            color: #4a5fc1;
+        }
+
+        /* Footer */
+        footer {
+            background: #1e2a5e;
+            padding: 30px 0;
+            text-align: center;
+            color: white;
+            font-size: 16px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Floating Decorations -->
+    <div class="circle circle1"></div>
+    <div class="circle circle2"></div>
+
+    <!-- Navbar -->
+    <nav>
+    <div class="logo">PetPal</div>
+
+    <ul>
+        <li><a href="{% url 'home' %}">Home</a></li>
+        <li><a href="{% url 'grooming' %}">Grooming</a></li>
+        <li><a href="{% url 'daycare' %}">Daycare</a></li>
+        <li><a href="{% url 'consultation' %}">Consultation</a></li>
+       <li><a href="{% url 'adoptionlist' %}">adoption</a></li>
+
+    </ul>
+
+    <div class="auth-btns">
+        <a href="{% url 'login' %}" class="login-btn">Login</a>
+        <a href="{% url 'register' %}" class="register-btn">Register</a>
+    </div>
+</nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-text">
+            <h1>Next-Gen<br>Pet Care</h1>
+            <p>The most advanced platform for pet adoption, grooming, daycare, consultation, and medicine delivery — all in one ultra-modern ecosystem.</p>
+
+            <a href="#" class="cta-btn">Explore Services</a>
+        </div>
+
+        <img src="https://images.unsplash.com/photo-1543852786-1cf6624b9987?auto=format&fit=crop&w=800&q=80">
+    </section>
+
+    <!-- Features -->
+    <section class="features">
+        <h2>Our Premium Services</h2>
+
+        <div class="features-grid">
+            <div class="feature-card">
+                <h3>✨ Luxury Grooming</h3>
+                <p>Top-tier grooming with care, comfort, and premium products.</p>
+            </div>
+
+            <div class="feature-card">
+                <h3>🏡 Pro Daycare</h3>
+                <p>Safe, monitored, interactive environments for all pets.</p>
+            </div>
+
+            <div class="feature-card">
+                <h3>💊 Smart Medicine</h3>
+                <p> expert consultations </p>
+            </div>
+        </div>
+    </section>
+
+        <!-- Help Pets Section -->
+    <section class="features" style="padding-top:40px; padding-bottom:100px;">
+        <h2 style="font-size:46px; font-weight:700; margin-bottom:60px; color:#293b8d;">
+            Love helping pets?
+        </h2>
+
+        <div class="features-grid" style="gap:40px; justify-content:center; display:flex; flex-wrap:wrap;">
+
+            <!-- Volunteer -->
+            <div class="feature-card" style="width:320px; padding:40px 25px; border-radius:20px; background:#fff; text-align:center;
+                box-shadow:0 6px 20px rgba(0,0,0,0.08); transition:0.3s;">
+                
+                <div style="width:80px; height:80px; background:#2f3241; border-radius:50%; display:flex; justify-content:center; align-items:center; margin:-60px auto 20px;">
+                    <span style="font-size:32px; color:white;">🌼</span>
+                </div>
+
+                <h3 style="font-size:24px; font-weight:700; color:#000;">Become a volunteer</h3>
+                <p style="margin:12px 0 28px; color:#666;">Help our lovable pets by offering time, energy and care.</p>
+
+                <button style="padding:10px 25px; border-radius:20px; border:none; background:#2f3241; color:white; font-size:15px; cursor:pointer;"
+                    onclick="location.href='{% url 'volunteerSignup' %}'">
+                    Volunteer
+                </button>
+            </div>
+
+            <!-- Foster Parent -->
+            <div class="feature-card" style="width:320px; padding:40px 25px; border-radius:20px; background:#fff; text-align:center;
+                box-shadow:0 6px 20px rgba(0,0,0,0.08); transition:0.3s;">
+                
+                <div style="width:80px; height:80px; background:#2f3241; border-radius:50%; display:flex; justify-content:center; align-items:center; margin:-60px auto 20px;">
+                    <span style="font-size:32px; color:white;">🏠</span>
+                </div>
+
+                <h3 style="font-size:24px; font-weight:700; color:#000;">  Become a foster parent</h3>
+                <p style="margin:12px 0 28px; color:#666;">Give a temporary home to abandoned pets and help them heal.</p>
+
+                <button style="padding:10px 25px; border-radius:20px; border:none; background:#2f3241; color:white; font-size:15px; cursor:pointer;"
+                    onclick="location.href='{% url 'adoptionlist' %}'">
+                    Foster
+                </button>
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- Footer -->
+    <footer>
+        © 2025 PetPal — Designed with ❤️ for your pets
+    </footer>
+
+</body>
+
+</html>

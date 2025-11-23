@@ -1,0 +1,178 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Volunteer Signup – PetPal</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+        body {
+            background: linear-gradient(135deg, #e8ecff, #ffd9ef);
+            font-family: "Poppins", sans-serif;
+            overflow-x: hidden;
+        }
+
+        .bg-hero {
+            background-image: url("https://images.unsplash.com/photo-1517849845537-4d257902454a?auto=format&fit=crop&w=1200&q=80");
+            background-size: cover;
+            background-position: center;
+        }
+
+        .glass {
+            background: rgba(255, 255, 255, 0.80);
+            backdrop-filter: blur(18px);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-12px); }
+        }
+
+        .fade-in { animation: fadeIn 0.7s ease-out forwards; }
+        .float { animation: float 5s infinite ease-in-out; }
+    </style>
+</head>
+
+<body class="min-h-screen flex">
+
+    <!-- LEFT VISUAL -->
+    <div class="hidden lg:block w-1/2 bg-hero relative">
+        <div class="absolute inset-0 bg-black/25"></div>
+
+        <div class="absolute bottom-10 left-10 text-white fade-in">
+            <h1 class="text-5xl font-extrabold drop-shadow-xl">Join as a Volunteer</h1>
+            <p class="text-lg mt-3 opacity-90 drop-shadow-xl">
+                Your kindness can change a pet's life forever.
+            </p>
+        </div>
+    </div>
+
+    <!-- SIGNUP FORM -->
+    <div class="w-full lg:w-1/2 flex items-center justify-center p-10">
+        <div class="glass p-10 rounded-3xl shadow-2xl w-full max-w-lg fade-in border border-white/40">
+
+            <!-- Icon -->
+            <div class="flex justify-center mb-6">
+                <div class="w-20 h-20 rounded-full bg-pink-500 flex items-center justify-center text-4xl text-white shadow-xl float">
+                    🐾
+                </div>
+            </div>
+
+            <h2 class="text-4xl font-bold text-center text-gray-800">Volunteer Signup</h2>
+            <p class="text-center text-gray-600 mt-1 mb-8">
+                Start helping today — fill in your details
+            </p>
+
+            <form method = "POST" enctype = "multipart/form-data" class="space-y-6">
+                {% csrf_token %}
+                {% for msg in messages %}
+                <h3> {{msg}} </h3>
+                {% endfor %}
+                <!-- Name -->
+                <div>
+                    <label class="text-gray-700 font-medium text-sm">Full Name</label>
+                    <input type="text" name="vname" required
+                        class="w-full mt-1 px-4 py-3 rounded-xl bg-gray-100 border border-gray-300
+                        focus:ring-2 focus:ring-indigo-400 outline-none"
+                        placeholder="Enter full name">
+                </div>
+
+                <!-- Email -->
+                <div>
+                    <label class="text-gray-700 font-medium text-sm">Email</label>
+                    <input type="email" name="vemail" required
+                        class="w-full mt-1 px-4 py-3 rounded-xl bg-gray-100 border border-gray-300
+                        focus:ring-2 focus:ring-indigo-400 outline-none"
+                        placeholder="Enter email">
+                </div>
+
+                <!-- Phone -->
+                <div>
+                    <label class="text-gray-700 font-medium text-sm">Phone Number</label>
+                    <input type="vtext" name="phone" required
+                        class="w-full mt-1 px-4 py-3 rounded-xl bg-gray-100 border border-gray-300
+                        focus:ring-2 focus:ring-indigo-400 outline-none"
+                        placeholder="Enter phone number">
+                </div>
+
+                <!-- Address -->
+                <div>
+                    <label class="text-gray-700 font-medium text-sm">Address</label>
+                    <textarea name="vaddress" rows="2" required
+                        class="w-full mt-1 px-4 py-3 rounded-xl bg-gray-100 border border-gray-300
+                        focus:ring-2 focus:ring-indigo-400 outline-none"
+                        placeholder="Enter address"></textarea>
+                </div>
+
+                <!-- Skills -->
+                <div>
+                    <label class="text-gray-700 font-medium text-sm">How can you help?</label>
+                    <select name="skills" required
+                        class="w-full mt-1 px-4 py-3 rounded-xl bg-gray-100 border border-gray-300
+                        focus:ring-2 focus:ring-indigo-400 outline-none">
+                        <option value="">Select</option>
+                        <option value="Animal Care">Animal Care</option>
+                        <option value="Training & Handling">Training & Handling</option>
+                        <option value="Transportation">Transportation</option>
+                        <option value="Groomer">Groomer</option>
+
+                    </select>
+                </div>
+
+                <!-- FileProof  -->
+                <div>
+                    <label class="text-gray-700 font-medium text-sm">Add Proof</label>
+                    <input type="file" name="vfile" required
+                        class="w-full mt-1 px-4 py-3 rounded-xl bg-gray-100 border border-gray-300
+                        focus:ring-2 focus:ring-indigo-400 outline-none"
+                        placeholder="">
+                </div>
+
+                 <!-- Password  -->
+                 <div>
+                    <label class="text-gray-700 font-medium text-sm">Create Password</label>
+                    <input type="password" name="vpassword" required
+                        class="w-full mt-1 px-4 py-3 rounded-xl bg-gray-100 border border-gray-300
+                        focus:ring-2 focus:ring-indigo-400 outline-none"
+                        placeholder="Create password">
+                </div>
+
+                <!-- Confirm Password -->
+                <div>
+                    <label class="text-gray-700 font-medium text-sm">Confirm Password</label>
+                    <input type="password" name="vcpassword" required
+                        class="w-full mt-1 px-4 py-3 rounded-xl bg-gray-100 border border-gray-300
+                        focus:ring-2 focus:ring-indigo-400 outline-none"
+                        placeholder="Create password">
+                </div>
+
+                <!-- Signup Button -->
+                <button type="submit"
+                    class="w-full py-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white 
+                    font-semibold shadow-lg transition">
+                    Create Volunteer Account
+                </button>
+
+                <!-- Already have account -->
+                <p class="text-center text-sm mt-4 text-gray-600">
+                    Already a volunteer?
+                    <a href="{% url 'volunteerLogin' %}" class="text-indigo-700 hover:underline font-medium">
+                        Login here
+                    </a>
+                </p>
+            </form>
+
+        </div>
+    </div>
+
+</body>
+</html>

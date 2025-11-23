@@ -1,0 +1,91 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PetCare Login</title>
+
+    <!-- Tailwind -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+        /* Replace hero image with your cat image */
+        .bg-hero {
+            background-image: url("{% static 'img/cat.jpeg' %}");
+            background-size: cover;
+            background-position: center;
+        }
+
+        .glass {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(20px);
+        }
+    </style>
+</head>
+
+<body class="min-h-screen flex">
+
+    <!-- LEFT HERO -->
+    <div class="hidden lg:block lg:w-1/2 bg-hero relative">
+        <div class="absolute inset-0 bg-black/20"></div>
+
+        <div class="absolute bottom-10 left-10 text-white">
+            <h1 class="text-4xl font-extrabold drop-shadow-lg">Welcome to PetCare</h1>
+            <p class="mt-2 text-lg opacity-90 drop-shadow-lg">Your trusted partner in adoption & pet well-being</p>
+        </div>
+    </div>
+
+    <!-- RIGHT LOGIN -->
+    <div class="w-full lg:w-1/2 flex items-center justify-center p-10">
+
+        <div class="glass shadow-2xl rounded-3xl p-10 w-full max-w-md">
+
+            <!-- Logo -->
+            <div class="flex justify-center mb-6">
+                <div class="w-16 h-16 rounded-full bg-indigo-600 flex items-center justify-center text-3xl text-white shadow-xl">
+                    🐾
+                </div>
+            </div>
+
+            <h2 class="text-3xl font-bold text-center text-gray-800">Login</h2>
+            <p class="text-center text-gray-500 mb-8">Glad to see you again!</p>
+
+            <form method ="POST" class="space-y-6">
+                {% csrf_token %}
+                {% for msg in messages %}
+                <h3> {{msg}} </h3>
+                {% endfor %}
+                <div>
+                    <label class="text-gray-700 font-medium text-sm">Username</label>
+                    <input type="text" name="username" required
+                        class="w-full mt-1 px-4 py-3 rounded-xl bg-gray-50 border border-gray-300 focus:ring-2 focus:ring-indigo-400 outline-none"
+                        placeholder="Enter your username">
+                </div>
+
+                <div>
+                    <label class="text-gray-700 font-medium text-sm">Password</label>
+                    <input type="password" name="password" required
+                        class="w-full mt-1 px-4 py-3 rounded-xl bg-gray-50 border border-gray-300 focus:ring-2 focus:ring-indigo-400 outline-none"
+                        placeholder="Enter your password">
+                </div>
+
+                <button type="submit"
+                    class="w-full py-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold shadow-md transition">
+                    Sign In
+                </button>
+
+                <div class="text-right">
+                    <a href="#" class="text-sm text-indigo-600 hover:underline">Forgot password?</a>
+                </div>
+
+                <p class="text-center text-sm mt-4 text-gray-600">
+                    New here?
+                    <a href="{% url 'register' %}" class="text-indigo-700 hover:underline font-medium">Create an account</a>
+                </p>
+            </form>
+        </div>
+    </div>
+
+</body>
+</html>
