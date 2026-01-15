@@ -10,6 +10,8 @@ class volunteer_registration(models.Model):
     phone = models.CharField(max_length=15, default='True')
     skills = models.CharField(max_length=30, default='True')
     address = models.TextField(default='True')
+    is_available = models.BooleanField(default=False) 
 
+    
     def __str__(self):
         return self.name

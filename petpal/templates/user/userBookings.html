@@ -1,0 +1,153 @@
+{% extends "user/base.html" %}
+{% load static %}
+
+{% block title %}My Bookings{% endblock %}
+
+{% block extra_css %}
+<style>
+.glass-card{
+  background:rgba(255,255,255,.75);
+  backdrop-filter:blur(16px);
+  border:1px solid rgba(255,255,255,.45);
+  box-shadow:0 20px 60px rgba(0,0,0,.12);
+}
+.dark .glass-card{
+  background:rgba(15,23,42,.9);
+  border:1px solid rgba(255,255,255,.12);
+  box-shadow:0 30px 80px rgba(0,0,0,.7);
+}
+
+.tab-btn{
+  padding:10px 22px;
+  border-radius:999px;
+  font-weight:600;
+  background:#eef2ff;
+  color:#4f46e5;
+  transition:.3s;
+}
+.tab-btn.active{
+  background:linear-gradient(135deg,#6366f1,#ec4899);
+  color:white;
+}
+
+.badge{padding:6px 14px;border-radius:999px;font-size:12px;font-weight:700;}
+.badge-pending{background:#fef3c7;color:#b45309;}
+.badge-approved{background:#dcfce7;color:#166534;}
+.badge-rejected{background:#fee2e2;color:#991b1b;}
+.badge-completed{background:#e0e7ff;color:#3730a3;}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto py-20 px-6">
+
+<h1 class="text-4xl font-extrabold mb-10">📅 My Bookings</h1>
+
+<!-- TABS -->
+<div class="flex gap-3 mb-12 flex-wrap">
+  <button class="tab-btn active" onclick="filterBookings('all', this)">All</button>
+  <button class="tab-btn" onclick="filterBookings('Pending', this)">Upcoming</button>
+  <button class="tab-btn" onclick="filterBookings('Completed', this)">Completed</button>
+  <button class="tab-btn" onclick="filterBookings('Rejected', this)">Cancelled</button>
+</div>
+
+<!-- ================= CONSULTATIONS ================= -->
+<h2 class="text-2xl font-bold mb-6 text-indigo-600">🩺 Consultations</h2>
+
+{% if bookings %}
+<div class="grid md:grid-cols-2 gap-8 mb-20">
+{% for b in bookings %}
+<div class="glass-card rounded-3xl p-7 booking-item" data-status="{{ b.status }}">
+  <h2 class="text-lg font-bold text-indigo-600 mb-2">Dr. {{ b.doctor.name }}</h2>
+
+  <p><strong>Date:</strong> {{ b.date|date:"M d, Y" }}</p>
+  <p><strong>Time:</strong> {{ b.time }}</p>
+  <p><strong>Pet:</strong> {{ b.pet_name }}</p>
+  <p><strong>Issue:</strong> {{ b.issue }}</p>
+
+  <div class="flex gap-3 mt-5">
+    <a href="{% url 'petapp:download_booking_pdf' b.id %}"
+       class="px-4 py-2 rounded-lg bg-slate-700 text-white text-sm">📄 PDF</a>
+
+    {% if b.status == "Pending" or b.status == "Approved" %}
+      <a href="{% url 'petapp:my_bookings' %}?cancel={{ b.id }}"
+         class="px-4 py-2 rounded-lg bg-red-500 text-white text-sm"
+         onclick="return confirm('Cancel this consultation?');">
+        ❌ Cancel
+      </a>
+    {% endif %}
+  </div>
+</div>
+{% endfor %}
+</div>
+{% else %}
+<p>No consultations yet.</p>
+{% endif %}
+
+<!-- ================= DAYCARE BOOKINGS ================= -->
+<h2 class="text-2xl font-bold mb-6 text-pink-600">🐶 Daycare</h2>
+
+{% if daycare_bookings %}
+<div class="grid md:grid-cols-2 gap-8">
+{% for d in daycare_bookings %}
+<div class="glass-card rounded-3xl p-7 booking-item" data-status="{{ d.status }}">
+
+  <div class="flex justify-between items-center mb-3">
+    <h2 class="text-lg font-bold text-pink-600">{{ d.pet_name }}</h2>
+
+    {% if d.status == "Confirmed" %}
+      <span class="badge badge-approved">Confirmed</span>
+    {% elif d.status == "Completed" %}
+      <span class="badge badge-completed">Completed</span>
+    {% elif d.status == "Cancelled" %}
+      <span class="badge badge-rejected">Cancelled</span>
+    {% endif %}
+  </div>
+
+  <p><strong>Plan:</strong> {{ d.plan }}</p>
+  <p><strong>Duration:</strong> {{ d.duration }}</p>
+  <p><strong>Date:</strong> {{ d.date|date:"M d, Y" }}</p>
+  <p><strong>Time:</strong> {{ d.start_time }} – {{ d.end_time }}</p>
+  <p><strong>Total:</strong> ₹{{ d.total_cost }}</p>
+
+  <div class="flex gap-3 mt-5">
+    <a href="{% url 'petapp:daycareSuccess' d.id %}"
+       class="px-4 py-2 rounded-lg bg-pink-600 text-white text-sm">
+       👁 View
+    </a>
+
+    {% if d.status == "Confirmed" %}
+      <a href="{% url 'petapp:my_bookings' %}?cancel_daycare={{ d.id }}"
+         class="px-4 py-2 rounded-lg bg-red-500 text-white text-sm"
+         onclick="return confirm('Cancel this daycare booking?');">
+        ❌ Cancel
+      </a>
+    {% endif %}
+  </div>
+
+</div>
+{% endfor %}
+</div>
+{% else %}
+<p>No daycare bookings yet.</p>
+{% endif %}
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function filterBookings(status, btn){
+  document.querySelectorAll(".tab-btn").forEach(b=>b.classList.remove("active"));
+  btn.classList.add("active");
+
+  document.querySelectorAll(".booking-item").forEach(card=>{
+    if(status === "all"){
+      card.style.display="block";
+    }else{
+      card.style.display = card.dataset.status === status ? "block" : "none";
+    }
+  });
+}
+</script>
+{% endblock %}

@@ -1,0 +1,72 @@
+{% extends "user/base.html" %}
+{% load static %}
+
+{% block title %}Booking Confirmed — PetPal{% endblock %}
+
+{% block content %}
+
+<div class="blob blob1"></div>
+<div class="blob blob2"></div>
+
+<section class="min-h-[70vh] flex items-center justify-center px-6">
+
+  <div class="success-card max-w-xl w-full">
+
+    <!-- CHECK -->
+    <div class="check-wrap">
+      <div class="check">✓</div>
+    </div>
+
+    <h1 class="text-4xl font-extrabold mt-4">
+      Booking Confirmed!
+    </h1>
+
+    <p class="text-gray-600 mt-4 text-lg">
+      Your pet’s grooming session has been successfully booked.
+    </p>
+
+    <!-- DETAILS -->
+    <div class="mt-8 text-left bg-white/70 p-6 rounded-2xl shadow-inner">
+
+      <div class="grid grid-cols-2 gap-y-4 text-sm">
+        <div class="font-semibold text-gray-700">Appointment Date:</div>
+        <div>{{ date }}</div>
+
+        <div class="font-semibold text-gray-700">Time:</div>
+        <div>{{ time }}</div>
+
+        <div class="font-semibold text-gray-700">Phone:</div>
+        <div>{{ phone }}</div>
+
+        <div class="font-semibold text-gray-700">Services:</div>
+        <div>
+          <ul class="list-disc list-inside">
+            {% for s in services %}
+              <li>{{ s }}</li>
+            {% endfor %}
+          </ul>
+        </div>
+
+        <div class="font-semibold text-gray-700">Total Amount:</div>
+        <div class="font-bold text-lg text-indigo-600">₹{{ total }}</div>
+      </div>
+
+    </div>
+
+    <!-- ACTIONS -->
+    <div class="flex flex-col sm:flex-row gap-4 justify-center mt-10">
+
+      <a href="{% url 'grooming' %}" class="action-btn secondary-btn">
+        Book Another
+      </a>
+
+      <a href="{% url 'home' %}" class="action-btn primary-btn">
+        Back to Home
+      </a>
+
+    </div>
+
+  </div>
+</section>
+
+{% endblock %}

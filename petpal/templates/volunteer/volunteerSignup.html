@@ -56,7 +56,7 @@
         </div>
     </div>
 
-    <!-- SIGNUP FORM -->
+    <!-- RIGHT PANEL -->
     <div class="w-full lg:w-1/2 flex items-center justify-center p-10">
         <div class="glass p-10 rounded-3xl shadow-2xl w-full max-w-lg fade-in border border-white/40">
 
@@ -67,112 +67,154 @@
                 </div>
             </div>
 
-            <h2 class="text-4xl font-bold text-center text-gray-800">Volunteer Signup</h2>
-            <p class="text-center text-gray-600 mt-1 mb-8">
-                Start helping today — fill in your details
-            </p>
+            <!-- ================= AUTH BOX ================= -->
+            <div id="authBox" class="fade-in">
+                <h2 class="text-4xl font-bold text-center text-gray-800">Volunteer Authorization</h2>
+                <p class="text-center text-gray-600 mt-1 mb-8">
+                    Enter the authorization code provided by PetPal.
+                </p>
 
-            <form method = "POST" enctype = "multipart/form-data" class="space-y-6">
-                {% csrf_token %}
-                {% for msg in messages %}
-                <h3> {{msg}} </h3>
-                {% endfor %}
-                <!-- Name -->
-                <div>
-                    <label class="text-gray-700 font-medium text-sm">Full Name</label>
-                    <input type="text" name="vname" required
-                        class="w-full mt-1 px-4 py-3 rounded-xl bg-gray-100 border border-gray-300
-                        focus:ring-2 focus:ring-indigo-400 outline-none"
-                        placeholder="Enter full name">
-                </div>
+                <input id="authCode" type="password" placeholder="Authorization Code"
+                    class="w-full px-4 py-3 rounded-xl bg-gray-100 border border-gray-300
+                    focus:ring-2 focus:ring-indigo-400 outline-none mb-4">
 
-                <!-- Email -->
-                <div>
-                    <label class="text-gray-700 font-medium text-sm">Email</label>
-                    <input type="email" name="vemail" required
-                        class="w-full mt-1 px-4 py-3 rounded-xl bg-gray-100 border border-gray-300
-                        focus:ring-2 focus:ring-indigo-400 outline-none"
-                        placeholder="Enter email">
-                </div>
-
-                <!-- Phone -->
-                <div>
-                    <label class="text-gray-700 font-medium text-sm">Phone Number</label>
-                    <input type="vtext" name="phone" required
-                        class="w-full mt-1 px-4 py-3 rounded-xl bg-gray-100 border border-gray-300
-                        focus:ring-2 focus:ring-indigo-400 outline-none"
-                        placeholder="Enter phone number">
-                </div>
-
-                <!-- Address -->
-                <div>
-                    <label class="text-gray-700 font-medium text-sm">Address</label>
-                    <textarea name="vaddress" rows="2" required
-                        class="w-full mt-1 px-4 py-3 rounded-xl bg-gray-100 border border-gray-300
-                        focus:ring-2 focus:ring-indigo-400 outline-none"
-                        placeholder="Enter address"></textarea>
-                </div>
-
-                <!-- Skills -->
-                <div>
-                    <label class="text-gray-700 font-medium text-sm">How can you help?</label>
-                    <select name="skills" required
-                        class="w-full mt-1 px-4 py-3 rounded-xl bg-gray-100 border border-gray-300
-                        focus:ring-2 focus:ring-indigo-400 outline-none">
-                        <option value="">Select</option>
-                        <option value="Animal Care">Animal Care</option>
-                        <option value="Training & Handling">Training & Handling</option>
-                        <option value="Transportation">Transportation</option>
-                        <option value="Groomer">Groomer</option>
-
-                    </select>
-                </div>
-
-                <!-- FileProof  -->
-                <div>
-                    <label class="text-gray-700 font-medium text-sm">Add Proof</label>
-                    <input type="file" name="vfile" required
-                        class="w-full mt-1 px-4 py-3 rounded-xl bg-gray-100 border border-gray-300
-                        focus:ring-2 focus:ring-indigo-400 outline-none"
-                        placeholder="">
-                </div>
-
-                 <!-- Password  -->
-                 <div>
-                    <label class="text-gray-700 font-medium text-sm">Create Password</label>
-                    <input type="password" name="vpassword" required
-                        class="w-full mt-1 px-4 py-3 rounded-xl bg-gray-100 border border-gray-300
-                        focus:ring-2 focus:ring-indigo-400 outline-none"
-                        placeholder="Create password">
-                </div>
-
-                <!-- Confirm Password -->
-                <div>
-                    <label class="text-gray-700 font-medium text-sm">Confirm Password</label>
-                    <input type="password" name="vcpassword" required
-                        class="w-full mt-1 px-4 py-3 rounded-xl bg-gray-100 border border-gray-300
-                        focus:ring-2 focus:ring-indigo-400 outline-none"
-                        placeholder="Create password">
-                </div>
-
-                <!-- Signup Button -->
-                <button type="submit"
+                <button onclick="verifyCode()"
                     class="w-full py-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white 
                     font-semibold shadow-lg transition">
-                    Create Volunteer Account
+                    Verify & Continue
                 </button>
 
-                <!-- Already have account -->
-                <p class="text-center text-sm mt-4 text-gray-600">
-                    Already a volunteer?
-                    <a href="{% url 'volunteerLogin' %}" class="text-indigo-700 hover:underline font-medium">
-                        Login here
-                    </a>
+                <p id="authError" class="text-red-500 text-sm mt-4 hidden animate-pulse text-center">
+                    Invalid authorization code.
                 </p>
-            </form>
+            </div>
+
+            <!-- ================= REGISTER FORM ================= -->
+            <div id="registerBox" class="hidden fade-in">
+
+                <h2 class="text-4xl font-bold text-center text-gray-800">Volunteer Signup</h2>
+                <p class="text-center text-gray-600 mt-1 mb-8">
+                    Start helping today — fill in your details
+                </p>
+
+                <form method="POST" enctype="multipart/form-data" class="space-y-6">
+                    {% csrf_token %}
+                    {% for msg in messages %}
+                        <h3>{{ msg }}</h3>
+                    {% endfor %}
+
+                    <!-- Name -->
+                    <div>
+                        <label class="text-gray-700 font-medium text-sm">Full Name</label>
+                        <input type="text" name="vname" required
+                            class="w-full mt-1 px-4 py-3 rounded-xl bg-gray-100 border border-gray-300
+                            focus:ring-2 focus:ring-indigo-400 outline-none"
+                            placeholder="Enter full name">
+                    </div>
+
+                    <!-- Email -->
+                    <div>
+                        <label class="text-gray-700 font-medium text-sm">Email</label>
+                        <input type="email" name="vemail" required
+                            class="w-full mt-1 px-4 py-3 rounded-xl bg-gray-100 border border-gray-300
+                            focus:ring-2 focus:ring-indigo-400 outline-none"
+                            placeholder="Enter email">
+                    </div>
+
+                    <!-- Phone -->
+                    <div>
+                        <label class="text-gray-700 font-medium text-sm">Phone Number</label>
+                        <input type="text" name="phone" required
+                            class="w-full mt-1 px-4 py-3 rounded-xl bg-gray-100 border border-gray-300
+                            focus:ring-2 focus:ring-indigo-400 outline-none"
+                            placeholder="Enter phone number">
+                    </div>
+
+                    <!-- Address -->
+                    <div>
+                        <label class="text-gray-700 font-medium text-sm">Address</label>
+                        <textarea name="vaddress" rows="2" required
+                            class="w-full mt-1 px-4 py-3 rounded-xl bg-gray-100 border border-gray-300
+                            focus:ring-2 focus:ring-indigo-400 outline-none"
+                            placeholder="Enter address"></textarea>
+                    </div>
+
+                    <!-- Skills -->
+                    <div>
+                        <label class="text-gray-700 font-medium text-sm">How can you help?</label>
+                        <select name="skills" required
+                            class="w-full mt-1 px-4 py-3 rounded-xl bg-gray-100 border border-gray-300
+                            focus:ring-2 focus:ring-indigo-400 outline-none">
+                            <option value="">Select</option>
+                            <option value="Animal Care">Animal Care</option>
+                            <option value="Training & Handling">Training & Handling</option>
+                            <option value="Transportation">Transportation</option>
+                            <option value="Groomer">Groomer</option>
+                        </select>
+                    </div>
+
+                    <!-- File Proof -->
+                    <div>
+                        <label class="text-gray-700 font-medium text-sm">Add Proof</label>
+                        <input type="file" name="vfile" required
+                            class="w-full mt-1 px-4 py-3 rounded-xl bg-gray-100 border border-gray-300
+                            focus:ring-2 focus:ring-indigo-400 outline-none">
+                    </div>
+
+                    <!-- Password -->
+                    <div>
+                        <label class="text-gray-700 font-medium text-sm">Create Password</label>
+                        <input type="password" name="vpassword" required
+                            class="w-full mt-1 px-4 py-3 rounded-xl bg-gray-100 border border-gray-300
+                            focus:ring-2 focus:ring-indigo-400 outline-none"
+                            placeholder="Create password">
+                    </div>
+
+                    <!-- Confirm Password -->
+                    <div>
+                        <label class="text-gray-700 font-medium text-sm">Confirm Password</label>
+                        <input type="password" name="vcpassword" required
+                            class="w-full mt-1 px-4 py-3 rounded-xl bg-gray-100 border border-gray-300
+                            focus:ring-2 focus:ring-indigo-400 outline-none"
+                            placeholder="Confirm password">
+                    </div>
+
+                    <!-- Signup Button -->
+                    <button type="submit"
+                        class="w-full py-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white 
+                        font-semibold shadow-lg transition">
+                        Create Volunteer Account
+                    </button>
+
+                    <!-- Already have account -->
+                    <p class="text-center text-sm mt-4 text-gray-600">
+                        Already a volunteer?
+                        <a href="{% url 'volunteer:volunteerLogin' %}" class="text-indigo-700 hover:underline font-medium">
+                            Login here
+                        </a>
+                    </p>
+                </form>
+            </div>
 
         </div>
     </div>
+
+<script>
+/* ================= AUTH LOGIC ================= */
+const SECRET_CODE = "PETPAL-VOLUNTEER-2025";
+
+function verifyCode(){
+    const input = document.getElementById("authCode").value;
+    const error = document.getElementById("authError");
+
+    if(input === SECRET_CODE){
+        document.getElementById("authBox").classList.add("hidden");
+        document.getElementById("registerBox").classList.remove("hidden");
+    } else {
+        error.classList.remove("hidden");
+    }
+}
+</script>
 
 </body>
 </html>

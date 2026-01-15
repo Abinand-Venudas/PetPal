@@ -22,7 +22,7 @@ def volunteerSignup(request):
         # Check if the email already exists
             if volunteer_registration.objects.filter(email=vemail).exists():
                 messages.error(request, "Email already registered.")
-                return redirect('volunteerSignup')
+                return redirect('volunteer:volunteerSignup')
             else:
                 vfile = request.FILES.get("vfile")
                 volunteer = volunteer_registration(
@@ -36,7 +36,7 @@ def volunteerSignup(request):
                 )
                 volunteer.save()
                 messages.success(request, "Registration successful.")
-                return redirect('volunteerLogin')
+                return redirect('volunteer:volunteerLogin')
     return render(request, "volunteer/volunteerSignup.html")
 
 def volunteerLogin(request):
@@ -45,18 +45,38 @@ def volunteerLogin(request):
         password = request.POST.get("password")
         try:
             volunteer = volunteer_registration.objects.get(email=email, password=password)
+            request.session['volunteer_id'] = volunteer.id
+            request.session['volunteer_name'] = volunteer.name
+            request.session['volunteer_email'] = volunteer.email
+
             messages.success(request, "Login successful.")
-            return redirect('volunteerHome')
+            return redirect('volunteer:volunteerHome')
         except volunteer_registration.DoesNotExist:
             messages.error(request, "Invalid email or password.")
     return render(request, "volunteer/volunteerLogin.html")
 
-def volunteerHome(request):
-    return render(request, "volunteer/volunteerHome.html")  
+ 
 def volunteerAppointments(request):
     return render(request, "volunteer/volunteerAppointments.html")
 def volunteerPets(request):
     return render(request, "volunteer/volunteerPets.html")
 def volunteerNotification(request):
     return render(request, "volunteer/volunteerNotification.html")
-# Create your views here.
+def volunteerHome(request):
+    volunteer = volunteer_registration.objects.get(
+        email=request.session["volunteer_email"]
+    )
+
+    if request.method == "POST":
+        action = request.POST.get("action")
+
+        if action == "checkin":
+            volunteer.is_available = True
+        elif action == "checkout":
+            volunteer.is_available = False
+
+        volunteer.save()
+
+    return render(request, "volunteer/volunteerHome.html", {
+        "volunteer": volunteer
+    })

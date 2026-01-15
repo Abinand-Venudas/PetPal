@@ -1,0 +1,162 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Login | PetPal</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+
+body{
+  font-family:"Poppins",sans-serif;
+  min-height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:linear-gradient(135deg,#eef1ff,#ffe6f5);
+  overflow:hidden;
+}
+
+/* Background blobs */
+.circle{
+  position:absolute;
+  border-radius:50%;
+  filter:blur(90px);
+  opacity:.55;
+  z-index:-1;
+}
+.circle1{width:320px;height:320px;background:#7b8cff;top:-80px;left:-80px}
+.circle2{width:380px;height:380px;background:#ff7ac5;bottom:-120px;right:-60px}
+
+/* Login Card */
+.login-card{
+  width:100%;
+  max-width:420px;
+  background:rgba(255,255,255,.88);
+  backdrop-filter:blur(18px);
+  border-radius:24px;
+  padding:42px 36px;
+  box-shadow:0 30px 70px rgba(0,0,0,.25);
+  animation:fade .6s ease;
+}
+
+@keyframes fade{
+  from{opacity:0;transform:translateY(18px)}
+  to{opacity:1;transform:translateY(0)}
+}
+
+/* Title */
+.login-card h1{
+  text-align:center;
+  font-size:34px;
+  font-weight:800;
+  margin-bottom:6px;
+  background:linear-gradient(45deg,#4a5fc1,#ff77b7);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+}
+
+.login-card p{
+  text-align:center;
+  font-size:14px;
+  color:#666;
+  margin-bottom:32px;
+}
+
+/* Inputs */
+.input-group{
+  margin-bottom:18px;
+}
+
+.input-group label{
+  display:block;
+  font-size:14px;
+  margin-bottom:6px;
+  color:#444;
+}
+
+.input-group input{
+  width:100%;
+  padding:12px 14px;
+  border-radius:12px;
+  border:1.5px solid #dcdff6;
+  font-size:15px;
+  outline:none;
+}
+
+.input-group input:focus{
+  border-color:#4a5fc1;
+}
+
+/* Button */
+.login-btn{
+  width:100%;
+  padding:14px;
+  border:none;
+  border-radius:14px;
+  font-size:16px;
+  font-weight:600;
+  color:#fff;
+  background:linear-gradient(135deg,#4a5fc1,#ff7ac5);
+  cursor:pointer;
+  margin-top:10px;
+  box-shadow:0 12px 30px rgba(255,122,197,.5);
+  transition:.3s;
+}
+
+.login-btn:hover{
+  transform:translateY(-2px);
+}
+
+/* Back link */
+.back-link{
+  display:block;
+  text-align:center;
+  margin-top:18px;
+  font-size:14px;
+  color:#4a5fc1;
+  text-decoration:none;
+}
+.back-link:hover{text-decoration:underline}
+</style>
+</head>
+
+<body>
+
+<div class="circle circle1"></div>
+<div class="circle circle2"></div>
+
+<div class="login-card">
+  <h1>🛡️ Admin Login</h1>
+  <p>Secure access to PetPal Admin Dashboard</p>
+
+ <form method="POST">
+  {% csrf_token %}
+
+  <div class="input-group">
+    <label>Admin Email</label>
+    <input type="email" name="email" placeholder="admin@petpal.com" required>
+  </div>
+
+  <div class="input-group">
+    <label>Password</label>
+    <input type="password" name="password" placeholder="••••••••" required>
+  </div>
+
+  <button type="submit" class="login-btn">
+    Login
+  </button>
+</form>
+
+<a href="/" class="back-link">
+  ← Back to Home
+</a>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,127 @@
+{% extends "petadmin/baseadmin.html" %}
+
+{% block content %}
+<div class="p-10 max-w-4xl mx-auto">
+
+  <!-- PAGE HEADER -->
+  <div class="mb-8">
+    <h1 class="text-4xl font-extrabold text-indigo-700">Adoption Request</h1>
+    <p class="text-gray-500 mt-1">Review and manage adoption request details</p>
+  </div>
+
+  <!-- MAIN CARD -->
+  <div class="bg-white rounded-3xl shadow-xl p-10 space-y-8 border border-gray-100">
+
+    <!-- STATUS BADGE -->
+    <div class="flex justify-between items-center">
+      <h2 class="text-2xl font-bold text-gray-800">Request Details</h2>
+
+      {% if adoption.status == "Pending" %}
+        <span class="px-5 py-2 rounded-full text-sm font-bold bg-yellow-100 text-yellow-700">
+          ⏳ Pending
+        </span>
+      {% elif adoption.status == "Approved" %}
+        <span class="px-5 py-2 rounded-full text-sm font-bold bg-green-100 text-green-700">
+          ✅ Approved
+        </span>
+      {% elif adoption.status == "Visited" %}
+        <span class="px-5 py-2 rounded-full text-sm font-bold bg-blue-100 text-blue-700">
+          🐾 Visited
+        </span>
+      {% elif adoption.status == "Rejected" %}
+        <span class="px-5 py-2 rounded-full text-sm font-bold bg-red-100 text-red-700">
+          ❌ Rejected
+        </span>
+      {% else %}
+        <span class="px-5 py-2 rounded-full text-sm font-bold bg-gray-100 text-gray-700">
+          {{ adoption.status }}
+        </span>
+      {% endif %}
+    </div>
+
+    <!-- DETAILS GRID -->
+    <div class="grid md:grid-cols-2 gap-6 text-sm">
+
+      <div class="p-5 rounded-2xl bg-gray-50 border">
+        <p class="text-gray-500 font-semibold mb-1">User Name</p>
+        <p class="text-lg font-bold text-gray-800">{{ adoption.user.name }}</p>
+      </div>
+
+      <div class="p-5 rounded-2xl bg-gray-50 border">
+        <p class="text-gray-500 font-semibold mb-1">Email</p>
+        <p class="text-lg font-bold text-gray-800">{{ adoption.user.email }}</p>
+      </div>
+
+      <div class="p-5 rounded-2xl bg-gray-50 border">
+        <p class="text-gray-500 font-semibold mb-1">Pet Name</p>
+        <p class="text-lg font-bold text-gray-800">{{ adoption.pet.name }}</p>
+      </div>
+
+      <div class="p-5 rounded-2xl bg-gray-50 border">
+        <p class="text-gray-500 font-semibold mb-1">Visit Date</p>
+        <p class="text-lg font-bold text-gray-800">{{ adoption.visit_date }}</p>
+      </div>
+
+      <div class="p-5 rounded-2xl bg-gray-50 border">
+        <p class="text-gray-500 font-semibold mb-1">Requested On</p>
+        <p class="text-lg font-bold text-gray-800">{{ adoption.created_at }}</p>
+      </div>
+
+      <div class="p-5 rounded-2xl bg-gray-50 border">
+        <p class="text-gray-500 font-semibold mb-1">Current Status</p>
+        <p class="text-lg font-bold text-indigo-700">{{ adoption.status }}</p>
+      </div>
+
+    </div>
+
+    <!-- ACTION BUTTONS -->
+    <div class="pt-6 flex flex-wrap gap-4 justify-between items-center">
+
+      <!-- BACK BUTTON -->
+      <a href="{% url 'petadmin:adminAdoptions' %}"
+         class="px-6 py-3 rounded-xl border border-gray-300 text-gray-700 font-semibold hover:bg-gray-100 transition">
+        ← Back to Requests
+      </a>
+
+      <!-- ADMIN ACTIONS -->
+      <div class="flex gap-4">
+
+        {% if adoption.status == "Pending" %}
+
+          <!-- APPROVE -->
+          <a href="{% url 'petadmin:update_adoption_status' adoption.id 'Approved' %}"
+             onclick="return confirm('Approve this adoption request?')"
+             class="px-6 py-3 rounded-xl bg-gradient-to-r from-green-500 to-emerald-600 text-white font-semibold shadow-lg hover:shadow-xl transition">
+            ✅ Approve
+          </a>
+
+          <!-- REJECT -->
+          <a href="{% url 'petadmin:update_adoption_status' adoption.id 'Rejected' %}"
+             onclick="return confirm('Reject this adoption request? This cannot be undone.')"
+             class="px-6 py-3 rounded-xl bg-gradient-to-r from-red-500 to-pink-600 text-white font-semibold shadow-lg hover:shadow-xl transition">
+            ❌ Reject
+          </a>
+
+        {% elif adoption.status == "Approved" %}
+
+          <!-- MARK AS VISITED -->
+          <a href="{% url 'petadmin:update_adoption_status' adoption.id 'Visited' %}"
+             onclick="return confirm('Mark this adoption as Visited?')"
+             class="px-6 py-3 rounded-xl bg-gradient-to-r from-blue-500 to-indigo-600 text-white font-semibold shadow-lg hover:shadow-xl transition">
+            🐾 Mark as Visited
+          </a>
+
+        {% else %}
+
+          <span class="px-6 py-3 rounded-xl bg-gray-200 text-gray-600 font-semibold cursor-not-allowed">
+            No further actions available
+          </span>
+
+        {% endif %}
+
+      </div>
+    </div>
+
+  </div>
+</div>
+{% endblock %}

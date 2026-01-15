@@ -1,0 +1,169 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Doctor Appointments | PetPal</title>
+
+<script src="https://cdn.tailwindcss.com"></script>
+
+<style>
+/* Floating paw background */
+.paw-bg{
+    background-image:url("{% static 'img/paws.png' %}");
+    background-size:120px;
+    opacity:0.05;
+    animation:floatPaws 14s linear infinite;
+    pointer-events:none;
+}
+@keyframes floatPaws{
+    from{background-position:0 0}
+    to{background-position:600px 600px}
+}
+</style>
+</head>
+
+<body class="bg-gray-50 relative">
+
+<!-- BACKGROUND -->
+<div class="paw-bg fixed inset-0 -z-10"></div>
+
+<!-- NAVBAR -->
+<nav class="bg-white shadow-md px-8 py-4 flex justify-between items-center sticky top-0 z-20">
+    <h1 class="text-2xl font-bold text-amber-600">🐾 PetPal – Doctor Panel</h1>
+
+    <div class="flex gap-6 font-medium text-gray-700">
+        <a href="{% url 'doctor:doctorHome' %}" class="hover:text-amber-600">Dashboard</a>
+        <a href="#" class="text-amber-600 font-semibold">Appointments</a>
+        <a href="{% url 'doctor:doctorLogin' %}" class="hover:text-red-500">Logout</a>
+    </div>
+</nav>
+
+<!-- MAIN -->
+<div class="p-8 max-w-7xl mx-auto">
+
+    <!-- HEADER -->
+    <div class="mb-10">
+        <h2 class="text-3xl font-extrabold text-gray-800">Appointments</h2>
+        <p class="text-gray-500 mt-1">
+            Manage today’s and upcoming pet appointments
+        </p>
+    </div>
+
+    <!-- FILTER BAR -->
+    <div class="bg-white rounded-2xl shadow p-5 mb-8 flex flex-wrap gap-4 items-center">
+        <select class="px-4 py-2 border rounded-xl">
+            <option>All</option>
+            <option>Today</option>
+            <option>Upcoming</option>
+            <option>Completed</option>
+        </select>
+
+        <input type="date" class="px-4 py-2 border rounded-xl">
+
+        <button class="bg-amber-500 hover:bg-amber-600 text-white px-6 py-2 rounded-xl">
+            Apply
+        </button>
+    </div>
+
+    <!-- APPOINTMENT LIST -->
+    <div class="space-y-6">
+
+        <!-- APPOINTMENT CARD -->
+        <div class="bg-white rounded-2xl shadow-lg p-6 flex flex-col lg:flex-row
+                    justify-between items-start lg:items-center gap-6">
+
+            <div>
+                <h3 class="text-xl font-semibold text-gray-800">
+                    Charlie (Dog)
+                </h3>
+                <p class="text-gray-500 text-sm">
+                    Owner: Anita • Skin Check
+                </p>
+                <p class="text-gray-600 mt-1">
+                    📅 Today • ⏰ 3:00 PM
+                </p>
+            </div>
+
+            <span class="px-4 py-1 rounded-full bg-yellow-100 text-yellow-700 font-medium">
+                Pending
+            </span>
+
+            <div class="flex gap-3">
+                <button
+                    class="bg-indigo-500 hover:bg-indigo-600 text-white px-4 py-2 rounded-xl">
+                    View
+                </button>
+                <button
+                    class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-xl">
+                    Complete
+                </button>
+            </div>
+        </div>
+
+        <!-- APPOINTMENT CARD -->
+        <div class="bg-white rounded-2xl shadow-lg p-6 flex flex-col lg:flex-row
+                    justify-between items-start lg:items-center gap-6">
+
+            <div>
+                <h3 class="text-xl font-semibold text-gray-800">
+                    Bella (Cat)
+                </h3>
+                <p class="text-gray-500 text-sm">
+                    Owner: Rahul • Follow-up
+                </p>
+                <p class="text-gray-600 mt-1">
+                    📅 Today • ⏰ 4:30 PM
+                </p>
+            </div>
+
+            <span class="px-4 py-1 rounded-full bg-green-100 text-green-700 font-medium">
+                Completed
+            </span>
+
+            <div class="flex gap-3">
+                <button
+                    class="bg-gray-200 text-gray-700 px-4 py-2 rounded-xl">
+                    View Summary
+                </button>
+            </div>
+        </div>
+
+        <!-- APPOINTMENT CARD -->
+        <div class="bg-white rounded-2xl shadow-lg p-6 flex flex-col lg:flex-row
+                    justify-between items-start lg:items-center gap-6">
+
+            <div>
+                <h3 class="text-xl font-semibold text-gray-800">
+                    Rex (German Shepherd)
+                </h3>
+                <p class="text-gray-500 text-sm">
+                    Owner: Anitha • General Checkup
+                </p>
+                <p class="text-gray-600 mt-1">
+                    📅 Tomorrow • ⏰ 11:00 AM
+                </p>
+            </div>
+
+            <span class="px-4 py-1 rounded-full bg-blue-100 text-blue-700 font-medium">
+                Upcoming
+            </span>
+
+            <div class="flex gap-3">
+                <button
+                    class="bg-indigo-500 hover:bg-indigo-600 text-white px-4 py-2 rounded-xl">
+                    View
+                </button>
+                <button
+                    class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-xl">
+                    Cancel
+                </button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+</body>
+</html>

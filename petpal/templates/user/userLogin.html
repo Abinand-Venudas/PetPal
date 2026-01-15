@@ -10,7 +10,6 @@
     <script src="https://cdn.tailwindcss.com"></script>
 
     <style>
-        /* Replace hero image with your cat image */
         .bg-hero {
             background-image: url("{% static 'img/cat.jpeg' %}");
             background-size: cover;
@@ -51,11 +50,12 @@
             <h2 class="text-3xl font-bold text-center text-gray-800">Login</h2>
             <p class="text-center text-gray-500 mb-8">Glad to see you again!</p>
 
-            <form method ="POST" class="space-y-6">
+            <form method="POST" class="space-y-6">
                 {% csrf_token %}
                 {% for msg in messages %}
-                <h3> {{msg}} </h3>
+                <h3>{{ msg }}</h3>
                 {% endfor %}
+
                 <div>
                     <label class="text-gray-700 font-medium text-sm">Username</label>
                     <input type="text" name="username" required
@@ -75,13 +75,19 @@
                     Sign In
                 </button>
 
+                <!-- GO TO HOME BUTTON -->
+                <a href="/"
+                   class="block text-center w-full py-3 rounded-xl border border-indigo-600 text-indigo-600 hover:bg-indigo-50 font-semibold transition">
+                    Go to Home
+                </a>
+
                 <div class="text-right">
                     <a href="#" class="text-sm text-indigo-600 hover:underline">Forgot password?</a>
                 </div>
 
                 <p class="text-center text-sm mt-4 text-gray-600">
                     New here?
-                    <a href="{% url 'register' %}" class="text-indigo-700 hover:underline font-medium">Create an account</a>
+                    <a href="{% url 'petapp:register' %}" class="text-indigo-700 hover:underline font-medium">Create an account</a>
                 </p>
             </form>
         </div>

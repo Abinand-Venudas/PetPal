@@ -1,0 +1,143 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Doctor Login | PetPal</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/feather-icons"></script>
+
+    <style>
+        .paw-bg {
+            background-image: url("{% static 'img/paws.png' %}");
+            background-size: 140px;
+            animation: floatPaws 18s linear infinite;
+            opacity: 0.08;
+        }
+
+        @keyframes floatPaws {
+            from { background-position: 0 0; }
+            to { background-position: 800px 800px; }
+        }
+
+        .fade-in {
+            animation: fade 0.8s ease-in-out;
+        }
+
+        @keyframes fade {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .loader {
+            border: 3px solid white;
+            border-top: 3px solid transparent;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 0.7s linear infinite;
+            display: none;
+        }
+
+        @keyframes spin {
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+
+<body class="min-h-screen flex items-center justify-center bg-gradient-to-br from-amber-100 to-white relative overflow-hidden">
+
+<!-- ✅ Background paws (fixed properly) -->
+<div class="fixed inset-0 paw-bg pointer-events-none"></div>
+
+<div class="bg-white shadow-2xl rounded-3xl overflow-hidden w-full max-w-4xl grid grid-cols-1 md:grid-cols-2 fade-in relative z-10">
+
+    <!-- Left Image -->
+    <div class="hidden md:block">
+        <img src="{% static 'img/doctor-login.jpg' %}" class="h-full w-full object-cover">
+    </div>
+
+    <!-- Login Form -->
+    <div class="p-10 bg-white/95 backdrop-blur-xl flex flex-col justify-center">
+        <h2 class="text-3xl font-bold text-gray-800 mb-2">Doctor Login</h2>
+        <p class="text-gray-500 mb-8">Access your consultation dashboard</p>
+
+        <form method="POST" onsubmit="showLoader()">
+            {% csrf_token %}
+
+            <!-- Email -->
+            <div class="mb-5">
+                <label class="block mb-1 text-gray-600">Email</label>
+                <input type="email" name="email" required
+                    class="w-full border border-gray-300 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-amber-400">
+            </div>
+
+            <!-- Password with Eye Icon -->
+            <div class="mb-5">
+                <label class="block mb-1 text-gray-600">Password</label>
+                <div class="relative">
+                    <input type="password" name="password" id="password" required
+                        class="w-full border border-gray-300 rounded-xl p-3 pr-10 focus:outline-none focus:ring-2 focus:ring-amber-400">
+
+                    <span onclick="togglePassword()" 
+                          class="absolute right-3 top-3 cursor-pointer text-gray-500">
+                        <i data-feather="eye" id="eyeIcon"></i>
+                    </span>
+                </div>
+            </div>
+
+            <!-- Remember & Forgot -->
+            <div class="flex items-center justify-between mb-6">
+                <label class="flex items-center text-sm text-gray-600">
+                    <input type="checkbox" class="mr-2"> Remember me
+                </label>
+                <a href="#" class="text-sm text-amber-600 hover:underline">Forgot password?</a>
+            </div>
+
+            <!-- Login Button with Loader -->
+            <button type="submit" id="loginBtn"
+                class="w-full bg-amber-500 hover:bg-amber-600 text-white font-semibold py-3 rounded-xl transition flex items-center justify-center gap-3">
+                
+                <span id="btnText">Login</span>
+                <div class="loader" id="loader"></div>
+            </button>
+        </form>
+
+        <p class="text-center text-sm text-gray-500 mt-6">
+            Not registered? 
+            <a href="{% url 'doctor:doctorSignup' %}" class="text-amber-600 font-medium hover:underline">
+                Register
+            </a>
+        </p>
+    </div>
+
+</div>
+
+<script>
+    feather.replace();
+
+    function togglePassword() {
+        const pass = document.getElementById("password");
+        const icon = document.getElementById("eyeIcon");
+
+        if (pass.type === "password") {
+            pass.type = "text";
+            icon.setAttribute("data-feather", "eye-off");
+        } else {
+            pass.type = "password";
+            icon.setAttribute("data-feather", "eye");
+        }
+        feather.replace();
+    }
+
+    function showLoader() {
+        document.getElementById("loader").style.display = "block";
+        document.getElementById("btnText").textContent = "Logging in...";
+        document.getElementById("loginBtn").disabled = true;
+    }
+</script>
+
+</body>
+</html>

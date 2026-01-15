@@ -1,0 +1,272 @@
+{% extends "user/base.html" %}
+{% load static %}
+
+{% block title %}PetPal — Consultation Confirmed{% endblock %}
+
+{% block extra_css %}
+<style>
+/* ================= PAGE BACKGROUND ================= */
+.success-bg{
+  min-height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:60px 20px;
+  background:
+    radial-gradient(circle at top left,#eef2ff,#ffffff 60%),
+    radial-gradient(circle at bottom right,#ffe4f1,#ffffff 60%);
+}
+.dark .success-bg{
+  background:
+    radial-gradient(circle at top left,#1e293b,#020617 60%),
+    radial-gradient(circle at bottom right,#312e81,#020617 60%);
+}
+
+/* ================= CARD ================= */
+.success-card{
+  max-width:680px;
+  width:100%;
+  padding:48px 46px;
+  border-radius:28px;
+  background:rgba(255,255,255,.95);
+  backdrop-filter:blur(18px);
+  border:1px solid rgba(255,255,255,.6);
+  box-shadow:0 40px 120px rgba(0,0,0,.15);
+  text-align:center;
+  animation:fadeUp .8s ease forwards;
+}
+.dark .success-card{
+  background:rgba(2,6,23,.95);
+  border:1px solid rgba(255,255,255,.15);
+  box-shadow:0 50px 140px rgba(0,0,0,.8);
+}
+
+/* ================= TEXT ================= */
+.success-title{
+  font-size:42px;
+  font-weight:800;
+  background:linear-gradient(135deg,#6366f1,#ec4899);
+  -webkit-background-clip:text;
+  color:transparent;
+}
+.dark .success-title{background:none;color:#f8fafc;}
+
+.success-subtitle{
+  margin-top:10px;
+  font-size:16px;
+  color:#4b5563;
+}
+.dark .success-subtitle{color:#cbd5e1;}
+
+/* ================= INFO BOX ================= */
+.info-box{
+  margin-top:36px;
+  padding:26px 28px;
+  border-radius:20px;
+  background:#f9fafb;
+  border:1px solid #e5e7eb;
+  text-align:left;
+}
+.dark .info-box{
+  background:rgba(30,41,59,.9);
+  border:1px solid rgba(255,255,255,.12);
+}
+
+/* ================= INFO ROW ================= */
+.info-row{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:10px 0;
+  border-bottom:1px solid #e5e7eb;
+}
+.info-row:last-child{border-bottom:none;}
+.dark .info-row{border-bottom:1px solid rgba(255,255,255,.12);}
+
+.info-label{
+  font-size:14px;
+  color:#6b7280;
+  font-weight:600;
+}
+.dark .info-label{color:#94a3b8;}
+
+.info-value{
+  font-size:15px;
+  font-weight:700;
+  color:#111827;
+}
+.dark .info-value{color:#f8fafc;}
+
+/* ================= STATUS BADGE ================= */
+.status{
+  display:inline-block;
+  padding:6px 14px;
+  border-radius:999px;
+  font-size:13px;
+  font-weight:700;
+  background:rgba(99,102,241,.15);
+  color:#4f46e5;
+}
+.dark .status{
+  background:rgba(99,102,241,.25);
+  color:#c7d2fe;
+}
+
+/* ================= BUTTONS ================= */
+.action-row{
+  margin-top:30px;
+  display:flex;
+  gap:14px;
+  flex-wrap:wrap;
+  justify-content:center;
+}
+
+.success-btn{
+  padding:14px 28px;
+  border-radius:16px;
+  background:linear-gradient(135deg,#6366f1,#ec4899);
+  color:white;
+  font-weight:700;
+  text-decoration:none;
+  box-shadow:0 20px 50px rgba(236,72,153,.35);
+  transition:.3s;
+}
+.success-btn:hover{
+  transform:translateY(-2px);
+  box-shadow:0 30px 70px rgba(236,72,153,.5);
+}
+
+.secondary-btn{
+  padding:14px 28px;
+  border-radius:16px;
+  background:#f3f4f6;
+  color:#111827;
+  font-weight:700;
+  text-decoration:none;
+  border:1px solid #e5e7eb;
+  transition:.3s;
+}
+.secondary-btn:hover{background:#e5e7eb;}
+.dark .secondary-btn{
+  background:rgba(30,41,59,.9);
+  color:#f8fafc;
+  border:1px solid rgba(255,255,255,.12);
+}
+.dark .secondary-btn:hover{background:rgba(51,65,85,.9);}
+
+/* ================= CONFETTI ================= */
+.confetti{
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  overflow:hidden;
+  z-index:9999;
+}
+.confetti span{
+  position:absolute;
+  width:10px;height:10px;
+  background:linear-gradient(135deg,#6366f1,#ec4899);
+  opacity:.9;
+  animation:fall 3s linear infinite;
+}
+@keyframes fall{
+  from{transform:translateY(-10vh) rotate(0deg)}
+  to{transform:translateY(110vh) rotate(360deg)}
+}
+
+/* ================= ANIMATION ================= */
+@keyframes fadeUp{
+  from{opacity:0;transform:translateY(30px)}
+  to{opacity:1;transform:translateY(0)}
+}
+</style>
+{% endblock %}
+
+{% block content %}
+
+<!-- CONFETTI -->
+<div class="confetti" id="confetti"></div>
+
+<div class="success-bg">
+  <div class="success-card">
+
+    <h1 class="success-title">
+      Consultation Confirmed 🎉
+    </h1>
+
+    <p class="success-subtitle">
+      Your appointment has been successfully booked.
+    </p>
+
+    <!-- INFO BOX -->
+    <div class="info-box">
+
+      <div class="info-row">
+        <span class="info-label">Doctor</span>
+        <span class="info-value">Dr. {{ consultation.doctor.name }}</span>
+      </div>
+
+      <div class="info-row">
+        <span class="info-label">Date</span>
+        <span class="info-value">{{ consultation.date }}</span>
+      </div>
+
+      <div class="info-row">
+        <span class="info-label">Time</span>
+        <span class="info-value">{{ consultation.time }}</span>
+      </div>
+
+      <div class="info-row">
+        <span class="info-label">Status</span>
+        <span class="status">{{ consultation.status }}</span>
+      </div>
+
+    <!-- PET DETAILS -->
+<div class="info-row">
+  <span class="info-label">Pet Name</span>
+  <span class="info-value">{{ consultation.pet_name }}</span>
+</div>
+
+<div class="info-row">
+  <span class="info-label">Issue</span>
+  <span class="info-value">{{ consultation.issue }}</span>
+</div>
+
+    <!-- ACTION BUTTONS -->
+    <div class="action-row">
+      <a href="/" class="success-btn">Go to Dashboard</a>
+
+      
+      <!-- RESCHEDULE -->
+      <a href="{% url 'petapp:consultation' %}" class="secondary-btn">
+        Reschedule
+      </a>
+
+      <!-- CANCEL -->
+      <a href="{% url 'petapp:consultation' %}?cancel={{ consultation.id }}" class="secondary-btn">
+        Cancel
+      </a>
+    </div>
+
+  </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+/* ================= CONFETTI EFFECT ================= */
+const confetti = document.getElementById("confetti");
+
+for(let i=0;i<80;i++){
+  const piece = document.createElement("span");
+  piece.style.left = Math.random()*100+"%";
+  piece.style.animationDuration = (2 + Math.random()*2)+"s";
+  piece.style.opacity = Math.random();
+  confetti.appendChild(piece);
+}
+
+// Auto stop confetti after 4 seconds
+setTimeout(()=>{confetti.innerHTML="";},4000);
+</script>
+{% endblock %}

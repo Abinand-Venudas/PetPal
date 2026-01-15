@@ -1,0 +1,127 @@
+{% extends "Petadmin/baseAdmin.html" %}
+{% load static %}
+
+{% block title %}Admin Dashboard{% endblock %}
+
+{% block content %}
+
+<!-- HEADER -->
+<div class="mb-14">
+  <h1 class="text-5xl font-extrabold">Dashboard</h1>
+  <p class="text-gray-500 mt-3">Admin overview & analytics</p>
+</div>
+
+<!-- STATS -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 mb-20">
+  <div class="glass card p-9 rounded-3xl">
+    <p class="text-xs uppercase text-gray-400">Adoption Pets</p>
+    <h3 class="text-5xl font-extrabold text-indigo-600 mt-4">
+      {{ pets|length }}
+    </h3>
+  </div>
+
+  <div class="glass card p-9 rounded-3xl">
+    <p class="text-xs uppercase text-gray-400">Doctors</p>
+    <h3 class="text-5xl font-extrabold text-purple-600 mt-4">
+      {{ doctor_count }}
+    </h3>
+  </div>
+
+  <div class="glass card p-9 rounded-3xl">
+    <p class="text-xs uppercase text-gray-400">Volunteers</p>
+    <h3 class="text-5xl font-extrabold text-emerald-600 mt-4">
+      {{ volunteer_count }}
+    </h3>
+  </div>
+
+  <div class="glass card p-9 rounded-3xl">
+    <p class="text-xs uppercase text-gray-400">Users</p>
+    <h3 class="text-5xl font-extrabold text-orange-500 mt-4">
+      {{ user_count }}
+    </h3>
+  </div>
+</div>
+
+<!-- CHARTS -->
+<div class="grid lg:grid-cols-3 gap-10">
+  <div class="glass p-8 rounded-3xl lg:col-span-2">
+    <h3 class="font-bold text-xl mb-6">User Growth</h3>
+<canvas id="userChart" height="120"></canvas>
+  </div>
+
+  <div class="glass p-8 rounded-3xl">
+    <h3 class="font-bold text-xl mb-6">Services</h3>
+<canvas id="serviceChart"
+        height="240"
+        data-doctors="{{ doctor_count }}"
+        data-volunteers="{{ volunteer_count }}"
+        data-pets="{{ pets|length }}"
+        data-users="{{ user_count }}">
+</canvas>
+
+  </div>
+</div>
+
+{% endblock %}
+{% block extra_js %}
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+  /* USER GROWTH */
+  const userCtx = document.getElementById("userChart");
+  if (userCtx) {
+    new Chart(userCtx, {
+      type: "line",
+      data: {
+        labels: ["Jan","Feb","Mar","Apr","May","Jun"],
+        datasets: [{
+          data: [20,40,70,110,130,{{ user_count }}],
+          borderColor: "#6366f1",
+          backgroundColor: "rgba(99,102,241,.15)",
+          fill: true,
+          tension: .4,
+          pointRadius: 4
+        }]
+      },
+      options: {
+        plugins: { legend: { display: false } },
+        scales: { y: { beginAtZero: true } }
+      }
+    });
+  }
+
+  /* SERVICES */
+  const serviceCtx = document.getElementById("serviceChart");
+  if (serviceCtx) {
+    new Chart(serviceCtx, {
+      type: "doughnut",
+      data: {
+        labels: ["Doctors","Volunteers","Adoption","Users"],
+        datasets: [{
+          data: [
+            serviceCtx.dataset.doctors,
+            serviceCtx.dataset.volunteers,
+            serviceCtx.dataset.pets,
+            serviceCtx.dataset.users
+          ],
+          backgroundColor: [
+            "#8b5cf6",
+            "#10b981",
+            "#f97316",
+            "#fb923c"
+          ],
+          borderWidth: 0
+        }]
+      },
+      options: {
+        cutout: "70%",
+        plugins: {
+          legend: { position: "bottom" }
+        }
+      }
+    });
+  }
+
+});
+</script>
+{% endblock %}

@@ -1,0 +1,220 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Doctor Registration | PetPal</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!-- Tailwind -->
+<script src="https://cdn.tailwindcss.com"></script>
+<!-- Icons -->
+<script src="https://unpkg.com/feather-icons"></script>
+
+<style>
+body{
+    background:linear-gradient(135deg,#eef2ff,#ffffff);
+    font-family:Poppins,sans-serif;
+}
+
+/* Fade animation */
+.fade-in{
+    animation:fade .5s ease forwards;
+}
+@keyframes fade{
+    from{opacity:0;transform:translateY(16px)}
+    to{opacity:1;transform:translateY(0)}
+}
+
+/* Loader */
+.loader{
+    border:3px solid white;
+    border-top:3px solid transparent;
+    border-radius:50%;
+    width:20px;height:20px;
+    animation:spin .7s linear infinite;
+    display:none;
+}
+@keyframes spin{100%{transform:rotate(360deg)}}
+
+/* File input */
+.file-input::-webkit-file-upload-button{
+    background:#6366f1;
+    color:white;
+    border:none;
+    padding:8px 14px;
+    border-radius:10px;
+    cursor:pointer;
+    margin-right:10px;
+}
+.file-input::-webkit-file-upload-button:hover{
+    background:#4f46e5;
+}
+</style>
+</head>
+
+<body class="min-h-screen flex items-center justify-center">
+
+<div class="bg-white w-full max-w-5xl shadow-2xl rounded-3xl overflow-hidden grid grid-cols-1 md:grid-cols-2 fade-in">
+
+<!-- LEFT INFO -->
+<div class="hidden md:flex items-center justify-center bg-gradient-to-br from-indigo-600 to-pink-500 p-10 text-white">
+    <div class="space-y-4">
+        <h2 class="text-4xl font-extrabold">Doctor Access Only</h2>
+        <p class="opacity-90 leading-relaxed">
+            To protect trust on PetPal, doctor registrations require authorization.
+        </p>
+    </div>
+</div>
+
+<!-- RIGHT PANEL -->
+<div class="p-8 md:p-10 bg-white/95 backdrop-blur-xl">
+
+<!-- AUTH -->
+<div id="authBox" class="fade-in">
+    <h1 class="text-3xl font-bold text-gray-800 mb-2">Doctor Authorization</h1>
+    <p class="text-gray-500 mb-6 text-sm">
+        Enter the authorization code provided by PetPal.
+    </p>
+
+    <input id="authCode" type="password" placeholder="Authorization Code"
+        class="w-full border rounded-xl p-3 mb-4 focus:outline-none focus:ring-2 focus:ring-indigo-400">
+
+    <button onclick="verifyCode()"
+        class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 rounded-xl transition">
+        Verify & Continue
+    </button>
+
+    <p id="authError" class="text-red-500 text-sm mt-4 hidden animate-pulse">
+        Invalid authorization code.
+    </p>
+</div>
+
+<!-- REGISTER -->
+<div id="registerBox" class="hidden fade-in">
+
+<h1 class="text-3xl font-bold text-gray-800 mb-2">Create Doctor Account</h1>
+<p class="text-gray-500 mb-6 text-sm">
+    Fill in your professional details to get started.
+</p>
+
+<form method="POST" enctype="multipart/form-data" onsubmit="showLoader()">
+{% csrf_token %}
+
+<div class="grid md:grid-cols-2 gap-4 mb-4">
+    <input name="name" placeholder="Full Name" required class="border rounded-xl p-3 focus:ring-2 focus:ring-indigo-400">
+    <input name="email" type="email" placeholder="Email" required class="border rounded-xl p-3 focus:ring-2 focus:ring-indigo-400">
+</div>
+
+<!-- IMAGE PREVIEW -->
+<div class="flex items-center gap-6 mb-4">
+    <div class="w-24 h-24 rounded-full border-2 border-dashed border-indigo-400 flex items-center justify-center overflow-hidden">
+        <img id="imgPreview"
+             src="{% static 'img/doctor-placeholder.png' %}"
+             class="w-full h-full object-cover">
+    </div>
+    <div class="flex-1">
+        <p class="text-sm mb-1">Profile Image</p>
+        <input name="image" type="file" accept="image/*"
+               onchange="previewImage(event)"
+               class="file-input border rounded-xl p-3 w-full">
+    </div>
+</div>
+
+<div class="grid md:grid-cols-2 gap-4 mb-4">
+    <input name="phone" placeholder="Phone" required class="border rounded-xl p-3 focus:ring-2 focus:ring-indigo-400">
+    <input name="city" placeholder="City" class="border rounded-xl p-3 focus:ring-2 focus:ring-indigo-400">
+</div>
+
+<div class="grid md:grid-cols-2 gap-4 mb-4">
+    <select name="specialization" required class="border rounded-xl p-3 focus:ring-2 focus:ring-indigo-400">
+        <option value="">Specialization</option>
+        <option>General Veterinary</option>
+        <option>Dermatology</option>
+        <option>Orthopedics</option>
+        <option>Cardiology</option>
+        <option>Nutrition</option>
+    </select>
+    <input name="experience" type="number" min="0"
+        placeholder="Experience (Years)" required
+        class="border rounded-xl p-3 focus:ring-2 focus:ring-indigo-400">
+</div>
+
+<div class="grid md:grid-cols-2 gap-4 mb-4">
+    <input name="license" placeholder="License Number" class="border rounded-xl p-3 focus:ring-2 focus:ring-indigo-400">
+    <input name="clinic" placeholder="Clinic / Hospital" class="border rounded-xl p-3 focus:ring-2 focus:ring-indigo-400">
+</div>
+
+<div class="relative mb-4">
+    <input id="password" name="password" type="password"
+        placeholder="Password" required
+        class="border rounded-xl p-3 w-full pr-12 focus:ring-2 focus:ring-indigo-400">
+    <span onclick="togglePass('password')" class="absolute right-4 top-3 cursor-pointer text-gray-400">
+        <i data-feather="eye"></i>
+    </span>
+</div>
+
+<div class="relative mb-6">
+    <input id="confirm" name="confirm_password" type="password"
+        placeholder="Confirm Password" required
+        class="border rounded-xl p-3 w-full pr-12 focus:ring-2 focus:ring-indigo-400">
+    <span onclick="togglePass('confirm')" class="absolute right-4 top-3 cursor-pointer text-gray-400">
+        <i data-feather="eye"></i>
+    </span>
+</div>
+
+<button id="signupBtn" type="submit"
+    class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 rounded-xl flex justify-center gap-3">
+    <span id="btnText">Register as Doctor</span>
+    <div class="loader" id="loader"></div>
+</button>
+
+</form>
+
+<p class="text-center text-sm text-gray-600 mt-6">
+    Already registered?
+    <a href="{% url 'doctor:doctorLogin' %}" class="text-indigo-600 font-semibold hover:underline">
+        Login here
+    </a>
+</p>
+
+</div>
+</div>
+</div>
+
+<script>
+feather.replace();
+
+const SECRET_CODE="PETPAL-DOCTOR-2025";
+
+function verifyCode(){
+    const input=document.getElementById("authCode").value;
+    const error=document.getElementById("authError");
+
+    if(input===SECRET_CODE){
+        authBox.classList.add("hidden");
+        registerBox.classList.remove("hidden");
+    }else{
+        error.classList.remove("hidden");
+    }
+}
+
+function showLoader(){
+    loader.style.display="block";
+    btnText.textContent="Creating account...";
+    signupBtn.disabled=true;
+}
+
+function togglePass(id){
+    const el=document.getElementById(id);
+    el.type=el.type==="password"?"text":"password";
+}
+
+function previewImage(event){
+    const img=document.getElementById("imgPreview");
+    img.src=URL.createObjectURL(event.target.files[0]);
+}
+</script>
+
+</body>
+</html>

@@ -72,16 +72,24 @@
                 Access your volunteer dashboard
             </p>
 
-            <form action = "{% url 'volunteerHome' %}" class="space-y-6">
-
+            <form method = "POST" class="space-y-6">
+                {% csrf_token %}
+                {% comment %} {% if messages %} {% endcomment %}
+                    {% for message in messages %}
+                        <div class="p-4 mb-4 text-sm text-white bg-red-500 rounded-lg" role="alert">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% comment %} {% endif %} {% endcomment %}
                 <!-- Username -->
                 <div>
                     <label class="text-gray-700 font-medium text-sm">Volunteer ID / Email</label>
-                    <input type="text" name="username" required
+                    <input type="text" name="email" required
                         class="w-full mt-1 px-4 py-3 rounded-xl bg-gray-100 border border-gray-300 focus:ring-2 
                                focus:ring-indigo-400 outline-none"
                         placeholder="Enter volunteer ID or email">
                 </div>
+
 
                 <!-- Password -->
                 <div>
@@ -106,7 +114,7 @@
 
                 <p class="text-center text-sm mt-4 text-gray-600">
                     New volunteer?
-                    <a href="#" class="text-indigo-700 hover:underline font-medium">Register here</a>
+                    <a href="{% url 'volunteer:volunteerSignup' %}" class="text-indigo-700 hover:underline font-medium">Register here</a>
                 </p>
             </form>
 

@@ -1,0 +1,211 @@
+{% extends "user/base.html" %}
+{% load static %}
+
+{% block title %}PetPal — Daycare Booking Successful{% endblock %}
+
+{% block extra_css %}
+<style>
+/* ---------- BACKGROUND ---------- */
+.success-bg{
+  min-height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:60px 20px;
+  background:
+    radial-gradient(circle at top left,#eef2ff,#ffffff 60%),
+    radial-gradient(circle at bottom right,#ffe4f1,#ffffff 60%);
+}
+.dark .success-bg{
+  background:
+    radial-gradient(circle at top left,#1e293b,#020617 60%),
+    radial-gradient(circle at bottom right,#312e81,#020617 60%);
+}
+
+/* ---------- CARD ---------- */
+.success-card{
+  max-width:760px;
+  width:100%;
+  padding:48px 46px;
+  border-radius:28px;
+  background:rgba(255,255,255,.95);
+  backdrop-filter:blur(18px);
+  border:1px solid rgba(255,255,255,.6);
+  box-shadow:0 40px 120px rgba(0,0,0,.08);
+}
+.dark .success-card{
+  background:rgba(15,23,42,.9);
+  border:1px solid rgba(255,255,255,.08);
+  box-shadow:0 40px 120px rgba(0,0,0,.45);
+}
+
+/* ---------- ICON ---------- */
+.success-icon{
+  width:84px;
+  height:84px;
+  border-radius:50%;
+  background:linear-gradient(135deg,#22c55e,#4ade80);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  margin:0 auto 20px;
+  color:white;
+  font-size:38px;
+  box-shadow:0 12px 40px rgba(34,197,94,.4);
+}
+
+/* ---------- DETAILS ---------- */
+.detail-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:18px 30px;
+  margin-top:28px;
+}
+.detail{
+  padding:14px 16px;
+  border-radius:14px;
+  background:#f8fafc;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+.dark .detail{
+  background:#020617;
+}
+.detail span:first-child{
+  font-weight:500;
+  color:#475569;
+}
+.dark .detail span:first-child{
+  color:#94a3b8;
+}
+.detail span:last-child{
+  font-weight:700;
+  color:#111827;
+}
+.dark .detail span:last-child{
+  color:#e5e7eb;
+}
+
+/* ---------- TOTAL ---------- */
+.total-box{
+  margin-top:26px;
+  padding:18px 20px;
+  border-radius:18px;
+  background:linear-gradient(135deg,#6366f1,#ec4899);
+  color:white;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  font-size:1.1rem;
+  font-weight:700;
+}
+
+/* ---------- BUTTONS ---------- */
+.btn-group{
+  display:flex;
+  justify-content:center;
+  gap:18px;
+  margin-top:36px;
+}
+.btn-primary{
+  padding:12px 30px;
+  border-radius:14px;
+  background:#4f46e5;
+  color:white;
+  font-weight:600;
+  transition:.2s;
+}
+.btn-primary:hover{background:#4338ca}
+.btn-outline{
+  padding:12px 30px;
+  border-radius:14px;
+  border:2px solid #4f46e5;
+  color:#4f46e5;
+  font-weight:600;
+  transition:.2s;
+}
+.btn-outline:hover{
+  background:#4f46e5;
+  color:white;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="success-bg">
+
+  <div class="success-card text-center">
+
+    <!-- ICON -->
+    <div class="success-icon">
+      <i class="fas fa-check"></i>
+    </div>
+
+    <!-- TITLE -->
+    <h1 class="text-3xl font-extrabold mb-2">Booking Confirmed!</h1>
+    <p class="text-gray-600 dark:text-gray-300">
+      Your daycare booking has been successfully completed.
+    </p>
+
+    <!-- DETAILS -->
+    <div class="detail-grid text-left">
+
+      <div class="detail">
+        <span>Pet Name</span>
+        <span>{{ booking.pet_name }}</span>
+      </div>
+
+      <div class="detail">
+        <span>Plan</span>
+        <span>{{ booking.plan }}</span>
+      </div>
+
+      <div class="detail">
+        <span>Duration</span>
+        <span>{{ booking.duration }}</span>
+      </div>
+
+      <div class="detail">
+        <span>Date</span>
+        <span>{{ booking.date }}</span>
+      </div>
+
+      <div class="detail">
+        <span>Drop Time</span>
+        <span>{{ booking.start_time }}</span>
+      </div>
+
+      <div class="detail">
+        <span>Pickup Time</span>
+        <span>{{ booking.end_time }}</span>
+      </div>
+
+      <div class="detail">
+        <span>Booking ID</span>
+        <span>#{{ booking.id }}</span>
+      </div>
+
+      <div class="detail">
+        <span>Status</span>
+        <span class="text-green-600">Confirmed</span>
+      </div>
+
+    </div>
+
+    <!-- TOTAL -->
+    <div class="total-box">
+      <span>Total Amount</span>
+      <span>₹{{ booking.total_cost }}</span>
+    </div>
+
+    <!-- BUTTONS -->
+    <div class="btn-group">
+      <a href="{% url 'petapp:my_bookings' %}" class="btn-primary">My Bookings</a>
+      <a href="{% url 'petapp:daycare' %}" class="btn-outline">Book Again</a>
+    </div>
+
+  </div>
+
+</section>
+{% endblock %}

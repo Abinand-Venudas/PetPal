@@ -1,300 +1,303 @@
+{% extends "user/base.html" %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="en">
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PetPal – Consultation</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+{% block title %}PetPal — Premium Consultation{% endblock %}
 
-    <style>
-        /* Background */
-        body {
-            font-family: "Poppins", sans-serif;
-            background: linear-gradient(140deg, #ffe5f4, #f0f3ff, #fff7fe);
-            overflow-x: hidden;
-        }
+{% block extra_css %}
+<style>
+/* ================= VIDEO BACKGROUND ================= */
+.video-bg{
+  position:fixed;
+  inset:0;
+  width:100vw;
+  height:100vh;
+  overflow:hidden;
+  z-index:-10;
+}
+.video-bg video{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+.video-bg::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:linear-gradient(180deg,rgba(255,255,255,0.55),rgba(255,255,255,0.8));
+}
+.dark .video-bg::after{
+  background:linear-gradient(180deg,rgba(2,6,23,0.75),rgba(2,6,23,0.9));
+}
 
-         nav {
-            padding: 18px 70px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            position: sticky;
-            top: 0;
-            backdrop-filter: blur(15px);
-            background: rgba(255, 255, 255, 0.35);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-            z-index: 100;
-        }
+/* Ensure page content scrolls above video */
+body{
+  position:relative;
+}
 
-          nav ul {
-            list-style: none;
-            display: flex;
-            gap: 35px;
-        }
+/* ================= INPUT ================= */
+.input{
+  width:100%;
+  padding:16px 48px 16px 18px;
+  border-radius:18px;
+  border:1.5px solid #e5e7eb;
+  background:#fff;
+  color:#111827;
+}
+.dark .input{
+  background:rgba(15,23,42,.95);
+  border-color:#334155;
+  color:#f8fafc;
+}
+.dark .input::placeholder{color:#94a3b8;}
 
-        nav ul li a {
-            text-decoration: none;
-            font-size: 17px;
-            font-weight: 500;
-            color: #333;
-            transition: 0.25s;
-        }
+/* ================= ICON INPUT ================= */
+.input-wrapper{position:relative;}
+.input-icon{
+  position:absolute;
+  right:16px;
+  top:50%;
+  transform:translateY(-50%);
+  font-size:18px;
+  cursor:pointer;
+  z-index:10;
+  color:#6d28d9;
+  pointer-events:auto;
+  transition:all .25s ease;
+}
+.input-icon:hover{color:#ec4899;}
+.dark .input-icon{color:#f8fafc !important;opacity:0.95;}
+.dark .input-icon:hover{color:#f472b6 !important;}
 
-        nav ul li a:hover {
-            color: #4a5fc1;
-            letter-spacing: 1px;
-        }
-        .logo {
-            font-size: 28px;
-            font-weight: 800;
-            color: #804bff;
-            cursor: pointer;
-        }
-        .auth-btns a {
-            text-decoration: none;
-            font-size: 15px;
-            font-weight: 600;
-            padding: 8px 16px;
-            border-radius: 8px;
-            transition: 0.25s;
-        }
-        .login-btn {
-            color: #4a5fc1;
-            border: 2px solid #4a5fc1;
-            margin-right: 12px;
-        }
-        .login-btn:hover {
-            background: #4a5fc1;
-            color: #fff;
-        }
-        .register-btn {
-            background: #ff63b8;
-            color: #fff;
-            border: 2px solid #ff63b8;
-        }
-        .register-btn:hover {
-            background: #fff;
-            color: #ff63b8;
-        }
-        
+.input-wrapper:focus-within .input-icon{
+  color:#ec4899;
+  text-shadow:0 0 8px rgba(236,72,153,.6);
+}
+.dark .input-wrapper:focus-within .input-icon{
+  color:#f472b6;
+  text-shadow:0 0 10px rgba(244,114,182,.8);
+}
 
-        /* Glass Card */
-        .glass {
-            background: rgba(255, 255, 255, 0.78);
-            border: 1px solid rgba(255, 255, 255, 0.35);
-            backdrop-filter: blur(18px);
-        }
+input[type="date"]::-webkit-calendar-picker-indicator{
+  opacity:0;
+  display:none;
+}
 
-        /* Animations */
-        @keyframes fadeInUp {
-            0% { opacity: 0; transform: translateY(25px); }
-            100% { opacity: 1; transform: translateY(0); }
-        }
+/* ================= DOCTOR CARD ================= */
+.doc-card{
+  cursor:pointer;
+  padding:18px;
+  border-radius:26px;
+  background:white;
+  border:1px solid #eef2ff;
+  transition:.35s;
+  text-align:center;
+}
+.dark .doc-card{
+  background:rgba(30,41,59,.9);
+  border:1px solid rgba(255,255,255,.08);
+}
+.doc-card:hover{transform:translateY(-8px);}
+.dark .doc-card h3{color:#f8fafc;}
+.dark .doc-card p{color:#cbd5f5;}
 
-        .fade-in { animation: fadeInUp 0.7s ease forwards; }
+input[type="radio"]{display:none}
+input[type="radio"]:checked + .doc-card{
+  border-color:#7c3aed;
+  box-shadow:0 35px 70px rgba(124,58,237,.35);
+}
 
-        /* Cute Floating Shapes */
-        .float-shape {
-            animation: float 8s ease-in-out infinite;
-        }
+/* ================= BUTTON ================= */
+.primary-btn{
+  background:#6d28d9;
+  color:white;
+  border-radius:18px;
+  padding:18px;
+  font-weight:600;
+}
+.primary-btn:disabled{
+  opacity:0.6;
+  cursor:not-allowed;
+}
 
-        @keyframes float {
-            0%,100% { transform: translateY(0); }
-            50% { transform: translateY(-18px); }
-        }
+/* ================= DISABLED DAY STYLE ================= */
+.input.disabled-day{
+  border-color:#ef4444 !important;
+  box-shadow:0 0 0 3px rgba(239,68,68,.25);
+}
+.dark .input.disabled-day{
+  border-color:#f87171 !important;
+  box-shadow:0 0 0 3px rgba(248,113,113,.35);
+}
+</style>
+{% endblock %}
 
-        .input {
-            border: 1px solid #e4d6ff;
-            background: rgba(255, 255, 255, 0.85);
-        }
-        .input:focus {
-            border-color: #a78bfa;
-            box-shadow: 0 0 8px #d5caff;
-        }
+{% block content %}
 
-        /* Doctor cards */
-        .doc-card {
-            transition: .3s;
-            background: linear-gradient(to bottom right, #ffffff, #fdf1ff);
-            box-shadow: 0 10px 20px rgba(162, 123, 255, 0.12);
-        }
-        .doc-card:hover {
-            transform: translateY(-6px);
-            box-shadow: 0 18px 32px rgba(162, 123, 255, 0.22);
-        }
+<!-- ===== FULLSCREEN VIDEO BACKGROUND ===== -->
+<div class="video-bg">
+  <video autoplay muted loop playsinline>
+    <source src="{% static 'img/vet.MP4' %}" type="video/mp4">
+  </video>
+</div>
 
-        /* Section Title */
-        .sec-title {
-            font-size: 30px;
-            font-weight: 800;
-            background: linear-gradient(90deg, #804bff, #ff63b8);
-            -webkit-background-clip: text;
-            color: transparent;
-        }
-    </style>
-</head>
+<section class="max-w-7xl mx-auto px-6 pt-28 text-center relative z-10">
+  <h1 class="text-6xl font-extrabold">Veterinary Consultation</h1>
+  <p class="mt-4 text-lg max-w-2xl mx-auto">Premium care from certified professionals</p>
+</section>
 
-<body class="px-4 md:px-20 py-16">
+<section class="px-6 md:px-20 py-20 relative z-10">
+  <div class="glass max-w-5xl mx-auto p-14">
 
-    <!-- Floating Decorations -->
-    <div class="absolute top-10 left-10 w-32 h-32 rounded-full bg-pink-200 opacity-40 blur-3xl float-shape"></div>
-    <div class="absolute bottom-10 right-10 w-40 h-40 rounded-full bg-indigo-300 opacity-40 blur-3xl float-shape"></div>
+<!-- ================= LOGIN NOTICE ================= -->
+{% if not request.session.user_id %}
+<div class="mb-10 p-6 rounded-2xl bg-yellow-50 border border-yellow-200 text-yellow-800 text-center">
+  <p class="text-lg font-semibold">You can explore this page without logging in.</p>
+  <p class="mt-2">To book a consultation, please log in.</p>
+  <a href="{% url 'petapp:login' %}" class="inline-block mt-4 px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition">
+    Login to Continue
+  </a>
+</div>
+{% endif %}
 
+<form method="post">
+{% csrf_token %}
 
+<!-- PET INFO -->
+<div class="mb-16">
+  <h2 class="text-3xl font-bold mb-6">Pet Information</h2>
+  <div class="grid md:grid-cols-3 gap-6">
+    <input class="input" name="pet_name" placeholder="Pet Name" required>
+    <select class="input" name="pet_type">
+      <option>Dog</option><option>Cat</option><option>Other</option>
+    </select>
+    <input class="input" type="number" name="age" placeholder="Age" required>
+  </div>
+  <textarea class="input mt-6" rows="3" name="issue" placeholder="Describe the issue" required></textarea>
+</div>
 
-     <!-- Navbar -->
-    <nav>
-    <div class="logo">PetPal</div>
-
-    <ul>
-        <li><a href="{% url 'home' %}">Home</a></li>
-        <li><a href="{% url 'grooming' %}">Grooming</a></li>
-        <li><a href="{% url 'daycare' %}">Daycare</a></li>
-        <li><a href="{% url 'consultation' %}">Consultation</a></li>
-       <li><a href="{% url 'adoptionlist' %}">adoption</a></li>
-
-    </ul>
-
-    <div class="auth-btns">
-        <a href="{% url 'login' %}" class="login-btn">Login</a>
-        <a href="{% url 'register' %}" class="register-btn">Register</a>
-    </div>
-</nav>
-
-    <!-- HEADER -->
-    <div class="text-center fade-in relative z-20">
-        <img src="https://cdn-icons-png.flaticon.com/512/1998/1998611.png"
-             class="w-20 mx-auto mb-4 opacity-90">
-
-        <h1 class="text-5xl font-extrabold bg-gradient-to-r from-indigo-600 to-pink-500 bg-clip-text text-transparent">
-            Veterinary Consultation
-        </h1>
-
-        <p class="text-gray-600 max-w-2xl mx-auto mt-3">
-            Talk to trusted veterinarians for symptoms, health issues, or advice — all with love and care ❤️
+<!-- DOCTOR SELECTION -->
+<div class="mb-16">
+  <h2 class="text-3xl font-bold mb-6">Select a Doctor</h2>
+  <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
+    {% for d in dc %}
+    <label>
+      <input type="radio" name="doctor_id" value="{{ d.id }}" required>
+      <div class="doc-card">
+        {% if d.image %}
+          <img src="{{ d.image.url }}" class="w-full h-44 object-cover rounded-2xl">
+        {% else %}
+          <img src="https://images.unsplash.com/photo-1607746882042-944635dfe10e"
+               class="w-full h-44 object-cover rounded-2xl">
+        {% endif %}
+        <h3 class="mt-4 text-lg font-semibold">Dr. {{ d.name }}</h3>
+        <p class="text-sm text-gray-500 dark:text-gray-400">
+          {{ d.specialization }} · {{ d.experience }} yrs
         </p>
+      </div>
+    </label>
+    {% endfor %}
+  </div>
+</div>
+
+<!-- SCHEDULE -->
+<div class="mb-16">
+  <h2 class="text-3xl font-bold mb-6">Schedule</h2>
+  <div class="grid md:grid-cols-2 gap-6">
+
+    <div class="input-wrapper">
+      <input type="date" id="consultDate" name="date" class="input" required>
+      <i class="fa-solid fa-calendar-days input-icon"
+         onclick="document.getElementById('consultDate').showPicker()"></i>
     </div>
 
-    <!-- MAIN CARD -->
-    <div class="glass max-w-5xl mx-auto mt-16 p-10 rounded-3xl shadow-xl fade-in relative z-20">
-
-        <form class="space-y-14">
-
-            <!-- PET DETAILS -->
-            <div>
-                <h2 class="sec-title mb-4">🐶 Pet Information</h2>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                        <label class="text-gray-700 font-medium">Pet Name</label>
-                        <input type="text" required
-                               class="input mt-2 w-full px-4 py-3 rounded-xl">
-                    </div>
-
-                    <div>
-                        <label class="text-gray-700 font-medium">Pet Type</label>
-                        <select class="input mt-2 w-full px-4 py-3 rounded-xl">
-                            <option>Dog</option>
-                            <option>Cat</option>
-                            <option>Bird</option>
-                            <option>Rabbit</option>
-                            <option>Other</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div class="mt-5">
-                    <label class="font-medium text-gray-700">Describe Symptoms</label>
-                    <textarea rows="3"
-                              placeholder="Ex: vomiting, hair loss, itching..."
-                              class="input mt-2 w-full px-4 py-3 rounded-xl"></textarea>
-                </div>
-            </div>
-
-            <!-- DOCTOR SELECTION -->
-            <div>
-                <h2 class="sec-title mb-4">🐾 Select Your Doctor</h2>
-
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mt-6">
-
-                    <!-- Doctor 1 -->
-                    <label>
-                        <input type="radio" name="doctor" class="hidden peer" required>
-                        <div class="doc-card p-5 rounded-2xl border-2 border-transparent peer-checked:border-indigo-500">
-                            <img src="https://images.unsplash.com/photo-1607746882042-944635dfe10e"
-                                 class="w-full h-40 rounded-xl object-cover">
-                            <h3 class="font-bold text-lg mt-3 text-purple-700">Dr. Maya</h3>
-                            <p class="text-sm text-gray-500">Skin Specialist (Dermatology)</p>
-                            <p class="mt-1 text-sm text-indigo-600 font-medium">8+ years experience</p>
-                        </div>
-                    </label>
-
-                    <!-- Doctor 2 -->
-                    <label>
-                        <input type="radio" name="doctor" class="hidden peer">
-                        <div class="doc-card p-5 rounded-2xl border-2 border-transparent peer-checked:border-indigo-500">
-                            <img src="https://images.unsplash.com/photo-1537368910025-700350fe46c7"
-                                 class="w-full h-40 rounded-xl object-cover">
-                            <h3 class="font-bold text-lg mt-3 text-purple-700">Dr. Arun</h3>
-                            <p class="text-sm text-gray-500">General Vet Surgeon</p>
-                            <p class="mt-1 text-sm text-indigo-600 font-medium">12+ years experience</p>
-                        </div>
-                    </label>
-
-                    <!-- Doctor 3 -->
-                    <label>
-                        <input type="radio" name="doctor" class="hidden peer">
-                        <div class="doc-card p-5 rounded-2xl border-2 border-transparent peer-checked:border-indigo-500">
-                            <img src="https://images.unsplash.com/photo-1550831107-1553da8c8464"
-                                 class="w-full h-40 rounded-xl object-cover">
-                            <h3 class="font-bold text-lg mt-3 text-purple-700">Dr. Neha</h3>
-                            <p class="text-sm text-gray-500">Orthopedic Specialist</p>
-                            <p class="mt-1 text-sm text-indigo-600 font-medium">10+ years experience</p>
-                        </div>
-                    </label>
-
-                </div>
-            </div>
-
-            <!-- DATE & TIME -->
-            <div>
-                <h2 class="sec-title mb-4">⏰ Appointment Time</h2>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    <div>
-                        <label class="font-medium text-gray-700">Select Date</label>
-                        <input type="date" required
-                               class="input mt-2 w-full px-4 py-3 rounded-xl cursor-pointer">
-                    </div>
-                    <div>
-                        <label class="font-medium text-gray-700">Select Time</label>
-                        <input type="time" required
-                               class="input mt-2 w-full px-4 py-3 rounded-xl cursor-pointer">
-                    </div>
-                </div>
-            </div>
-
-            <!-- CONTACT NUMBER -->
-            <div>
-                <label class="font-medium text-gray-700">Contact Number</label>
-                <input type="text" required
-                       class="input mt-2 w-full px-4 py-3 rounded-xl">
-            </div>
-
-            <!-- SUBMIT BUTTON -->
-            <button type="submit"
-                class="w-full py-4 text-white font-semibold text-lg rounded-xl bg-gradient-to-r from-indigo-500 to-pink-500 shadow-lg hover:opacity-90 transition">
-                Book Consultation 💙
-            </button>
-
-        </form>
-
+    <div class="input-wrapper">
+      <select id="consultTime" name="time" class="input" required>
+        <option value="">Select Time</option>
+      </select>
+      <i class="fa-solid fa-clock input-icon"></i>
     </div>
 
-    <p class="mt-12 text-center text-gray-500">© 2025 PetPal — Healthy pets, happy hearts 💖</p>
+  </div>
+  <p class="text-sm text-gray-500 dark:text-gray-400 mt-3">
+    Fully booked days are highlighted. Only available slots are shown.
+  </p>
+</div>
 
-</body>
-</html>
+<!-- ================= SUBMIT ================= -->
+{% if request.session.user_id %}
+  <button class="w-full primary-btn">Confirm Consultation</button>
+{% else %}
+  <button class="w-full primary-btn" disabled>Login to Book Consultation</button>
+{% endif %}
+
+</form>
+</div>
+</section>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+  const dateInput = document.getElementById("consultDate");
+  const timeSelect = document.getElementById("consultTime");
+  const doctorRadios = document.querySelectorAll("input[name='doctor_id']");
+
+  const ALL_TIMES = [
+    "10:00","11:00","12:00","13:00","14:00",
+    "15:00","16:00","17:00","18:00",
+    "19:00","20:00","21:00","22:00"
+  ];
+
+  const today = new Date().toISOString().split("T")[0];
+  dateInput.setAttribute("min", today);
+
+  async function fetchBooked(date) {
+    const res = await fetch(`/api/booked-slots/?date=${date}`);
+    return await res.json();
+  }
+
+  async function updateTimeSlots() {
+    const date = dateInput.value;
+    const selectedDoctor = document.querySelector("input[name='doctor_id']:checked");
+
+    timeSelect.innerHTML = '<option value="">Select Time</option>';
+    dateInput.classList.remove("disabled-day");
+
+    if (!date || !selectedDoctor) return;
+
+    const bookedData = await fetchBooked(date);
+    const doctorId = selectedDoctor.value;
+    const booked = bookedData[doctorId] || [];
+
+    let available = false;
+
+    ALL_TIMES.forEach(t => {
+      if (!booked.includes(t)) {
+        const opt = document.createElement("option");
+        opt.value = t;
+        opt.textContent = t;
+        timeSelect.appendChild(opt);
+        available = true;
+      }
+    });
+
+    if (!available) {
+      const opt = document.createElement("option");
+      opt.value = "";
+      opt.textContent = "No slots available";
+      opt.disabled = true;
+      timeSelect.appendChild(opt);
+      dateInput.classList.add("disabled-day");
+    }
+  }
+
+  dateInput.addEventListener("change", updateTimeSlots);
+  doctorRadios.forEach(radio => {
+    radio.addEventListener("change", updateTimeSlots);
+  });
+
+});
+</script>
+{% endblock %}

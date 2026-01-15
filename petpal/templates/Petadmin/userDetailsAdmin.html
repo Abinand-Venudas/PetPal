@@ -1,0 +1,19 @@
+{% extends "petadmin/baseAdmin.html" %}
+{% block content %}
+
+<h1 class="text-4xl font-extrabold mb-6">{{ user.name }}</h1>
+
+<p>Email: {{ user.email }}</p>
+<p>Status: {{ user.is_active|yesno:"Active,Blocked" }}</p>
+
+<h2 class="text-2xl font-bold mt-10 mb-4">Adoption History</h2>
+
+{% for req in adoptions %}
+<div class="bg-white p-4 rounded-xl shadow mb-3">
+  🐾 {{ req.pet.name }} — <strong>{{ req.status }}</strong>
+</div>
+{% empty %}
+<p class="text-gray-500">No adoption history.</p>
+{% endfor %}
+
+{% endblock %}

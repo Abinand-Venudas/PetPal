@@ -1,172 +1,259 @@
+{% extends "user/base.html" %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="en">
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PetPal – Premium Adoption</title>
+{% block title %}PetPal – Premium Adoption{% endblock %}
 
-    <script src="https://cdn.tailwindcss.com"></script>
+{% block extra_css %}
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
 
-    <style>
-        body {
-            background: linear-gradient(135deg, #eef1ff, #ffe6f5);
-            font-family: "Poppins", sans-serif;
-        }
+/* ===== PAGE BACKGROUND ===== */
+body{
+  background:linear-gradient(135deg,#eef1ff,#ffe6f5);
+  overflow-x:hidden;
+}
 
-        .glass {
-            background: rgba(255, 255, 255, 0.78);
-            backdrop-filter: blur(18px);
-        }
+/* ===== BACKGROUND BLOBS ===== */
+.blob{
+  position:fixed;
+  width:420px;height:420px;
+  border-radius:50%;
+  filter:blur(120px);
+  opacity:.45;
+  z-index:-1;
+}
+.blob.one{background:#818cf8;top:-120px;left:-120px}
+.blob.two{background:#f472b6;bottom:-120px;right:-120px}
 
-        @keyframes fadeUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+/* ===== GLASS ===== */
+.glass{
+  background:rgba(255,255,255,.8);
+  backdrop-filter:blur(20px);
+  border-radius:26px;
+  border:1px solid rgba(255,255,255,.6);
+}
 
-        .card {
-            animation: fadeUp 0.7s ease forwards;
-        }
+/* ===== MODAL ===== */
+.modal-bg{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.55);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  z-index:100;
+}
+.modal{
+  background:white;
+  padding:40px;
+  border-radius:20px;
+  width:90%;
+  max-width:420px;
+}
 
-        .zoom:hover img {
-            transform: scale(1.1);
-        }
+/* ================= ADOPT BUTTON PULSE ================= */
+@keyframes pulseGlow{
+  0%{ box-shadow:0 0 0 0 rgba(99,102,241,.6); }
+  70%{ box-shadow:0 0 0 12px rgba(99,102,241,0); }
+  100%{ box-shadow:0 0 0 0 rgba(99,102,241,0); }
+}
 
-        .modal-bg {
-            background: rgba(0, 0, 0, 0.55);
-        }
-    </style>
-</head>
+.adopt-btn{
+  animation:pulseGlow 2s infinite;
+  position:relative;
+}
+.adopt-btn:hover{
+  animation:none;
+  box-shadow:0 10px 30px rgba(99,102,241,.55);
+  transform:translateY(-2px);
+}
 
-<body class="py-16 px-6 md:px-20 relative">
+/* ===== ALREADY REQUESTED BADGE ===== */
+.requested-badge{
+  position:absolute;
+  top:16px;
+  right:16px;
+  background:rgba(34,197,94,.15);
+  color:#16a34a;
+  padding:6px 14px;
+  border-radius:999px;
+  font-size:13px;
+  font-weight:700;
+}
+</style>
+{% endblock %}
 
-    <!-- Header -->
-    <div class="text-center mb-14">
-        <h1 class="text-5xl font-extrabold text-indigo-800">Adopt Your Perfect Companion</h1>
-        <p class="text-gray-600 text-lg mt-3">Discover loving pets carefully cared for by us</p>
+{% block content %}
+
+<div class="blob one"></div>
+<div class="blob two"></div>
+
+<!-- HEADER -->
+<div class="text-center mt-24 mb-16">
+  <h1 class="text-6xl font-extrabold text-indigo-700">
+    Find Your Forever Friend
+  </h1>
+  <p class="text-gray-600 text-lg mt-4">
+    Premium care. Trusted adoption. Endless love.
+  </p>
+</div>
+
+<!-- ================= LOGIN NOTICE ================= -->
+{% if not request.session.user_id %}
+<div class="max-w-4xl mx-auto mb-12 p-6 rounded-2xl bg-yellow-50 border border-yellow-200 text-yellow-800 text-center">
+  <p class="text-lg font-semibold">You can browse pets without logging in.</p>
+  <p class="mt-2">To adopt a pet, please log in first.</p>
+  <a href="{% url 'petapp:login' %}"
+     class="inline-block mt-4 px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition">
+    Login to Continue
+  </a>
+</div>
+{% endif %}
+
+<!-- PET GRID -->
+<div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-12 px-6 md:px-20 pb-24">
+
+{% for pet in pets %}
+<div class="glass pet-card overflow-hidden relative">
+
+  {% if pet.vaccinated %}
+  <span class="absolute top-4 left-4 bg-green-600 text-white px-4 py-1 rounded-full text-sm shadow">
+    ✔ Vaccinated
+  </span>
+  {% endif %}
+
+  {% if pet.id in requested_pets %}
+  <span class="requested-badge">Already Requested</span>
+  {% endif %}
+
+  <div class="overflow-hidden rounded-t-3xl">
+    <img src="{{ pet.image.url }}" class="w-full h-64 object-cover">
+  </div>
+
+  <div class="p-7">
+    <h3 class="text-2xl font-bold">{{ pet.name }}</h3>
+
+    <p class="text-gray-500 text-sm mt-1">
+      {{ pet.pet_type }} • {{ pet.age }} Years
+    </p>
+
+    <div class="flex gap-4 mt-7">
+      <a href="{% url 'petapp:petDetails' pet.id %}"
+         class="w-1/2 py-3 text-center bg-indigo-50 border border-indigo-200 text-indigo-700 rounded-xl font-semibold">
+        View
+      </a>
+
+      {% if pet.id in requested_pets %}
+      <button disabled
+        class="w-1/2 py-3 text-center bg-gray-300 text-gray-600 rounded-xl font-semibold cursor-not-allowed">
+        Requested
+      </button>
+      {% else %}
+      <button
+        onclick="openAdoptModal('{{ pet.id }}')"
+        class="adopt-btn w-1/2 py-3 text-center bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-semibold">
+        Adopt
+      </button>
+      {% endif %}
     </div>
+  </div>
+</div>
+{% empty %}
+<p class="text-center col-span-3 text-gray-500 text-lg">
+  No pets available for adoption right now 🐾
+</p>
+{% endfor %}
 
-    <!-- Search + Filters -->
-    <div class="max-w-5xl mx-auto mb-12 p-6 glass rounded-2xl shadow-xl">
-        <div class="grid md:grid-cols-4 gap-5">
+</div>
 
-           
+<!-- ================= MODAL ================= -->
+<div id="adoptModal" class="modal-bg">
+  <div class="modal">
+    <h2 class="text-2xl font-bold mb-4 text-indigo-700">Select Adoption Date & Time</h2>
 
-            <select class="px-4 py-3 rounded-xl border bg-white shadow-sm">
-                <option>Type</option>
-                <option>Dog</option>
-                <option>Cat</option>
-                <option>Bird</option>
-                <option>Rabbit</option>
-            </select>
+    <form method="POST" id="adoptForm">
+      {% csrf_token %}
 
-            <select class="px-4 py-3 rounded-xl border bg-white shadow-sm">
-                <option>Age</option>
-                <option>Puppy / Kitten</option>
-                <option>Young</option>
-                <option>Adult</option>
-                <option>Senior</option>
-            </select>
+      <label class="block mb-2 font-semibold text-gray-700">Adoption Date</label>
+ <input type="date" name="visit_date" id="adoptionDate"
+       class="w-full px-4 py-3 border rounded-xl mb-5" required>
 
-        </div>
 
-        <div class="text-right mt-4">
-            <button class="px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl shadow">
-                Apply Filters
-            </button>
-        </div>
-    </div>
+      <label class="block mb-2 font-semibold text-gray-700">Preferred Time (10AM – 10PM)</label>
+      <select name="adoption_time" id="adoptionTime"
+              class="w-full px-4 py-3 border rounded-xl mb-6" required>
+        <option value="">Select a time slot</option>
+      </select>
 
-    <!-- Pet Grid -->
-    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-10">
+      <div class="flex justify-end gap-4">
+        <button type="button" onclick="closeModal()"
+                class="px-6 py-2 border rounded-xl">Cancel</button>
+        <button type="submit"
+                class="px-6 py-2 bg-indigo-600 text-white rounded-xl">
+          Confirm Adoption
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
 
-        <!-- EXAMPLE CARD — Replace with Django Loop -->
-        {% comment %} Example data, remove when dynamic {% endcomment %}
-        {% for i in "123" %}
-        <div class="glass rounded-3xl shadow-xl overflow-hidden card hover:shadow-2xl transition zoom relative">
+<script>
+function openAdoptModal(petId){
+    {% if not request.session.user_id %}
+        alert("You must be logged in to adopt a pet.");
+        window.location.href = "{% url 'petapp:login' %}";
+        return;
+    {% endif %}
 
-            <!-- Ribbon Tag -->
-            <div class="absolute top-4 left-4 bg-green-600 text-white px-3 py-1 rounded-full text-sm shadow">
-                Vaccinated
-            </div>
+    const modal = document.getElementById("adoptModal");
+    const form = document.getElementById("adoptForm");
 
-            <!-- Favorite Heart -->
-            <button class="absolute top-4 right-4 text-gray-600 text-2xl hover:text-red-500 transition">
-                ♥
-            </button>
+    form.action = "/adopt/" + petId + "/";
+    modal.style.display = "flex";
+}
 
-            <div class="overflow-hidden">
-                <img src="https://images.unsplash.com/photo-1619983081633-8f6f1fb0bd58"
-                     class="w-full h-64 object-cover transition">
-            </div>
+function closeModal(){
+    document.getElementById("adoptModal").style.display = "none";
+}
 
-            <div class="p-6">
-                <h3 class="text-xl font-bold text-gray-800">Bella</h3>
-                <p class="text-gray-500 text-sm">Golden Retriever • 2 Years • Female</p>
+/* ===== Disable Past Dates, Sundays & Holidays + Time Slots ===== */
+document.addEventListener("DOMContentLoaded", function(){
+    const dateInput = document.getElementById("adoptionDate");
+    const timeSelect = document.getElementById("adoptionTime");
 
-                <!-- Stats -->
-                <div class="flex items-center gap-5 mt-4 text-sm text-gray-700">
-                    <div class="flex items-center gap-1"><span>💖</span> Friendly</div>
-                    <div class="flex items-center gap-1"><span>🏃‍♂️</span> Active</div>
-                    <div class="flex items-center gap-1"><span>🍗</span> Healthy</div>
-                </div>
+    const today = new Date();
+    dateInput.min = today.toISOString().split("T")[0];
 
-                <div class="flex gap-3 mt-6">
-                    <button onclick="openModal()"
-                        class="w-1/2 py-3 bg-indigo-50 border border-indigo-200 text-indigo-700 font-semibold rounded-xl hover:bg-indigo-100">
-                        View
-                    </button>
+    const holidays = ["2026-01-26","2026-08-15","2026-10-02","2026-12-25"];
 
-                    <button
-                        class="w-1/2 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl">
-                        Adopt
-                    </button>
-                </div>
-            </div>
-        </div>
-        {% endfor %}
+    dateInput.addEventListener("change", function(){
+        const selected = new Date(this.value);
+        const formatted = this.value;
 
-    </div>
-
-    <!-- Modal -->
-    <div id="petModal"
-        class="hidden fixed inset-0 flex items-center justify-center modal-bg backdrop-blur-sm z-50">
-        
-        <div class="glass p-8 rounded-3xl shadow-2xl max-w-lg w-full">
-
-            <button onclick="closeModal()" class="float-right text-gray-600 text-xl hover:text-red-500">✕</button>
-
-            <h2 class="text-3xl font-bold text-gray-800 mb-4">Bella</h2>
-
-            <img src="https://images.unsplash.com/photo-1619983081633-8f6f1fb0bd58"
-                 class="w-full h-64 object-cover rounded-xl shadow mb-4">
-
-            <p class="text-gray-700 mb-3">
-                Bella is a sweet, gentle and playful Golden Retriever who loves attention and outdoor walks.
-            </p>
-
-            <ul class="text-gray-600 mb-4">
-                <li>• 2 Years Old</li>
-                <li>• Fully Vaccinated</li>
-                <li>• Friendly with kids & other pets</li>
-                <li>• Training: Basic Commands</li>
-            </ul>
-
-            <button class="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-semibold">
-                Proceed to Adopt
-            </button>
-        </div>
-    </div>
-
-    <script>
-        function openModal() {
-            document.getElementById("petModal").classList.remove("hidden");
+        if (selected.getDay() === 0){
+            alert("Adoptions are not available on Sundays.");
+            this.value = "";
+            return;
         }
-        function closeModal() {
-            document.getElementById("petModal").classList.add("hidden");
-        }
-    </script>
-</body>
 
-</html>
+        if (holidays.includes(formatted)){
+            alert("This date is a holiday. Please choose another date.");
+            this.value = "";
+            return;
+        }
+    });
+
+    timeSelect.innerHTML = '<option value="">Select a time slot</option>';
+    for(let h=10; h<=22; h++){
+        let start = (h>12?h-12:h)+":00 "+(h>=12?"PM":"AM");
+        let endH = h+1;
+        let end = (endH>12?endH-12:endH)+":00 "+(endH>=12?"PM":"AM");
+        let opt = document.createElement("option");
+        opt.value = start+" - "+end;
+        opt.textContent = start+" - "+end;
+        timeSelect.appendChild(opt);
+    }
+});
+</script>
+
+{% endblock %}

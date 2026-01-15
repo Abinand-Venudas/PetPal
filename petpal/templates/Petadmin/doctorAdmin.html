@@ -1,0 +1,86 @@
+{% extends "petadmin/baseAdmin.html" %}
+{% load static %}
+
+{% block title %}Doctor Availability{% endblock %}
+
+{% block content %}
+
+<h1 class="text-4xl font-extrabold mb-6">Doctor Availability</h1>
+<p class="text-gray-500 mb-10">
+  Live availability based on doctor check-in / check-out
+</p>
+
+<!-- SEARCH -->
+<form method="get" class="mb-10 flex flex-wrap gap-4">
+  <input
+    type="text"
+    name="q"
+    value="{{ query }}"
+    placeholder="Search by name, specialization or city"
+    class="px-4 py-3 rounded-xl border w-full md:w-96"
+  >
+
+  <select
+    name="availability"
+    class="px-4 py-3 rounded-xl border"
+  >
+    <option value="">All Doctors</option>
+    <option value="available" {% if availability == "available" %}selected{% endif %}>
+      Available
+    </option>
+    <option value="offline" {% if availability == "offline" %}selected{% endif %}>
+      Offline
+    </option>
+  </select>
+
+  <button
+    type="submit"
+    class="px-6 py-3 rounded-xl bg-indigo-600 text-white font-semibold"
+  >
+    Search
+  </button>
+</form>
+
+<!-- DOCTORS GRID -->
+<div class="grid md:grid-cols-3 gap-6">
+
+{% for doctor in doctors %}
+<div class="bg-white p-6 rounded-2xl shadow">
+
+  <div class="flex items-center gap-4 mb-4">
+    {% if doctor.image %}
+      <img src="{{ doctor.image.url }}" class="w-14 h-14 rounded-full object-cover">
+    {% else %}
+      <img src="{% static 'img/default-doctor.png' %}" class="w-14 h-14 rounded-full">
+    {% endif %}
+
+    <div>
+      <h3 class="font-semibold">Dr. {{ doctor.name }}</h3>
+      <p class="text-sm text-gray-500">{{ doctor.specialization }}</p>
+    </div>
+  </div>
+
+  <p class="text-sm text-gray-600 mb-4">
+    🏥 {{ doctor.clinic }} <br>
+    📍 {{ doctor.city }}
+  </p>
+
+  <div class="flex gap-3">
+    <a href="{% url 'petadmin:doctorDetailsAdmin' doctor.id %}"
+       class="flex-1 text-center py-2 rounded-xl bg-indigo-100 text-indigo-700">
+      View Profile
+    </a>
+
+    <a href="{% url 'petadmin:deleteDoctor' doctor.id %}"
+       onclick="return confirm('Are you sure?')"
+       class="flex-1 text-center py-2 rounded-xl bg-red-100 text-red-700">
+      Remove
+    </a>
+  </div>
+
+</div>
+{% endfor %}
+
+</div>
+
+{% endblock %}

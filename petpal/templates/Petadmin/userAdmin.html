@@ -1,0 +1,55 @@
+{% extends "petadmin/baseadmin.html" %}
+
+{% block content %}
+<div class="p-10">
+
+  <h1 class="text-4xl font-extrabold mb-8">Registered Users</h1>
+
+  <div class="bg-white rounded-2xl shadow overflow-hidden">
+    <table class="w-full">
+      <thead class="bg-gray-100">
+        <tr>
+          <th class="p-4 text-left">Name</th>
+          <th class="p-4 text-left">Email</th>
+          <th class="p-4 text-left">Status</th>
+          <th class="p-4 text-left">Adoption</th>
+          <th class="p-4 text-left">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for user in users %}
+        <tr class="border-b">
+          <td class="p-4">{{ user.name }}</td>
+          <td class="p-4">{{ user.email }}</td>
+          <td class="p-4 text-green-600 font-semibold">Active</td>
+
+          <!-- 🐾 ADOPTION ICON + COUNT -->
+          <td class="p-4">
+            {% if user.adoption_count > 0 %}
+              <a href="{% url 'petadmin:adminAdoptions' %}?user={{ user.id }}"
+                 class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-100 text-indigo-700 font-semibold hover:bg-indigo-200 transition">
+                🐾 {{ user.adoption_count }}
+              </a>
+            {% else %}
+              <span class="text-gray-400">—</span>
+            {% endif %}
+          </td>
+
+          <td class="p-4 flex gap-2">
+            <a href="#" class="px-4 py-2 bg-blue-100 text-blue-700 rounded-lg">View</a>
+            <a href="#" class="px-4 py-2 bg-yellow-100 text-yellow-700 rounded-lg">Block</a>
+            <a href="#" class="px-4 py-2 bg-red-100 text-red-700 rounded-lg">Delete</a>
+          </td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="5" class="p-6 text-center text-gray-500">
+            No users found
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

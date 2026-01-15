@@ -1,0 +1,30 @@
+{% extends "petadmin/baseAdmin.html" %}
+{% block content %}
+
+<h1 class="text-3xl font-extrabold mb-8">Consultations</h1>
+
+<table class="w-full bg-white rounded-2xl shadow">
+<thead class="bg-gray-100">
+<tr>
+  <th class="p-4">User</th>
+  <th class="p-4">Doctor</th>
+  <th class="p-4">Date</th>
+  <th class="p-4">Time</th>
+  <th class="p-4">Status</th>
+</tr>
+</thead>
+
+<tbody>
+{% for c in consultations %}
+<tr class="border-t">
+  <td class="p-4">{{ c.user.name }}</td>
+  <td class="p-4">Dr. {{ c.doctor.name }}</td>
+  <td class="p-4">{{ c.date }}</td>
+  <td class="p-4">{{ c.time }}</td>
+  <td class="p-4 font-semibold">{{ c.status }}</td>
+</tr>
+{% endfor %}
+</tbody>
+</table>
+
+{% endblock %}

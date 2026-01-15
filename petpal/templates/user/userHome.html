@@ -7,7 +7,15 @@
 <title>PetPal — User Home</title>
 <script src="https://cdn.tailwindcss.com"></script>
 
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+
 <style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
     :root {
         --soft-indigo: #7b8cff;
         --soft-pink: #ff99cc;
@@ -32,47 +40,97 @@
         color: transparent;
     }
 
-    @keyframes floatPaw {
-        0%,100%{transform:translateY(0);}
-        50%{transform:translateY(-12px);}
+    /* ✅ EXACT HOME NAVBAR */
+    nav {
+        padding: 18px 70px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        position: sticky;
+        top: 0;
+        backdrop-filter: blur(15px);
+        background: rgba(255, 255, 255, 0.35);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        z-index: 100;
+    }
+
+    .logo {
+        font-size: 32px;
+        font-weight: 800;
+        background: linear-gradient(45deg, #4a5fc1, #ff77b7);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    nav ul {
+        list-style: none;
+        display: flex;
+        gap: 35px;
+    }
+
+    nav ul li a {
+        text-decoration: none;
+        font-size: 17px;
+        font-weight: 500;
+        color: #333;
+        transition: 0.25s;
+    }
+
+    nav ul li a:hover {
+        color: #4a5fc1;
+        letter-spacing: 1px;
+    }
+
+    .auth-btns a {
+        padding: 10px 22px;
+        border-radius: 10px;
+        font-size: 16px;
+        text-decoration: none;
+        margin-left: 10px;
+        transition: 0.3s ease;
+    }
+
+    .login-btn {
+        border: 2px solid #4a5fc1;
+        color: #4a5fc1;
+    }
+
+    .login-btn:hover {
+        background: #4a5fc1;
+        color: white;
+    }
+
+    .register-btn {
+        background: linear-gradient(135deg, #4a5fc1, #ff7ac5);
+        color: white;
+        box-shadow: 0 0 12px rgba(255, 122, 197, 0.5);
+    }
+
+    .register-btn:hover {
+        transform: scale(1.05);
     }
 </style>
 </head>
 
 <body class="relative">
 
-<!-- Floating Paws Background -->
-<div class="pointer-events-none fixed inset-0 opacity-[0.05]"
-     style="background:url('https://cdn-icons-png.flaticon.com/512/616/616408.png') repeat;
-            background-size:160px;
-            animation:floatPaw 6s ease-in-out infinite;">
-</div>
+<!-- ✅ EXACT HOME NAVBAR -->
+<nav>
+    <div class="logo">PetPal</div>
 
-<!-- NAVBAR -->
-<header class="sticky top-0 z-30 bg-white/60 backdrop-blur-xl border-b border-gray-200">
-    <nav class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
-        
-        <div class="text-2xl font-extrabold title-gradient">PetPal</div>
+    <ul>
+        <li><a href="{% url 'home' %}">Home</a></li>
+        <li><a href="{% url 'grooming' %}">Grooming</a></li>
+        <li><a href="{% url 'daycare' %}">Daycare</a></li>
+        <li><a href="{% url 'consultation' %}">Consultation</a></li>
+        <li><a href="{% url 'adoptionlist' %}">Adoption</a></li>
+    </ul>
 
-        <ul class="hidden md:flex gap-8 text-gray-700 font-medium">
-            <li><a href="{% url 'home' %}" class="hover:text-indigo-600">Home</a></li>
-            <li><a href="{% url 'grooming' %}" class="hover:text-indigo-600">Grooming</a></li>
-            <li><a href="{% url 'daycare' %}" class="hover:text-indigo-600">Daycare</a></li>
-            <li><a href="{% url 'consultation' %}" class="hover:text-indigo-600">Consultation</a></li>
-        </ul>
-
-        <div class="flex items-center gap-4">
-            <div class="relative cursor-pointer">
-                🔔
-                <span class="absolute -top-1 -right-2 bg-red-500 text-white text-xs px-1.5 py-0.5 rounded-full">3</span>
-            </div>
-            <img src="https://cdn-icons-png.flaticon.com/512/1946/1946429.png"
-                 class="w-10 h-10 rounded-full border shadow">
-        </div>
-
-    </nav>
-</header>
-
+    <div class="auth-btns">
+        <a href="{% url 'login' %}" class="login-btn">Login</a>
+        <a href="{% url 'register' %}" class="register-btn">Register</a>
+    </div>
+</nav>
 
 <!-- HERO -->
 <section class="max-w-7xl mx-auto px-6 mt-10 grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
@@ -82,6 +140,7 @@
             Welcome Back, 
             <span class="title-gradient">{{ user.username }}</span> 👋
         </h1>
+
         <p class="text-gray-600 text-lg max-w-lg">
             Here’s everything you need for your furry friend — bookings, doctors, daycare, grooming, and more.
         </p>
@@ -91,6 +150,7 @@
                class="px-6 py-3 rounded-xl bg-indigo-600 text-white shadow hover:bg-indigo-700">
                Book Daycare
             </a>
+
             <a href="{% url 'consultation' %}"
                class="px-6 py-3 rounded-xl border border-gray-300 bg-white/70 hover:bg-white">
                Book Consultation
@@ -110,24 +170,24 @@
 
 </section>
 
-
 <!-- AVAILABLE GROOMERS -->
 <section class="max-w-7xl mx-auto px-6 mt-16">
 
     <h2 class="text-3xl font-bold title-gradient mb-6">Available Groomers</h2>
 
     <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-
+    {% for v in vol %}
         <div class="glass p-5 rounded-2xl shadow">
-            <img src="https://images.unsplash.com/photo-1594824476967-48c8b9642732?auto=format&fit=crop&w=400&q=70"
+            <img src="https://images.unsplash.com/photo-1594824476967-48c8b9642732"
                  class="w-full h-44 object-cover rounded-xl">
-            <h3 class="mt-3 text-lg font-semibold">Sarah Johnson</h3>
-            <p class="text-gray-600 text-sm mb-3">Senior Groomer • 7 yrs</p>
+            <h3 class="mt-3 text-lg font-semibold">{{ v.name }}</h3>
+            <p class="text-gray-600 text-sm mb-3">{{ v.skills }} </p>
             <button class="px-4 py-2 bg-indigo-600 text-white rounded-lg w-full">Book</button>
         </div>
+    {% endfor %}
 
-        <div class="glass p-5 rounded-2xl shadow">
-            <img src="https://images.unsplash.com/photo-1603202662706-019647784d3a?auto=format&fit=crop&w=400&q=70"
+        {% comment %} <div class="glass p-5 rounded-2xl shadow">
+            <img src="https://images.unsplash.com/photo-1603202662706-019647784d3a"
                  class="w-full h-44 object-cover rounded-xl">
             <h3 class="mt-3 text-lg font-semibold">Michael Adams</h3>
             <p class="text-gray-600 text-sm mb-3">Professional Groomer • 5 yrs</p>
@@ -135,17 +195,15 @@
         </div>
 
         <div class="glass p-5 rounded-2xl shadow">
-            <img src="https://images.unsplash.com/photo-1607746882042-944635dfe10e?auto=format&fit=crop&w=400&q=70"
+            <img src="https://images.unsplash.com/photo-1607746882042-944635dfe10e"
                  class="w-full h-44 object-cover rounded-xl">
             <h3 class="mt-3 text-lg font-semibold">Priya Gupta</h3>
             <p class="text-gray-600 text-sm mb-3">Pet Spa Expert • 6 yrs</p>
             <button class="px-4 py-2 bg-indigo-600 text-white rounded-lg w-full">Book</button>
-        </div>
+        </div> {% endcomment %}
 
     </div>
-
 </section>
-
 
 <!-- CONSULTING DOCTORS -->
 <section class="max-w-7xl mx-auto px-6 mt-16 mb-20">
@@ -153,16 +211,19 @@
     <h2 class="text-3xl font-bold title-gradient mb-6">Consulting Doctors</h2>
 
     <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-
+        {% for d in dc %}
         <div class="glass p-5 rounded-2xl shadow">
             <img src="https://images.unsplash.com/photo-1607746882042-944635dfe10e"
                  class="w-full h-44 object-cover rounded-xl">
-            <h3 class="mt-3 text-lg font-semibold">Dr. Maya</h3>
-            <p class="text-gray-600 text-sm mb-3">Dermatologist • 8 yrs</p>
-            <button class="px-4 py-2 bg-pink-500 text-white rounded-lg w-full">Consult</button>
+            <h3 class="mt-3 text-lg font-semibold">Dr. {{ d.name }}</h3>
+            <p class="text-gray-600 text-sm mb-3">{{ d.specialization }} • {{ d.experience }} yrs</p>
+<a href="{% url 'doctorProfile' d.id %}"
+   class="block px-4 py-2 bg-pink-500 text-white rounded-lg text-center w-full">
+  Consult
+</a>
         </div>
-
-        <div class="glass p-5 rounded-2xl shadow">
+  {% endfor %}
+        {% comment %} <div class="glass p-5 rounded-2xl shadow">
             <img src="https://images.unsplash.com/photo-1537368910025-700350fe46c7"
                  class="w-full h-44 object-cover rounded-xl">
             <h3 class="mt-3 text-lg font-semibold">Dr. Arun</h3>
@@ -176,12 +237,10 @@
             <h3 class="mt-3 text-lg font-semibold">Dr. Neha</h3>
             <p class="text-gray-600 text-sm mb-3">Orthopedic • 10 yrs</p>
             <button class="px-4 py-2 bg-pink-500 text-white rounded-lg w-full">Consult</button>
-        </div>
+        </div> {% endcomment %}
 
     </div>
-
 </section>
-
 
 <footer class="text-center text-gray-600 py-6">
     © 2025 PetPal — Your pet’s second home 💙

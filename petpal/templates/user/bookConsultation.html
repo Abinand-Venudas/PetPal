@@ -1,0 +1,41 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+<title>Book Consultation</title>
+<script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-50 p-10">
+
+<div class="max-w-xl mx-auto bg-white p-8 rounded-3xl shadow">
+
+<h2 class="text-3xl font-bold mb-6">
+  Consult Dr. {{ doctor.name }}
+</h2>
+
+<form method="POST">
+{% csrf_token %}
+
+<label class="block mb-2 font-semibold">Issue</label>
+<textarea name="issue" required
+  class="w-full p-3 rounded-xl border mb-4"></textarea>
+
+<label class="block mb-2 font-semibold">Date</label>
+<input type="date" name="date" required
+  class="w-full p-3 rounded-xl border mb-4">
+
+<label class="block mb-2 font-semibold">Time</label>
+<input type="time" name="time" min="10:00" max="22:00" required
+  class="w-full p-3 rounded-xl border mb-6">
+
+<button
+  class="w-full bg-indigo-600 text-white py-3 rounded-xl font-semibold">
+  Confirm Booking
+</button>
+
+</form>
+
+</div>
+</body>
+</html>

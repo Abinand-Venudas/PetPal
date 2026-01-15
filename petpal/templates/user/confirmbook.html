@@ -1,0 +1,118 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Confirm Booking | PetPal</title>
+
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+body{
+  font-family:"Poppins",sans-serif;
+  background:linear-gradient(135deg,#fff1f8,#eef2ff);
+}
+
+/* Glass card */
+.glass{
+  background:rgba(255,255,255,.85);
+  backdrop-filter:blur(20px);
+  border-radius:28px;
+  box-shadow:0 40px 90px rgba(236,72,153,.18);
+  border:1px solid rgba(236,72,153,.2);
+}
+</style>
+</head>
+
+<body class="min-h-screen flex items-center justify-center px-6">
+
+<div class="glass max-w-3xl w-full p-10">
+
+  <!-- HEADER -->
+  <div class="text-center mb-10">
+    <h1 class="text-4xl font-extrabold mb-3">
+      Confirm Your <span class="text-pink-500">Booking</span>
+    </h1>
+    <p class="text-gray-500">
+      Please review your daycare booking details before confirmation
+    </p>
+  </div>
+
+  <!-- DETAILS GRID -->
+  <div class="grid md:grid-cols-2 gap-8 mb-10">
+
+    <!-- PET DETAILS -->
+    <div>
+      <h3 class="font-bold text-lg mb-4">🐾 Pet Details</h3>
+      <ul class="space-y-2 text-gray-600">
+        <li><strong>Name:</strong> Bruno</li>
+        <li><strong>Breed:</strong> Golden Retriever</li>
+        <li><strong>Age:</strong> 2 Years</li>
+        <li><strong>Type:</strong> Dog</li>
+      </ul>
+    </div>
+
+    <!-- OWNER DETAILS -->
+    <div>
+      <h3 class="font-bold text-lg mb-4">👤 Owner Details</h3>
+      <ul class="space-y-2 text-gray-600">
+        <li><strong>Name:</strong> John Doe</li>
+        <li><strong>Email:</strong> john@email.com</li>
+        <li><strong>Phone:</strong> +91 98765 43210</li>
+      </ul>
+    </div>
+
+  </div>
+
+  <!-- BOOKING SUMMARY -->
+  <div class="bg-pink-50 rounded-2xl p-8 mb-10">
+
+    <h3 class="font-bold text-lg mb-6 text-center">📋 Booking Summary</h3>
+
+    <div class="flex justify-between mb-3 text-gray-700">
+      <span>Selected Plan</span>
+      <span class="font-semibold">Standard (Full Day)</span>
+    </div>
+
+    <div class="flex justify-between mb-3 text-gray-700">
+      <span>Date</span>
+      <span class="font-semibold">12 Jan 2026</span>
+    </div>
+
+    <div class="flex justify-between mb-3 text-gray-700">
+      <span>Duration</span>
+      <span class="font-semibold">Full Day</span>
+    </div>
+
+    <hr class="my-5">
+
+    <div class="flex justify-between text-xl font-extrabold">
+      <span>Total Amount</span>
+      <span class="text-pink-600">₹899</span>
+    </div>
+  </div>
+
+  <!-- ACTIONS -->
+  <div class="flex flex-col sm:flex-row gap-4">
+    <a href="{% url 'daycare' %}"
+       class="w-full text-center py-4 rounded-xl border border-gray-300 font-semibold hover:bg-gray-100 transition">
+      ← Edit Booking
+    </a>
+
+    <button
+      class="w-full py-4 rounded-xl bg-gradient-to-r from-pink-500 to-purple-500 text-white font-bold shadow-lg hover:scale-[1.02] transition">
+      Confirm & Pay
+    </button>
+  </div>
+
+  <!-- FOOTER NOTE -->
+  <p class="text-center text-sm text-gray-400 mt-8">
+    By confirming, you agree to PetPal’s terms & policies.
+  </p>
+
+</div>
+
+</body>
+</html>

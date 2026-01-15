@@ -1,0 +1,352 @@
+{% extends "user/base.html" %}
+{% load static %}
+
+{% block title %}PetPal — Adoption Request Sent{% endblock %}
+
+{% block extra_css %}
+<style>
+/* ================= PAGE BACKGROUND ================= */
+.success-bg{
+  min-height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:60px 20px;
+  background:
+    radial-gradient(circle at top left,#eef2ff,#ffffff 60%),
+    radial-gradient(circle at bottom right,#ffe4f1,#ffffff 60%);
+}
+.dark .success-bg{
+  background:
+    radial-gradient(circle at top left,#1e293b,#020617 60%),
+    radial-gradient(circle at bottom right,#312e81,#020617 60%);
+}
+
+/* ================= CARD ================= */
+.success-card{
+  max-width:720px;
+  width:100%;
+  padding:48px 46px;
+  border-radius:28px;
+  background:rgba(255,255,255,.95);
+  backdrop-filter:blur(18px);
+  border:1px solid rgba(255,255,255,.6);
+  box-shadow:0 40px 120px rgba(0,0,0,.15);
+  text-align:center;
+  animation:fadeUp .8s ease forwards;
+}
+.dark .success-card{
+  background:rgba(2,6,23,.95);
+  border:1px solid rgba(255,255,255,.15);
+  box-shadow:0 50px 140px rgba(0,0,0,.8);
+}
+
+/* ================= TEXT ================= */
+.success-title{
+  font-size:42px;
+  font-weight:800;
+  background:linear-gradient(135deg,#6366f1,#ec4899);
+  -webkit-background-clip:text;
+  color:transparent;
+}
+.dark .success-title{
+  background:none;
+  color:#f8fafc;
+}
+
+.success-subtitle{
+  margin-top:10px;
+  font-size:16px;
+  color:#4b5563;
+}
+.dark .success-subtitle{color:#cbd5e1;}
+
+/* ================= PROGRESS TRACKER ================= */
+.progress-wrap{
+  margin:34px 0 10px;
+  padding:20px 24px;
+  border-radius:20px;
+  background:#f9fafb;
+  border:1px solid #e5e7eb;
+}
+.dark .progress-wrap{
+  background:rgba(30,41,59,.9);
+  border:1px solid rgba(255,255,255,.12);
+}
+
+.progress-steps{
+  display:flex;
+  justify-content:space-between;
+  position:relative;
+}
+
+.progress-line{
+  position:absolute;
+  top:18px;
+  left:10%;
+  right:10%;
+  height:4px;
+  background:#e5e7eb;
+  border-radius:999px;
+  overflow:hidden;
+}
+.dark .progress-line{background:rgba(255,255,255,.15);}
+
+.progress-fill{
+  height:100%;
+  width:0%;
+  background:linear-gradient(135deg,#6366f1,#ec4899);
+  transition:width 1.2s ease;
+}
+
+.step{
+  width:33.33%;
+  text-align:center;
+  position:relative;
+  z-index:2;
+}
+
+.step-circle{
+  width:36px;
+  height:36px;
+  margin:0 auto;
+  border-radius:50%;
+  background:#e5e7eb;
+  color:#9ca3af;
+  font-weight:800;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  transition:.4s;
+}
+.dark .step-circle{background:rgba(255,255,255,.15);color:#94a3b8;}
+
+.step.active .step-circle{
+  background:linear-gradient(135deg,#6366f1,#ec4899);
+  color:white;
+  box-shadow:0 0 0 6px rgba(99,102,241,.15);
+  transform:scale(1.05);
+}
+
+.step.completed .step-circle{
+  background:#22c55e;
+  color:white;
+}
+
+.step-label{
+  margin-top:8px;
+  font-size:13px;
+  font-weight:700;
+  color:#6b7280;
+}
+.dark .step-label{color:#94a3b8;}
+.step.active .step-label,
+.step.completed .step-label{color:#111827;}
+.dark .step.active .step-label,
+.dark .step.completed .step-label{color:#f8fafc;}
+
+/* ================= INFO BOX ================= */
+.info-box{
+  margin-top:30px;
+  padding:26px 28px;
+  border-radius:20px;
+  background:#f9fafb;
+  border:1px solid #e5e7eb;
+  text-align:left;
+}
+.dark .info-box{
+  background:rgba(30,41,59,.9);
+  border:1px solid rgba(255,255,255,.12);
+}
+
+.info-row{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:10px 0;
+  border-bottom:1px solid #e5e7eb;
+  opacity:0;
+  transform:translateY(10px);
+  animation:rowIn .6s ease forwards;
+}
+.info-row:last-child{border-bottom:none;}
+.dark .info-row{border-bottom:1px solid rgba(255,255,255,.12);}
+
+.info-label{
+  font-size:14px;
+  color:#6b7280;
+  font-weight:600;
+}
+.dark .info-label{color:#94a3b8;}
+.info-value{
+  font-size:15px;
+  font-weight:700;
+  color:#111827;
+}
+.dark .info-value{color:#f8fafc;}
+
+/* ================= BUTTONS ================= */
+.action-row{
+  margin-top:30px;
+  display:flex;
+  gap:14px;
+  flex-wrap:wrap;
+  justify-content:center;
+}
+
+.success-btn{
+  padding:14px 28px;
+  border-radius:16px;
+  background:linear-gradient(135deg,#6366f1,#ec4899);
+  color:white;
+  font-weight:700;
+  text-decoration:none;
+  box-shadow:0 20px 50px rgba(236,72,153,.35);
+  transition:.3s;
+}
+.success-btn:hover{
+  transform:translateY(-2px);
+  box-shadow:0 30px 70px rgba(236,72,153,.5);
+}
+
+.secondary-btn{
+  padding:14px 28px;
+  border-radius:16px;
+  background:#f3f4f6;
+  color:#111827;
+  font-weight:700;
+  text-decoration:none;
+  border:1px solid #e5e7eb;
+  transition:.3s;
+}
+.secondary-btn:hover{background:#e5e7eb;}
+.dark .secondary-btn{
+  background:rgba(30,41,59,.9);
+  color:#f8fafc;
+  border:1px solid rgba(255,255,255,.12);
+}
+.dark .secondary-btn:hover{background:rgba(51,65,85,.9);}
+
+/* ================= ANIMATIONS ================= */
+@keyframes fadeUp{
+  from{opacity:0;transform:translateY(30px)}
+  to{opacity:1;transform:translateY(0)}
+}
+@keyframes rowIn{
+  from{opacity:0;transform:translateY(10px)}
+  to{opacity:1;transform:translateY(0)}
+}
+</style>
+{% endblock %}
+
+{% block content %}
+
+<div class="success-bg">
+  <div class="success-card">
+
+    <h1 class="success-title">
+      Adoption Progress 🐾
+    </h1>
+
+    <p class="success-subtitle">
+      Track your adoption journey in real time.
+    </p>
+
+    <!-- ================= PROGRESS TRACKER ================= -->
+    <div class="progress-wrap">
+      <div class="progress-steps">
+
+        <div class="progress-line">
+          <div class="progress-fill" id="progressFill"></div>
+        </div>
+
+        <div class="step" id="step-requested">
+          <div class="step-circle">1</div>
+          <div class="step-label">Request Sent</div>
+        </div>
+
+        <div class="step" id="step-approved">
+          <div class="step-circle">2</div>
+          <div class="step-label">Admin Approved</div>
+        </div>
+
+        <div class="step" id="step-visited">
+          <div class="step-circle">3</div>
+          <div class="step-label">Visited</div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ================= INFO BOX ================= -->
+    <div class="info-box">
+
+      <div class="info-row" style="animation-delay:.1s">
+        <span class="info-label">Pet Name</span>
+        <span class="info-value">{{ adoption.pet.name }}</span>
+      </div>
+
+      <div class="info-row" style="animation-delay:.2s">
+        <span class="info-label">Pet Type</span>
+        <span class="info-value">{{ adoption.pet.pet_type }}</span>
+      </div>
+
+      <div class="info-row" style="animation-delay:.3s">
+        <span class="info-label">Visit Date</span>
+        <span class="info-value">{{ adoption.visit_date|date:"M d, Y" }}</span>
+      </div>
+
+      {% if adoption.adoption_time %}
+      <div class="info-row" style="animation-delay:.4s">
+        <span class="info-label">Visit Time</span>
+        <span class="info-value">{{ adoption.adoption_time }}</span>
+      </div>
+      {% endif %}
+
+      <div class="info-row" style="animation-delay:.5s">
+        <span class="info-label">Current Status</span>
+        <span class="info-value">{{ adoption.status }}</span>
+      </div>
+
+    </div>
+
+    <!-- ================= ACTION BUTTONS ================= -->
+    <div class="action-row">
+      <a href="/" class="success-btn">Go to Dashboard</a>
+      <a href="{% url 'petapp:adoptionlist' %}" class="secondary-btn">
+        Browse More Pets
+      </a>
+    </div>
+
+  </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+(function(){
+    const status = "{{ adoption.status }}"; // Pending / Approved / Visited
+
+    const step1 = document.getElementById("step-requested");
+    const step2 = document.getElementById("step-approved");
+    const step3 = document.getElementById("step-visited");
+    const fill = document.getElementById("progressFill");
+
+    // Always mark first step
+    step1.classList.add("active","completed");
+    fill.style.width = "33%";
+
+    if(status === "Approved"){
+        step2.classList.add("active","completed");
+        fill.style.width = "66%";
+    }
+
+    if(status === "Visited"){
+        step2.classList.add("completed");
+        step3.classList.add("active","completed");
+        fill.style.width = "100%";
+    }
+})();
+</script>
+{% endblock %}

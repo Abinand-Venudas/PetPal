@@ -1,0 +1,70 @@
+{% extends "petadmin/baseAdmin.html" %}
+{% load static %}
+
+{% block title %}Volunteer Availability{% endblock %}
+
+{% block content %}
+
+<h1 class="text-4xl font-extrabold mb-8">Volunteer Availability</h1>
+
+<!-- AVAILABLE -->
+<h2 class="text-2xl font-bold text-green-600 mb-4">Available</h2>
+
+<div class="grid md:grid-cols-3 gap-6 mb-12">
+{% for volunteer in volunteers %}
+{% if volunteer.is_available %}
+<div class="bg-white p-6 rounded-2xl shadow">
+
+  <div class="flex items-center justify-between mb-4">
+    <div>
+      <h3 class="font-semibold">{{ volunteer.name }}</h3>
+      <p class="text-sm text-gray-500">{{ volunteer.skills }}</p>
+    </div>
+
+    <a href="{% url 'petadmin:toggleVolunteerAvailability' volunteer.id %}"
+       class="text-xs px-3 py-1 rounded-full bg-red-100 text-red-700 hover:bg-red-200">
+      Force Offline
+    </a>
+  </div>
+
+  <p class="text-sm text-gray-600">
+    📍 {{ volunteer.address }} <br>
+    📞 {{ volunteer.phone }}
+  </p>
+
+</div>
+{% endif %}
+{% endfor %}
+</div>
+
+<!-- OFFLINE -->
+<h2 class="text-2xl font-bold text-gray-600 mb-4">Not Available</h2>
+
+<div class="grid md:grid-cols-3 gap-6">
+{% for volunteer in volunteers %}
+{% if not volunteer.is_available %}
+<div class="bg-white p-6 rounded-2xl shadow opacity-80">
+
+  <div class="flex items-center justify-between mb-4">
+    <div>
+      <h3 class="font-semibold">{{ volunteer.name }}</h3>
+      <p class="text-sm text-gray-500">{{ volunteer.skills }}</p>
+    </div>
+
+    <a href="{% url 'petadmin:toggleVolunteerAvailability' volunteer.id %}"
+       class="text-xs px-3 py-1 rounded-full bg-green-100 text-green-700 hover:bg-green-200">
+      Force Available
+    </a>
+  </div>
+
+  <p class="text-sm text-gray-600">
+    📍 {{ volunteer.address }} <br>
+    📞 {{ volunteer.phone }}
+  </p>
+
+</div>
+{% endif %}
+{% endfor %}
+</div>
+
+{% endblock %}
