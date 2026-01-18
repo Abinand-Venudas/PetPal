@@ -188,3 +188,18 @@ class DaycareBooking(models.Model):
 
     def __str__(self):
         return f"{self.user.name} → {self.pet_name} ({self.date})"
+
+class Service(models.Model):
+    name = models.CharField(max_length=100)
+    price = models.CharField(max_length=100)
+
+    # ✅ NEW FIELD
+    icon = models.CharField(
+        max_length=10,
+        blank=True,
+        null=True,
+        help_text="Emoji icon for the service (e.g. 🛁 ✂️ 💅)"
+    )
+
+    def __str__(self):
+        return self.name

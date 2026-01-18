@@ -42,4 +42,11 @@ urlpatterns = [
     path('adoptions/', views.adminAdoptions, name='adminAdoptions'),
     path('adoption/view/<int:id>/', views.adminAdoptionView, name='adminAdoptionView'),
     path('adoption/update/<int:id>/<str:status>/', views.update_adoption_status, name='update_adoption_status'),
-]
+
+   # ================= SERVICES =================
+path('services/', views.serviceAdmin, name='serviceAdmin'),
+path('services/add/', views.addServiceAdmin, name='addServiceAdmin'),
+path('services/edit/<int:id>/', views.editServiceAdmin, name='editServiceAdmin'),
+path('services/delete/<int:id>/', views.deleteServiceAdmin, name='deleteServiceAdmin'),
+
+    ]

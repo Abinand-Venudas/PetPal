@@ -3,6 +3,7 @@ from django.contrib import messages
 from django.db.models import Q
 from petapp.models import AdoptionRequest, Consultation, Pet, user_registration
 from .models import Pro_Admin
+from petapp.models import Service   # ✅ IMPORT FROM CORRECT APP
 from doctor.models import doctor_registration
 from volunteer.models import volunteer_registration
 
@@ -295,7 +296,7 @@ def editPetAdmin(request, id):
         pet.age = request.POST.get("age")
         pet.description = request.POST.get("description")
         pet.vaccinated = request.POST.get("vaccinated") == "on"
-        pet.status = request.POST.get("status")
+        # pet.status = request.POST.get("status")
 
         if request.FILES.get("image"):
             pet.image = request.FILES.get("image")
@@ -364,6 +365,8 @@ def adminAdoptions(request):
     })
 
 def adminAdoptionView(request, id):
+
+
     # Ensure admin is logged in
     if not request.session.get("admin_id"):
         return redirect("petadmin:loginAdmin")
@@ -373,3 +376,62 @@ def adminAdoptionView(request, id):
     return render(request, "petadmin/adminAdoptionView.html", {
         "adoption": adoption
     })
+
+
+
+
+# ================== SERVICES ==================
+def addServiceAdmin(request):
+    if "admin_id" not in request.session:
+        return redirect("petadmin:loginAdmin")
+
+    if request.method == "POST":
+        Service.objects.create(
+            name=request.POST.get("name"),
+            price=request.POST.get("price"),
+            icon=request.POST.get("icon"),
+        )
+
+        messages.success(request, "Service added successfully")
+        return redirect("petadmin:serviceAdmin")
+
+    return render(request, "petadmin/addServiceAdmin.html")
+
+
+def serviceAdmin(request):
+    if "admin_id" not in request.session:
+        return redirect("petadmin:loginAdmin")
+
+    services = Service.objects.all()
+    return render(request, "petadmin/servicesAdmin.html", {
+        "services": services
+    })
+
+def editServiceAdmin(request, id):
+    if "admin_id" not in request.session:
+        return redirect("petadmin:loginAdmin")
+
+    service = Service.objects.get(id=id)
+
+    if request.method == "POST":
+        service.name = request.POST.get("name")
+        service.price = request.POST.get("price")
+        service.description = request.POST.get("description")
+        service.save()
+
+        messages.success(request, "Service updated successfully")
+        return redirect("petadmin:serviceAdmin")
+
+    return render(request, "petadmin/editServiceAdmin.html", {
+        "service": service
+    })
+
+def deleteServiceAdmin(request, id):    
+    if "admin_id" not in request.session:
+        return redirect("petadmin:loginAdmin")
+
+    service = get_object_or_404(Service, id=id)
+    service.delete()
+
+    messages.success(request, "Service deleted successfully")
+    return redirect("petadmin:serviceAdmin")

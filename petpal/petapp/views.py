@@ -5,10 +5,13 @@ from django.views.decorators.csrf import csrf_exempt
 from django.utils import timezone
 from datetime import datetime, timedelta
 import json
+from .models import Service
+
 
 from .models import DaycareBooking, Pet, AdoptionRequest, user_registration, SlotLock
 from doctor.models import doctor_registration, Appointment
 from volunteer.models import volunteer_registration
+from Petadmin.models import *
 
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.styles import getSampleStyleSheet
@@ -185,14 +188,7 @@ def my_bookings(request):
 
 # ================== GROOMING ==================
 def grooming(request):
-    services = [
-        ("Bath & Brush", 699, "🛁"),
-        ("Full Groom", 1299, "✂️"),
-        ("Nail Trim", 299, "💅"),
-        ("Ear Cleaning", 249, "👂"),
-        ("Teeth Brushing", 349, "🦷"),
-        ("De-shedding", 499, "🐕"),
-    ]
+    services = Service.objects.all()  # ✅ NO icon
 
     if request.method == "POST":
         date = request.POST.get("date")
@@ -206,7 +202,7 @@ def grooming(request):
                 "error": "Please fill all fields and select at least one service."
             })
 
-        price_map = {name: price for name, price, _ in services}
+        price_map = {s.name: int(s.price) for s in services}
         total = sum(price_map[s] for s in selected_services)
 
         request.session["groom_booking"] = {
@@ -219,7 +215,9 @@ def grooming(request):
 
         return redirect("petapp:groomsuccess")
 
-    return render(request, "user/grooming.html", {"services": services})
+    return render(request, "user/grooming.html", {
+        "services": services
+    })
 
 
 def groomSuccess(request):

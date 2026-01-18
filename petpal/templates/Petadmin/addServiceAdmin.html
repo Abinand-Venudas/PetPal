@@ -1,0 +1,63 @@
+{% extends "petadmin/baseAdmin.html" %}
+{% load static %}
+
+{% block title %}Add Service{% endblock %}
+
+{% block content %}
+
+<div class="mb-10">
+  <h1 class="text-4xl font-extrabold">Add Service</h1>
+  <p class="text-gray-500 mt-2">Manage service information</p>
+</div>
+
+<form method="post"
+      class="max-w-4xl glass rounded-3xl p-10 shadow-lg">
+{% csrf_token %}
+
+<div class="space-y-6">
+
+  <!-- SERVICE NAME -->
+  <input type="text"
+         name="name"
+         value="{{ service.name|default:'' }}"
+         placeholder="Service Name"
+         class="w-full px-5 py-4 rounded-xl border focus:ring-2 focus:ring-indigo-400"
+         required>
+
+  <!-- PRICE -->
+  <input type="number"
+         name="price"
+         value="{{ service.price|default:'' }}"
+         placeholder="Price"
+         class="w-full px-5 py-4 rounded-xl border focus:ring-2 focus:ring-indigo-400"
+         required>
+
+  <!-- ICON -->
+  <input type="text"
+         name="icon"
+         value="{{ service.icon|default:'' }}"
+         placeholder="Icon class (e.g. fa-shower, fa-scissors, fa-paw)"
+         class="w-full px-5 py-4 rounded-xl border focus:ring-2 focus:ring-indigo-400">
+
+  <p class="text-sm text-gray-500">
+    Examples: <b>fa-shower</b>, <b>fa-scissors</b>, <b>fa-paw</b>, <b>fa-spa</b>
+  </p>
+
+</div>
+
+<div class="flex gap-4 mt-10">
+  <button type="submit"
+          class="px-8 py-4 rounded-xl text-white font-semibold
+                 bg-gradient-to-r from-indigo-600 to-pink-500">
+    Save Service
+  </button>
+
+  <a href="{% url 'petadmin:serviceAdmin' %}"
+     class="px-8 py-4 rounded-xl bg-gray-100 font-semibold">
+    Cancel
+  </a>
+</div>
+
+</form>
+
+{% endblock %}

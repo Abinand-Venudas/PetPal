@@ -1,52 +1,47 @@
 {% extends "user/base.html" %}
 {% load static %}
 
-{% block title %}PetPal — Grooming{% endblock %}
+{% block title %}Pet Grooming Services{% endblock %}
 
 {% block extra_css %}
 <style>
-/* ================= BACKGROUND ================= */
-.blob{
-  position:absolute;
+/* ================= SERVICE CARD ================= */
+.service-card{
+  display:flex;
+  align-items:center;
+  gap:14px;
+  padding:18px 20px;
+  border-radius:16px;
+  background:#ffffff;
+  border:1px solid #e5e7eb;
+  cursor:pointer;
+  transition:.25s ease;
+}
+
+.service-card:hover{
+  transform:translateY(-3px);
+  box-shadow:0 14px 35px rgba(0,0,0,.08);
+}
+
+.service-card.active{
+  border-color:#6366f1;
+  box-shadow:0 18px 45px rgba(99,102,241,.25);
+}
+
+.service-card input{ display:none; }
+
+/* ================= ICON ================= */
+.service-icon{
+  width:44px;
+  height:44px;
   border-radius:50%;
-  filter:blur(120px);
-  opacity:.45;
-  z-index:-2;
-}
-.blob1{width:380px;height:380px;background:#7b8cff;top:-120px;left:-120px}
-.blob2{width:460px;height:460px;background:#ff99cc;bottom:-160px;right:-160px}
-
-/* ================= PAWS ================= */
-.paw-bg{
-  position:fixed;
-  inset:0;
-  pointer-events:none;
-  z-index:-1;
-}
-.paw{
-  position:absolute;
-  font-size:3.8rem;
-  opacity:.14;
-  animation:floatPaw linear infinite;
-}
-@keyframes floatPaw{
-  from{transform:translateY(120vh) rotate(0deg)}
-  to{transform:translateY(-140vh) rotate(360deg)}
-}
-@media(max-width:768px){.paw-bg{display:none}}
-
-/* ================= GLASS ================= */
-.glass{
-  background:rgba(255,255,255,.92);
-  backdrop-filter:blur(22px);
-  border:1px solid rgba(255,255,255,.45);
-}
-
-/* ================= TITLE ================= */
-.title-gradient{
-  background:linear-gradient(90deg,#7b8cff,#ff99cc);
-  -webkit-background-clip:text;
-  color:transparent;
+  background:#eef2ff;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:#6366f1;
+  font-size:18px;
+  flex-shrink:0;
 }
 
 /* ================= INPUT ================= */
@@ -56,243 +51,107 @@
   border-radius:14px;
   background:#f9fafb;
   border:1px solid #e5e7eb;
-  color:#111827;
-}
-.input:focus{
-  outline:none;
-  border-color:#7b8cff;
-  box-shadow:0 0 0 4px rgba(123,140,255,.2);
 }
 
-/* ================= SERVICE CARD ================= */
-.card{
-  padding:16px;
-  border-radius:18px;
-  background:#f9fafb;
-  border:1px solid #e5e7eb;
-  cursor:pointer;
-  transition:.3s;
-  display:flex;
-  gap:12px;
-  align-items:center;
-}
-.card input{display:none}
-.card:hover{
-  transform:translateY(-4px);
-  box-shadow:0 18px 40px rgba(0,0,0,.12);
-}
-.card.active{
-  background:linear-gradient(180deg,#ffffff,#f4f6ff);
-  border-color:#7b8cff;
-  box-shadow:0 20px 50px rgba(123,140,255,.4);
-}
-
-/* ================= TOTAL ================= */
-.total-box{
-  position:relative;
-  overflow:hidden;
-}
-.total-box::before{
-  content:"";
-  position:absolute;
-  inset:0;
-  background:linear-gradient(120deg,transparent,rgba(255,255,255,.3),transparent);
-  animation:shine 3s infinite;
-}
-@keyframes shine{
-  from{transform:translateX(-100%)}
-  to{transform:translateX(100%)}
-}
-
-/* ================= BUTTON ================= */
-.book-btn{
-  background:#fff;
-  color:#4f46e5;
-  border-radius:14px;
-  padding:14px 34px;
-  font-weight:700;
-  transition:.3s;
-}
-.book-btn:hover{
-  transform:translateY(-2px) scale(1.03);
-  box-shadow:0 14px 30px rgba(0,0,0,.25);
-}
-
-/* ================= ANIMATIONS ================= */
-.fade-up{
-  opacity:0;
-  transform:translateY(30px);
-  animation:fadeUp .8s ease forwards;
-}
-@keyframes fadeUp{
-  to{opacity:1;transform:translateY(0)}
-}
-
-/* ================= DARK MODE ================= */
-.dark body{
-  background:
-    radial-gradient(circle at top left,#1e293b,#020617 60%),
-    radial-gradient(circle at bottom right,#312e81,#020617 60%);
-}
-
-.dark .glass{
-  background:rgba(2,6,23,.94);
-  border:1px solid rgba(255,255,255,.18);
-  box-shadow:0 40px 120px rgba(0,0,0,.85);
-}
-
-.dark h1,.dark h3{color:#f8fafc}
-.dark p{color:#cbd5e1}
-
-.dark .card{
-  background:rgba(255,255,255,.09);
-  border:1px solid rgba(255,255,255,.22);
-  color:#f1f5f9;
-}
-.dark .card:hover{
-  box-shadow:0 20px 60px rgba(99,102,241,.45);
-}
-.dark .card.active{
-  background:linear-gradient(
-    180deg,
-    rgba(99,102,241,.35),
-    rgba(236,72,153,.25)
-  );
-  box-shadow:0 30px 80px rgba(99,102,241,.65);
-}
-
-/* ================= HARD DARK INPUT BASE ================= */
-.dark .input,
-.dark input,
-.dark textarea,
-.dark select{
-  background-color:#020617 !important;
-  border:1px solid rgba(255,255,255,.25) !important;
-  color:#f8fafc !important;
-  caret-color:#f8fafc !important;
-  -webkit-text-fill-color:#f8fafc !important;
-}
-
-/* Placeholder */
-.dark .input::placeholder{
-  color:#94a3b8 !important;
-  opacity:1;
-}
-
-/* ================= CHROME AUTOFILL BASE FIX ================= */
-.dark input:-webkit-autofill,
-.dark input:-webkit-autofill:hover,
-.dark input:-webkit-autofill:focus,
-.dark textarea:-webkit-autofill,
-.dark select:-webkit-autofill{
-  -webkit-box-shadow:0 0 0 1000px #020617 inset !important;
-  box-shadow:0 0 0 1000px #020617 inset !important;
-  -webkit-text-fill-color:#f8fafc !important;
-  caret-color:#f8fafc !important;
-  transition: background-color 9999s ease-in-out 0s;
-}
-
-/* ================= 🚨 CHROME 143 AUTOFILL ANIMATION HACK ================= */
-@keyframes autofillFix {
-  0% { background-color: transparent; }
-  100% { background-color: transparent; }
-}
-input:-webkit-autofill {
-  animation-name: autofillFix;
-  animation-duration: 1ms;
-  animation-iteration-count: 1;
-}
-
-.dark input[type="text"]:-webkit-autofill,
-.dark input[type="tel"]:-webkit-autofill,
-.dark input[name="name"]:-webkit-autofill,
-.dark input[name="pet_name"]:-webkit-autofill{
-  -webkit-text-fill-color:#ffffff !important;
-  caret-color:#ffffff !important;
-  box-shadow:0 0 0 1000px #020617 inset !important;
-  background-color:#020617 !important;
-}
-
-/* ================= FORCE FOCUS STATE ================= */
-.dark .input:focus,
-.dark input:focus,
-.dark textarea:focus,
-.dark select:focus{
-  background-color:#020617 !important;
-  border-color:#7b8cff !important;
-  box-shadow:0 0 0 4px rgba(123,140,255,.35) !important;
-  color:#ffffff !important;
-  -webkit-text-fill-color:#ffffff !important;
+/* ================= GLASS ================= */
+.glass{
+  background:rgba(255,255,255,.9);
+  backdrop-filter:blur(20px);
+  border-radius:28px;
 }
 </style>
 {% endblock %}
 
 {% block content %}
 
-<div class="blob blob1"></div>
-<div class="blob blob2"></div>
-
-<div class="paw-bg">
-  <span class="paw" style="left:12%;animation-duration:34s">🐾</span>
-  <span class="paw" style="left:32%;font-size:4.5rem;animation-duration:42s">🐾</span>
-  <span class="paw" style="left:55%;font-size:3rem;animation-duration:28s">🐾</span>
-  <span class="paw" style="left:75%;font-size:4rem;animation-duration:36s">🐾</span>
-</div>
-
 <section class="max-w-5xl mx-auto px-6 py-16">
+
+  <!-- HEADER -->
   <div class="text-center mb-14">
-    <div class="text-5xl mb-3">🐾</div>
-    <h1 class="text-5xl font-extrabold title-gradient fade-up">
+    <h1 class="text-4xl font-extrabold">
       Pet Grooming Services
     </h1>
-    <p class="mt-4 text-lg fade-up">
+    <p class="mt-3 text-gray-500">
       Luxury grooming designed for comfort & confidence.
     </p>
   </div>
 
-<form method="POST" action="{% url 'petapp:grooming' %}" class="glass p-12 rounded-[32px] space-y-12 fade-up" autocomplete="on">
-  {% csrf_token %}
+  <form method="POST"
+        action="{% url 'petapp:grooming' %}"
+        class="glass p-12 space-y-12">
 
-  <!-- SERVICES -->
-  <section>
-    <h3 class="text-xl font-semibold mb-5">Select Services</h3>
-    <div class="grid md:grid-cols-3 gap-6">
-      {% for name, price, icon in services %}
-        <label class="card">
-          <input type="checkbox" name="services" value="{{ name }}" data-price="{{ price }}">
-          {{ icon }} {{ name }}
-          <span class="ml-auto font-semibold">₹{{ price }}</span>
+    {% csrf_token %}
+
+    <!-- ================= SERVICES ================= -->
+    <section>
+      <h3 class="text-xl font-semibold mb-6">
+        Select Services
+      </h3>
+
+      <div class="grid md:grid-cols-2 gap-6">
+        {% for service in services %}
+        <label class="service-card">
+
+          <input type="checkbox"
+                 name="services"
+                 value="{{ service.id }}"
+                 data-price="{{ service.price }}">
+
+          <!-- ✅ ICON FROM ADMIN -->
+          <div class="service-icon">
+            <i class="fa-solid {{ service.icon|default:'fa-paw' }}"></i>
+          </div>
+
+          <div class="flex flex-col">
+            <span class="font-medium">
+              {{ service.name }}
+            </span>
+          </div>
+
+          <span class="ml-auto font-semibold">
+            ₹{{ service.price }}
+          </span>
+
         </label>
-      {% endfor %}
-    </div>
-  </section>
+        {% endfor %}
+      </div>
+    </section>
 
-  <!-- APPOINTMENT -->
-  <section>
-    <h3 class="text-xl font-semibold mb-5">Appointment</h3>
-    <div class="grid md:grid-cols-3 gap-6">
-      <input type="date" name="date" class="input" required>
+    <!-- ================= APPOINTMENT ================= -->
+    <section>
+      <h3 class="text-xl font-semibold mb-6">
+        Appointment
+      </h3>
 
-      <input type="time" name="time" class="input"
-             min="10:00" max="22:00" step="900" required>
+      <div class="grid md:grid-cols-3 gap-6">
+        <input type="date" name="date" class="input" required>
+        <input type="time" name="time" class="input" required>
+        <input type="tel"  name="phone" class="input"
+               placeholder="Phone Number"
+               pattern="[0-9]{10}" required>
+      </div>
+    </section>
 
-      <input type="tel" name="phone" class="input"
-             placeholder="Phone Number" required pattern="[0-9]{10}" autocomplete="tel">
-    </div>
-  </section>
+    <!-- ================= TOTAL ================= -->
+    <section class="flex justify-between items-center
+                   p-6 rounded-2xl
+                   bg-gradient-to-r from-indigo-600 to-pink-500
+                   text-white">
 
-  <!-- TOTAL -->
-  <section class="total-box flex justify-between items-center p-7 rounded-2xl bg-gradient-to-r from-indigo-600 to-pink-500 text-white shadow-xl">
-    <div>
-      <div class="text-sm opacity-80">Estimated Total</div>
-      <div id="total" class="text-3xl font-extrabold">₹0</div>
-    </div>
-    <button type="submit" class="book-btn">
-      Book Grooming
-    </button>
-  </section>
+      <div>
+        <div class="text-sm opacity-80">Estimated Total</div>
+        <div id="total" class="text-3xl font-extrabold">₹0</div>
+      </div>
 
-</form>
+      <button type="submit"
+              class="bg-white text-indigo-600
+                     px-8 py-3 rounded-xl font-semibold">
+        Book Grooming
+      </button>
+
+    </section>
+
+  </form>
 </section>
 
 {% endblock %}
@@ -302,33 +161,19 @@ input:-webkit-autofill {
 /* ================= TOTAL CALC ================= */
 const totalEl = document.getElementById("total");
 
-document.querySelectorAll(".card").forEach(card => {
+document.querySelectorAll(".service-card").forEach(card => {
   const checkbox = card.querySelector("input");
-  card.onclick = () => {
+
+  card.addEventListener("click", () => {
     checkbox.checked = !checkbox.checked;
     card.classList.toggle("active", checkbox.checked);
 
     let total = 0;
     document.querySelectorAll("input[type=checkbox]:checked")
-      .forEach(e => total += Number(e.dataset.price));
+      .forEach(i => total += Number(i.dataset.price));
 
     totalEl.textContent = "₹" + total;
-  }
-});
-
-/* ================= CHROME 143 AUTOFILL REPAINT ================= */
-function repaintAutofill() {
-  document.querySelectorAll("input").forEach(el => {
-    if (el.matches(":-webkit-autofill")) {
-      el.style.webkitTextFillColor = "#ffffff";
-      el.style.color = "#ffffff";
-      el.style.backgroundColor = "#020617";
-    }
   });
-}
-
-window.addEventListener("load", () => setTimeout(repaintAutofill, 50));
-document.addEventListener("focusin", repaintAutofill);
-document.addEventListener("input", repaintAutofill);
+});
 </script>
 {% endblock %}

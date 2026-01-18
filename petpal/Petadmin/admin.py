@@ -1,6 +1,4 @@
 from django.contrib import admin
+from petapp.models import Service   # ✅ ADD THIS LINE
 
-# Register your models here.
-from . models import Pro_Admin
-
-admin.site.register(Pro_Admin)
+admin.site.register(Service)

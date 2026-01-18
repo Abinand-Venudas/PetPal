@@ -161,6 +161,9 @@ body.loaded #page-skeleton{
       <i data-lucide="paw-print"></i><span>Adoption Pets</span>
     </a>
 
+    <a href="{% url 'petadmin:serviceAdmin' %}" class="px-5 py-3 rounded-xl">
+      <i data-lucide="paw-print"></i><span>Services</span>
+    </a>
     <!-- LOGOUT -->
     <form method="post" action="{% url 'petadmin:logoutAdmin' %}" class="pt-8">
       {% csrf_token %}
