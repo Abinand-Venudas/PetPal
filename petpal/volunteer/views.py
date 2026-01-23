@@ -1,82 +1,146 @@
-from django.shortcuts import render
-# def volunteerHome(request):
-#     return render(request, "volunteer/volunteer.html")  
-from .models import volunteer_registration
 from django.shortcuts import render, redirect
 from django.contrib import messages
-# Create your views here.
+from django.utils import timezone
+from django.contrib.auth.hashers import make_password, check_password
 
+from .models import volunteer_registration, VolunteerAttendance
+
+
+# ---------------- SIGNUP ----------------
 def volunteerSignup(request):
     if request.method == "POST":
         vname = request.POST.get("vname")
         vemail = request.POST.get("vemail")
         vpassword = request.POST.get("vpassword")
         vcpassword = request.POST.get("vcpassword")
-        vphone = request.POST.get("phone")
-        vaddress = request.POST.get("vaddress")
-        skills = request.POST.get("skills")
-        vfile = request.FILES.get("vfile")
-        if vpassword == vcpassword:
-            # messages.error(request, "Passwords do not match.")
-            # return redirect('userReg')
-        # Check if the email already exists
-            if volunteer_registration.objects.filter(email=vemail).exists():
-                messages.error(request, "Email already registered.")
-                return redirect('volunteer:volunteerSignup')
-            else:
-                vfile = request.FILES.get("vfile")
-                volunteer = volunteer_registration(
-                    name=vname,
-                    email=vemail,
-                    password=vpassword,
-                    phone=vphone,
-                    address=vaddress,
-                    proof=vfile,
-                    skills=skills
-                )
-                volunteer.save()
-                messages.success(request, "Registration successful.")
-                return redirect('volunteer:volunteerLogin')
+
+        if vpassword != vcpassword:
+            messages.error(request, "Passwords do not match.")
+            return redirect('volunteer:volunteerSignup')
+
+        if volunteer_registration.objects.filter(email=vemail).exists():
+            messages.error(request, "Email already registered.")
+            return redirect('volunteer:volunteerSignup')
+
+        volunteer_registration.objects.create(
+            name=vname,
+            email=vemail,
+            password=make_password(vpassword),  # 🔒 hashed
+            phone=request.POST.get("phone"),
+            address=request.POST.get("vaddress"),
+            skills=request.POST.get("skills"),
+            proof=request.FILES.get("vfile")
+        )
+
+        messages.success(request, "Registration successful.")
+        return redirect('volunteer:volunteerLogin')
+
     return render(request, "volunteer/volunteerSignup.html")
 
+
+# ---------------- LOGIN ----------------
 def volunteerLogin(request):
     if request.method == "POST":
         email = request.POST.get("email")
         password = request.POST.get("password")
-        try:
-            volunteer = volunteer_registration.objects.get(email=email, password=password)
-            request.session['volunteer_id'] = volunteer.id
-            request.session['volunteer_name'] = volunteer.name
-            request.session['volunteer_email'] = volunteer.email
 
-            messages.success(request, "Login successful.")
-            return redirect('volunteer:volunteerHome')
+        try:
+            volunteer = volunteer_registration.objects.get(email=email)
+
+            if check_password(password, volunteer.password):
+                request.session['volunteer_id'] = volunteer.id
+                request.session['volunteer_name'] = volunteer.name
+                request.session['volunteer_email'] = volunteer.email
+                return redirect('volunteer:volunteerHome')
+            else:
+                messages.error(request, "Invalid credentials.")
+
         except volunteer_registration.DoesNotExist:
-            messages.error(request, "Invalid email or password.")
+            messages.error(request, "Invalid credentials.")
+
     return render(request, "volunteer/volunteerLogin.html")
 
- 
-def volunteerAppointments(request):
-    return render(request, "volunteer/volunteerAppointments.html")
-def volunteerPets(request):
-    return render(request, "volunteer/volunteerPets.html")
-def volunteerNotification(request):
-    return render(request, "volunteer/volunteerNotification.html")
+
+# ---------------- DASHBOARD ----------------
 def volunteerHome(request):
+    if 'volunteer_id' not in request.session:
+        return redirect('volunteer:volunteerLogin')
+
     volunteer = volunteer_registration.objects.get(
-        email=request.session["volunteer_email"]
+        id=request.session['volunteer_id']
     )
 
-    if request.method == "POST":
-        action = request.POST.get("action")
+    attendances = VolunteerAttendance.objects.filter(volunteer=volunteer)
 
-        if action == "checkin":
-            volunteer.is_available = True
-        elif action == "checkout":
-            volunteer.is_available = False
+    total_hours = sum(a.worked_hours() for a in attendances)
 
-        volunteer.save()
+    checked_in = attendances.filter(check_out__isnull=True).exists()
 
     return render(request, "volunteer/volunteerHome.html", {
-        "volunteer": volunteer
+        "volunteer": volunteer,
+        "hours_completed": round(total_hours, 2),
+        "checked_in": checked_in,
+        "pets_helped": 28,
+        "upcoming_tasks": 4
     })
+
+
+# ---------------- CHECK-IN (ANTI DOUBLE) ----------------
+def volunteerCheckIn(request):
+    active = VolunteerAttendance.objects.filter(
+        volunteer_id=request.session['volunteer_id'],
+        check_out__isnull=True
+    ).exists()
+
+    if not active:
+        VolunteerAttendance.objects.create(
+            volunteer_id=request.session['volunteer_id']
+        )
+        volunteer_registration.objects.filter(
+            id=request.session['volunteer_id']
+        ).update(is_available=True)
+
+    return redirect('volunteer:volunteerHome')
+
+
+# ---------------- CHECK-OUT ----------------
+def volunteerCheckOut(request):
+    attendance = VolunteerAttendance.objects.filter(
+        volunteer_id=request.session['volunteer_id'],
+        check_out__isnull=True
+    ).last()
+
+    if attendance:
+        attendance.check_out = timezone.now()
+        attendance.save()
+
+    volunteer_registration.objects.filter(
+        id=request.session['volunteer_id']
+    ).update(is_available=False)
+
+    return redirect('volunteer:volunteerHome')
+
+
+# ---------------- ATTENDANCE HISTORY ----------------
+def volunteerAttendanceHistory(request):
+    if 'volunteer_id' not in request.session:
+        return redirect('volunteer:volunteerLogin')
+
+    records = VolunteerAttendance.objects.filter(
+        volunteer_id=request.session['volunteer_id']
+    ).order_by('-check_in')
+
+    return render(request, "volunteer/volunteerAttendance.html", {
+        "records": records
+    })
+
+
+# ---------------- STATIC ----------------
+def volunteerAppointments(request):
+    return render(request, "volunteer/volunteerAppointments.html")
+
+def volunteerPets(request):
+    return render(request, "volunteer/volunteerPets.html")
+
+def volunteerNotification(request):
+    return render(request, "volunteer/volunteerNotification.html")

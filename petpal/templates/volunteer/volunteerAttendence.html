@@ -1,0 +1,45 @@
+{% extends "volunteer/baseVolunteer.html" %}
+{% block title %}Attendance History{% endblock %}
+
+{% block content %}
+
+<h1 class="text-3xl font-bold mb-8">Attendance History</h1>
+
+<div class="bg-white rounded-xl shadow border overflow-hidden">
+    <table class="w-full text-left">
+        <thead class="bg-gray-100">
+            <tr>
+                <th class="px-6 py-3 text-sm font-semibold">Check-In</th>
+                <th class="px-6 py-3 text-sm font-semibold">Check-Out</th>
+                <th class="px-6 py-3 text-sm font-semibold">Hours</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for r in records %}
+            <tr class="border-t">
+                <td class="px-6 py-3">
+                    {{ r.check_in|date:"d M Y, h:i A" }}
+                </td>
+                <td class="px-6 py-3">
+                    {% if r.check_out %}
+                        {{ r.check_out|date:"d M Y, h:i A" }}
+                    {% else %}
+                        <span class="text-green-600 font-medium">Active</span>
+                    {% endif %}
+                </td>
+                <td class="px-6 py-3">
+                    {{ r.worked_hours }} hrs
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="3" class="px-6 py-6 text-center text-gray-500">
+                    No attendance records yet.
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% endblock %}

@@ -1,0 +1,79 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{% block title %}Volunteer – PetPal{% endblock %}</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+        body {
+            font-family: "Poppins", sans-serif;
+            background: #f4f6fc;
+        }
+        .sidebar { background: #1e2a5e; }
+        .sidebar a:hover { background: rgba(255,255,255,.15); }
+        .glass {
+            background: rgba(255,255,255,.85);
+            backdrop-filter: blur(15px);
+        }
+        .active {
+            background: rgba(255,255,255,.2);
+        }
+    </style>
+</head>
+
+<body class="flex">
+
+<!-- SIDEBAR -->
+<aside class="sidebar w-64 min-h-screen text-white p-6">
+    <h2 class="text-3xl font-extrabold mb-8">PetPal</h2>
+
+    <div class="mb-10 text-center">
+        <img src="https://cdn-icons-png.flaticon.com/512/1946/1946429.png"
+             class="w-20 h-20 rounded-full mx-auto shadow-lg" />
+        <h3 class="mt-3 text-xl font-semibold">
+            {{ request.session.volunteer_name|default:"Volunteer" }}
+        </h3>
+        <p class="text-sm opacity-75">Animal Care Volunteer</p>
+    </div>
+
+    <nav class="flex flex-col gap-3 text-[15px]">
+
+        <a href="{% url 'volunteer:volunteerHome' %}"
+           class="px-4 py-3 rounded-lg {% if request.resolver_match.url_name == 'volunteerHome' %}active{% endif %}">
+            🏠 Dashboard
+        </a>
+
+        <a href="{% url 'volunteer:volunteerAppointments' %}"
+           class="px-4 py-3 rounded-lg {% if request.resolver_match.url_name == 'volunteerAppointments' %}active{% endif %}">
+            📅 Appointments
+        </a>
+
+        <a href="{% url 'volunteer:volunteerPets' %}"
+           class="px-4 py-3 rounded-lg {% if request.resolver_match.url_name == 'volunteerPets' %}active{% endif %}">
+            🐶 Assigned Pets
+        </a>
+
+        <a href="{% url 'volunteer:volunteerNotification' %}"
+           class="px-4 py-3 rounded-lg {% if request.resolver_match.url_name == 'volunteerNotification' %}active{% endif %}">
+            📨 Messages
+        </a>
+
+        <a href="{% url 'volunteer:volunteerLogin' %}"
+           class="px-4 py-3 rounded-lg mt-6 bg-red-600 hover:bg-red-700">
+            🔓 Logout
+        </a>
+
+    </nav>
+</aside>
+
+<!-- MAIN CONTENT -->
+<main class="flex-1 p-8">
+    {% block content %}{% endblock %}
+</main>
+
+</body>
+</html>
