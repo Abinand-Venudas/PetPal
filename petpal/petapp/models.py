@@ -203,3 +203,27 @@ class Service(models.Model):
 
     def __str__(self):
         return self.name
+
+# =========================
+# GROOMING BOOKING MODEL
+# =========================
+class GroomingBooking(models.Model):
+    user = models.ForeignKey(user_registration, on_delete=models.CASCADE)
+
+    date = models.DateField()
+    time = models.TimeField()
+
+    phone = models.CharField(max_length=15)
+
+    services = models.JSONField()   # list of service IDs
+    total = models.IntegerField()
+
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        # 🚫 Prevent double booking same slot
+        unique_together = ("date", "time")
+        ordering = ["-created_at"]
+
+    def __str__(self):
+        return f"{self.user.name} → Grooming ({self.date} @ {self.time})"

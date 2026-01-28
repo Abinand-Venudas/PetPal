@@ -1,130 +1,57 @@
 {% extends "volunteer/baseVolunteer.html" %}
 
-{% block title %}Volunteer Notifications – PetPal{% endblock %}
+{% block title %}Notifications{% endblock %}
+{% block header_title %}Notifications{% endblock %}
+{% block header_subtitle %}Professional Communication Center{% endblock %}
 
 {% block content %}
 
-<!-- Top Bar -->
-<div class="flex items-center justify-between mb-10">
-    <h1 class="text-3xl font-bold text-gray-800">
-        Messages & Notifications
-    </h1>
-
-    <div class="relative cursor-pointer"
-        <span class="text-3xl">🔔</span>
-        <span class="absolute -top-1 -right-1 bg-red-600 text-white text-xs px-2 py-1 rounded-full">
-            4
-        </span>
-    </div>
+<!-- HEADER -->
+<div class="mb-10">
+    <h1 class="text-3xl font-extrabold text-slate-800">System Notifications</h1>
+    <p class="text-slate-500 mt-2 max-w-2xl">
+        Official communications, system alerts, and administrative updates.
+    </p>
 </div>
 
-<!-- NOTIFICATIONS -->
-<section class="mb-12">
-    <div class="flex items-center justify-between mb-4">
-        <h2 class="text-xl font-semibold">Notifications</h2>
-        <button class="px-4 py-1 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 text-sm">
-            Mark all as read
-        </button>
-    </div>
+<!-- NOTIFICATION PANEL -->
+<div class="space-y-6">
 
-    <div class="space-y-4">
+{% for n in notes %}
+<div class="glass-card rounded-2xl p-6 flex justify-between items-start hover:shadow-xl transition">
 
-        <div class="glass border rounded-xl p-4 shadow flex items-center gap-4">
-            <span class="text-2xl">📅</span>
-            <div>
-                <p class="font-semibold text-gray-800">
-                    New Appointment Assigned
-                </p>
-                <p class="text-gray-600 text-sm">
-                    You have been assigned to walk <b>Bruno</b> tomorrow at 10 AM.
-                </p>
-            </div>
+    <div class="flex gap-5">
+
+        <div class="w-12 h-12 rounded-full bg-indigo-100 flex items-center justify-center text-xl">
+            🔔
         </div>
 
-        <div class="glass border rounded-xl p-4 shadow flex items-center gap-4">
-            <span class="text-2xl">💬</span>
-            <div>
-                <p class="font-semibold text-gray-800">
-                    Admin sent a message
-                </p>
-                <p class="text-gray-600 text-sm">
-                    “Please update Luna's feeding report.”
-                </p>
-            </div>
-        </div>
-
-        <div class="glass border rounded-xl p-4 shadow flex items-center gap-4">
-            <span class="text-2xl">🐾</span>
-            <div>
-                <p class="font-semibold text-gray-800">
-                    Pet Update
-                </p>
-                <p class="text-gray-600 text-sm">
-                    Whiskers has a new grooming session scheduled.
-                </p>
-            </div>
+        <div>
+            <p class="font-semibold text-slate-800 leading-relaxed">
+                {{ n.message }}
+            </p>
+            <p class="text-xs text-gray-500 mt-2">
+                {{ n.created_at|timesince }} ago • System Notification
+            </p>
         </div>
 
     </div>
-</section>
 
-<!-- CHAT -->
-<section>
-    <h2 class="text-xl font-semibold mb-4">
-        Chat with Admin
-    </h2>
-
-    <div class="glass p-6 rounded-2xl shadow border h-[420px] flex flex-col">
-
-        <!-- Messages -->
-        <div class="flex-1 overflow-y-auto pr-2 space-y-4">
-
-            <div class="flex items-start gap-3">
-                <div class="w-10 h-10 bg-indigo-500 rounded-full flex items-center justify-center text-white text-lg">
-                    A
-                </div>
-                <div>
-                    <div class="bg-gray-200 text-gray-800 px-4 py-2 rounded-xl shadow max-w-xs">
-                        Hi, please confirm today’s appointment report.
-                    </div>
-                    <p class="text-xs text-gray-500 mt-1">
-                        Admin • 10:32 AM
-                    </p>
-                </div>
-            </div>
-
-            <div class="flex items-start gap-3 justify-end">
-                <div>
-                    <div class="bg-indigo-600 text-white px-4 py-2 rounded-xl shadow max-w-xs">
-                        Sure, I will update it in 20 minutes.
-                    </div>
-                    <p class="text-xs text-gray-500 mt-1 text-right">
-                        You • 10:34 AM
-                    </p>
-                </div>
-                <div class="w-10 h-10 bg-gray-600 rounded-full flex items-center justify-center text-white text-lg">
-                    V
-                </div>
-            </div>
-
-        </div>
-
-        <!-- Input -->
-        <div class="mt-4 flex items-center gap-3">
-            <input type="text"
-                   placeholder="Type your message..."
-                   class="flex-1 px-4 py-3 rounded-xl border border-gray-300 outline-none focus:ring-2 focus:ring-indigo-400">
-            <button class="px-5 py-3 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700">
-                Send
-            </button>
-        </div>
-
+    <div class="flex flex-col items-end">
+        {% if not n.is_read %}
+        <span class="px-3 py-1 bg-red-100 text-red-700 rounded-full text-xs font-semibold">
+            New
+        </span>
+        {% endif %}
     </div>
-</section>
 
-<!-- Footer -->
-<footer class="text-center text-gray-500 text-sm mt-12 py-6">
-    © 2025 PetPal — Volunteer Messaging
-</footer>
+</div>
+{% empty %}
+<div class="text-center py-24 text-gray-500">
+    No notifications available
+</div>
+{% endfor %}
+
+</div>
 
 {% endblock %}

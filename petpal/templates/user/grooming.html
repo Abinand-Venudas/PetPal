@@ -1,179 +1,231 @@
 {% extends "user/base.html" %}
 {% load static %}
 
-{% block title %}Pet Grooming Services{% endblock %}
+{% block title %}Pet Grooming{% endblock %}
 
 {% block extra_css %}
 <style>
-/* ================= SERVICE CARD ================= */
-.service-card{
-  display:flex;
-  align-items:center;
-  gap:14px;
-  padding:18px 20px;
-  border-radius:16px;
-  background:#ffffff;
-  border:1px solid #e5e7eb;
-  cursor:pointer;
-  transition:.25s ease;
-}
-
-.service-card:hover{
-  transform:translateY(-3px);
-  box-shadow:0 14px 35px rgba(0,0,0,.08);
-}
-
-.service-card.active{
-  border-color:#6366f1;
-  box-shadow:0 18px 45px rgba(99,102,241,.25);
-}
-
-.service-card input{ display:none; }
-
-/* ================= ICON ================= */
-.service-icon{
-  width:44px;
-  height:44px;
-  border-radius:50%;
-  background:#eef2ff;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  color:#6366f1;
-  font-size:18px;
-  flex-shrink:0;
-}
-
-/* ================= INPUT ================= */
-.input{
-  width:100%;
-  padding:14px 16px;
-  border-radius:14px;
-  background:#f9fafb;
-  border:1px solid #e5e7eb;
-}
-
-/* ================= GLASS ================= */
+/* ---------- LAYOUT ---------- */
 .glass{
-  background:rgba(255,255,255,.9);
+  background:rgba(255,255,255,.92);
   backdrop-filter:blur(20px);
   border-radius:28px;
+}
+.dark .glass{
+  background:rgba(15,23,42,.95);
+  border:1px solid rgba(255,255,255,.08);
+}
+
+/* ---------- SERVICE CARDS ---------- */
+.service-card{
+  display:flex;align-items:center;gap:14px;
+  padding:18px 20px;border-radius:16px;
+  background:#fff;border:1px solid #e5e7eb;
+  cursor:pointer;transition:.25s ease;color:#111;
+}
+.dark .service-card{
+  background:#0f172a;border:1px solid #1e293b;color:#f8fafc;
+}
+.service-card.active{
+  border-color:#6366f1;
+  box-shadow:0 10px 30px rgba(99,102,241,.3);
+}
+.service-card input{display:none;}
+
+.service-icon{
+  width:42px;height:42px;border-radius:50%;
+  background:#eef2ff;color:#6366f1;
+  display:flex;align-items:center;justify-content:center;
+}
+.dark .service-icon{
+  background:#1e293b;color:#a5b4fc;
+}
+
+/* ---------- INPUTS ---------- */
+.input{
+  width:100%;padding:14px;border-radius:14px;
+  background:#f9fafb;border:1px solid #e5e7eb;color:#111;
+}
+.dark .input{
+  background:#0f172a;border:1px solid #1e293b;color:#f8fafc;
+}
+
+/* ---------- SLOT BUTTONS ---------- */
+.slots{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(90px,1fr));
+  gap:12px;
+}
+
+.slot{
+  padding:10px 0;
+  border-radius:12px;
+  text-align:center;
+  font-weight:600;
+  background:#eef2ff;
+  color:#3730a3;
+  cursor:pointer;
+  border:2px solid transparent;
+  transition:.2s;
+}
+.slot:hover{transform:scale(1.05);}
+.slot.active{
+  background:#6366f1;
+  color:white;
+}
+.slot.booked{
+  background:#fee2e2;
+  color:#991b1b;
+  cursor:not-allowed;
+}
+.dark .slot{
+  background:#1e293b;color:#e0e7ff;
+}
+.dark .slot.booked{
+  background:#3f1d1d;color:#fecaca;
 }
 </style>
 {% endblock %}
 
 {% block content %}
+<section class="max-w-6xl mx-auto px-6 py-16">
 
-<section class="max-w-5xl mx-auto px-6 py-16">
+<div class="text-center mb-12">
+  <h1 class="text-4xl font-extrabold">Pet Grooming</h1>
+  <p class="mt-3 text-gray-500 dark:text-gray-300">
+    Smart booking • Clean slots • Real scheduling
+  </p>
+</div>
 
-  <!-- HEADER -->
-  <div class="text-center mb-14">
-    <h1 class="text-4xl font-extrabold">
-      Pet Grooming Services
-    </h1>
-    <p class="mt-3 text-gray-500">
-      Luxury grooming designed for comfort & confidence.
-    </p>
-  </div>
+<form method="POST" class="glass p-12 space-y-12">
+{% csrf_token %}
 
-  <form method="POST"
-        action="{% url 'petapp:grooming' %}"
-        class="glass p-12 space-y-12">
+<!-- SERVICES -->
+<section>
+<h3 class="text-xl font-semibold mb-6">Choose Services</h3>
+<div class="grid md:grid-cols-2 gap-6">
+{% for service in services %}
+<label class="service-card">
+  <input type="checkbox" name="services" value="{{ service.id }}" data-price="{{ service.price }}">
+  <div class="service-icon"><i class="fa-solid {{ service.icon|default:'fa-paw' }}"></i></div>
+  <span>{{ service.name }}</span>
+  <span class="ml-auto font-bold">₹{{ service.price }}</span>
+</label>
+{% endfor %}
+</div>
+</section>
 
-    {% csrf_token %}
+<!-- DATE -->
+<section>
+<h3 class="text-xl font-semibold mb-4">Select Date</h3>
+<input type="date" id="dateInput" name="date" class="input" required>
+</section>
 
-    <!-- ================= SERVICES ================= -->
-    <section>
-      <h3 class="text-xl font-semibold mb-6">
-        Select Services
-      </h3>
+<!-- TIME SLOTS -->
+<section>
+<h3 class="text-xl font-semibold mb-4">Select Time Slot</h3>
+<div class="slots" id="slotContainer"></div>
+<input type="hidden" name="time" id="timeField" required>
+</section>
 
-      <div class="grid md:grid-cols-2 gap-6">
-        {% for service in services %}
-        <label class="service-card">
+<!-- PHONE -->
+<section>
+<input type="tel" name="phone" class="input"
+       placeholder="Phone Number"
+       pattern="[0-9]{10}" required>
+</section>
 
-          <input type="checkbox"
-                 name="services"
-                 value="{{ service.id }}"
-                 data-price="{{ service.price }}">
+<!-- TOTAL -->
+<section class="flex justify-between items-center p-6 rounded-2xl
+               bg-gradient-to-r from-indigo-600 to-pink-500 text-white">
+<div>
+  <div class="text-sm opacity-80">Estimated Total</div>
+  <div id="total" class="text-3xl font-extrabold">₹0</div>
+</div>
 
-          <!-- ✅ ICON FROM ADMIN -->
-          <div class="service-icon">
-            <i class="fa-solid {{ service.icon|default:'fa-paw' }}"></i>
-          </div>
+<button type="submit"
+        class="bg-white text-indigo-600 px-8 py-3 rounded-xl font-semibold">
+  Book Grooming
+</button>
+</section>
 
-          <div class="flex flex-col">
-            <span class="font-medium">
-              {{ service.name }}
-            </span>
-          </div>
-
-          <span class="ml-auto font-semibold">
-            ₹{{ service.price }}
-          </span>
-
-        </label>
-        {% endfor %}
-      </div>
-    </section>
-
-    <!-- ================= APPOINTMENT ================= -->
-    <section>
-      <h3 class="text-xl font-semibold mb-6">
-        Appointment
-      </h3>
-
-      <div class="grid md:grid-cols-3 gap-6">
-        <input type="date" name="date" class="input" required>
-        <input type="time" name="time" class="input" required>
-        <input type="tel"  name="phone" class="input"
-               placeholder="Phone Number"
-               pattern="[0-9]{10}" required>
-      </div>
-    </section>
-
-    <!-- ================= TOTAL ================= -->
-    <section class="flex justify-between items-center
-                   p-6 rounded-2xl
-                   bg-gradient-to-r from-indigo-600 to-pink-500
-                   text-white">
-
-      <div>
-        <div class="text-sm opacity-80">Estimated Total</div>
-        <div id="total" class="text-3xl font-extrabold">₹0</div>
-      </div>
-
-      <button type="submit"
-              class="bg-white text-indigo-600
-                     px-8 py-3 rounded-xl font-semibold">
-        Book Grooming
-      </button>
-
-    </section>
-
-  </form>
+</form>
 </section>
 
 {% endblock %}
 
 {% block extra_js %}
 <script>
-/* ================= TOTAL CALC ================= */
+const bookedSlots = {{ booked_slots|safe }};
+const slotContainer = document.getElementById("slotContainer");
+const dateInput = document.getElementById("dateInput");
+const timeField = document.getElementById("timeField");
+
+/* -------- Disable past dates -------- */
+const today = new Date().toISOString().split("T")[0];
+dateInput.min = today;
+
+/* -------- Slot generation (10AM - 10PM) -------- */
+const slots = [];
+for(let h=10; h<=22; h++){
+  let hh = h.toString().padStart(2,"0");
+  slots.push(`${hh}:00`);
+}
+
+/* -------- Format time -------- */
+function formatTime(t){
+  let h = parseInt(t.split(":")[0]);
+  let ampm = h >= 12 ? "PM" : "AM";
+  h = h % 12 || 12;
+  return h + ":00 " + ampm;
+}
+
+/* -------- Render slots -------- */
+function renderSlots(date){
+  slotContainer.innerHTML = "";
+  const booked = bookedSlots[date] || [];
+
+  slots.forEach(t=>{
+    const div = document.createElement("div");
+    div.className = "slot";
+    div.innerText = formatTime(t);
+
+    if(booked.includes(t)){
+      div.classList.add("booked");
+    }else{
+      div.onclick = ()=>{
+        document.querySelectorAll(".slot").forEach(s=>s.classList.remove("active"));
+        div.classList.add("active");
+        timeField.value = t;
+      }
+    }
+    slotContainer.appendChild(div);
+  });
+}
+
+/* -------- Initial render (SHOW SLOTS BY DEFAULT) -------- */
+renderSlots(today);
+
+/* -------- Update when date changes -------- */
+dateInput.addEventListener("change", ()=>{
+  timeField.value = "";
+  renderSlots(dateInput.value);
+});
+
+/* -------- Total calc -------- */
 const totalEl = document.getElementById("total");
-
-document.querySelectorAll(".service-card").forEach(card => {
+document.querySelectorAll(".service-card").forEach(card=>{
   const checkbox = card.querySelector("input");
-
-  card.addEventListener("click", () => {
+  card.onclick = ()=>{
     checkbox.checked = !checkbox.checked;
-    card.classList.toggle("active", checkbox.checked);
+    card.classList.toggle("active",checkbox.checked);
 
     let total = 0;
     document.querySelectorAll("input[type=checkbox]:checked")
-      .forEach(i => total += Number(i.dataset.price));
-
-    totalEl.textContent = "₹" + total;
-  });
+      .forEach(i=> total += Number(i.dataset.price));
+    totalEl.innerText = "₹"+total;
+  }
 });
 </script>
 {% endblock %}
+

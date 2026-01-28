@@ -28,7 +28,7 @@ urlpatterns = [
 
     # Success
     path("consultation/success/<int:id>/", views.consultationSuccess, name="consultationSuccess"),
-    path("grooming/success/", views.groomSuccess, name="groomsuccess"),
+    path("grooming/success/", views.groomsuccess, name="groomsuccess"),
     path("adoption/success/<int:id>/", views.adoptionSuccess, name="adoptionSuccess"),
     path("confirmbook/", views.confirmbook, name="confirmbook"),
     path("daycareSuccess/<int:id>/", views.daycareSuccess, name="daycareSuccess"),

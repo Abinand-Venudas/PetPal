@@ -1,79 +1,150 @@
-{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>{% block title %}Volunteer – PetPal{% endblock %}</title>
+    <meta charset="UTF-8">
+    <title>{% block title %}Volunteer Panel{% endblock %}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+    <!-- Tailwind -->
     <script src="https://cdn.tailwindcss.com"></script>
 
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
     <style>
-        body {
-            font-family: "Poppins", sans-serif;
-            background: #f4f6fc;
+        *{
+            font-family: 'Inter', sans-serif;
         }
-        .sidebar { background: #1e2a5e; }
-        .sidebar a:hover { background: rgba(255,255,255,.15); }
-        .glass {
-            background: rgba(255,255,255,.85);
-            backdrop-filter: blur(15px);
+
+        .glass-card{
+            background: rgba(255,255,255,0.85);
+            backdrop-filter: blur(18px);
+            border: 1px solid rgba(255,255,255,0.5);
+            box-shadow: 0 30px 80px rgba(0,0,0,0.08);
         }
-        .active {
-            background: rgba(255,255,255,.2);
+
+        .sidebar-item{
+            display:flex;
+            align-items:center;
+            gap:14px;
+            padding:14px 18px;
+            border-radius:14px;
+            color:#475569;
+            font-weight:500;
+            transition:all .25s ease;
+        }
+
+        .sidebar-item:hover{
+            background:#EEF2FF;
+            color:#4338CA;
+            transform: translateX(4px);
+        }
+
+        .sidebar-active{
+            background:#E0E7FF;
+            color:#3730A3;
+            font-weight:700;
+            box-shadow: inset 4px 0 0 #4338CA;
+        }
+
+        .soft-shadow{
+            box-shadow: 0 15px 50px rgba(0,0,0,.08);
+        }
+
+        .divider{
+            height:1px;
+            background: linear-gradient(to right, transparent, #E5E7EB, transparent);
         }
     </style>
 </head>
 
-<body class="flex">
+<body class="bg-slate-100 min-h-screen">
 
-<!-- SIDEBAR -->
-<aside class="sidebar w-64 min-h-screen text-white p-6">
-    <h2 class="text-3xl font-extrabold mb-8">PetPal</h2>
+<div class="flex min-h-screen">
 
-    <div class="mb-10 text-center">
-        <img src="https://cdn-icons-png.flaticon.com/512/1946/1946429.png"
-             class="w-20 h-20 rounded-full mx-auto shadow-lg" />
-        <h3 class="mt-3 text-xl font-semibold">
-            {{ request.session.volunteer_name|default:"Volunteer" }}
-        </h3>
-        <p class="text-sm opacity-75">Animal Care Volunteer</p>
-    </div>
+    <!-- SIDEBAR -->
+    <aside class="w-80 bg-white soft-shadow hidden lg:flex flex-col relative z-10">
 
-    <nav class="flex flex-col gap-3 text-[15px]">
+        <!-- LOGO -->
+        <div class="p-8 border-b">
+            <h1 class="text-2xl font-extrabold text-indigo-700 tracking-tight">PetPal Care</h1>
+            <p class="text-sm text-gray-500 mt-1">Volunteer Management System</p>
+        </div>
 
-        <a href="{% url 'volunteer:volunteerHome' %}"
-           class="px-4 py-3 rounded-lg {% if request.resolver_match.url_name == 'volunteerHome' %}active{% endif %}">
-            🏠 Dashboard
-        </a>
+        <!-- NAV -->
+        <nav class="flex-1 p-6 space-y-3">
 
-        <a href="{% url 'volunteer:volunteerAppointments' %}"
-           class="px-4 py-3 rounded-lg {% if request.resolver_match.url_name == 'volunteerAppointments' %}active{% endif %}">
-            📅 Appointments
-        </a>
+            <a href="{% url 'volunteer:volunteerHome' %}" 
+               class="sidebar-item sidebar-active">
+                <span class="text-xl">🏠</span>
+                <span>Dashboard</span>
+            </a>
 
-        <a href="{% url 'volunteer:volunteerPets' %}"
-           class="px-4 py-3 rounded-lg {% if request.resolver_match.url_name == 'volunteerPets' %}active{% endif %}">
-            🐶 Assigned Pets
-        </a>
+            <a href="{% url 'volunteer:volunteerAppointments' %}" 
+               class="sidebar-item">
+                <span class="text-xl">📅</span>
+                <span>Appointments</span>
+            </a>
 
-        <a href="{% url 'volunteer:volunteerNotification' %}"
-           class="px-4 py-3 rounded-lg {% if request.resolver_match.url_name == 'volunteerNotification' %}active{% endif %}">
-            📨 Messages
-        </a>
+            <a href="{% url 'volunteer:volunteerPets' %}" 
+               class="sidebar-item">
+                <span class="text-xl">🐾</span>
+                <span>My Pets</span>
+            </a>
 
-        <a href="{% url 'volunteer:volunteerLogin' %}"
-           class="px-4 py-3 rounded-lg mt-6 bg-red-600 hover:bg-red-700">
-            🔓 Logout
-        </a>
+            <a href="{% url 'volunteer:volunteerAttendance' %}" 
+               class="sidebar-item">
+                <span class="text-xl">⏱</span>
+                <span>Attendance</span>
+            </a>
 
-    </nav>
-</aside>
+            <a href="{% url 'volunteer:volunteerNotification' %}" 
+               class="sidebar-item">
+                <span class="text-xl">🔔</span>
+                <span>Notifications</span>
+            </a>
 
-<!-- MAIN CONTENT -->
-<main class="flex-1 p-8">
-    {% block content %}{% endblock %}
-</main>
+        </nav>
+
+        <!-- PROFILE -->
+        <div class="p-6 border-t">
+            <div class="glass-card rounded-2xl p-4">
+                <p class="text-xs text-gray-500">Logged in as</p>
+                <p class="font-semibold text-gray-800">{{ request.session.volunteer_name }}</p>
+                <p class="text-xs text-gray-500">{{ request.session.volunteer_email }}</p>
+            </div>
+        </div>
+
+    </aside>
+
+    <!-- MAIN -->
+    <main class="flex-1 relative overflow-y-auto">
+
+        <!-- TOP BAR -->
+        <header class="bg-white soft-shadow p-6 flex justify-between items-center sticky top-0 z-20">
+            <div>
+                <h2 class="text-lg font-semibold text-gray-800">{% block header_title %}Dashboard{% endblock %}</h2>
+                <p class="text-xs text-gray-500">{% block header_subtitle %}Volunteer Portal{% endblock %}</p>
+            </div>
+
+            <div class="flex items-center gap-4">
+                <div class="text-sm text-gray-600">
+                    {{ request.session.volunteer_name }}
+                </div>
+                <div class="w-10 h-10 rounded-full bg-indigo-600 flex items-center justify-center text-white font-bold">
+                    {{ request.session.volunteer_name|first }}
+                </div>
+            </div>
+        </header>
+
+        <!-- CONTENT -->
+        <section class="p-10">
+            {% block content %}{% endblock %}
+        </section>
+
+    </main>
+
+</div>
 
 </body>
 </html>

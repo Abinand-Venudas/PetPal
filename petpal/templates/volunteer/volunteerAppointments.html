@@ -1,101 +1,113 @@
 {% extends "volunteer/baseVolunteer.html" %}
 
-{% block title %}Volunteer Appointments – PetPal{% endblock %}
+{% block title %}Appointments{% endblock %}
+{% block header_title %}Appointments{% endblock %}
+{% block header_subtitle %}Professional Task & Schedule Management{% endblock %}
 
 {% block content %}
 
-<!-- Page Header -->
-<div class="flex items-center justify-between mb-10">
-    <h1 class="text-3xl font-bold text-gray-800">Your Appointments</h1>
-
-    <button class="px-5 py-2 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700">
-        View Calendar
-    </button>
+<!-- PAGE HEADER -->
+<div class="mb-10">
+    <h1 class="text-3xl font-extrabold text-slate-800">Appointments & Tasks</h1>
+    <p class="text-slate-500 mt-2 max-w-2xl">
+        View, manage, and track all assigned volunteer tasks and scheduled responsibilities
+        in a structured professional workflow.
+    </p>
 </div>
 
-<!-- Upcoming Appointments -->
-<section class="mb-12">
-    <h2 class="text-2xl font-bold mb-4">Upcoming</h2>
+<!-- FILTER BAR -->
+<div class="glass-card rounded-2xl p-6 mb-10">
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <input type="text" placeholder="Search tasks..."
+               class="px-4 py-3 rounded-xl border focus:ring-2 focus:ring-indigo-500 outline-none">
 
-    <div class="glass p-6 rounded-xl shadow border">
-        <div class="space-y-6">
+        <select class="px-4 py-3 rounded-xl border focus:ring-2 focus:ring-indigo-500 outline-none">
+            <option>Status</option>
+            <option>Upcoming</option>
+            <option>Completed</option>
+        </select>
 
-            <div class="flex items-center justify-between bg-white p-5 rounded-xl shadow-sm border">
-                <div>
-                    <h3 class="text-xl font-semibold">🐶 Bruno – Walking Session</h3>
-                    <p class="text-gray-600">
-                        Date: <b>20 Nov</b> | Time: <b>11:00 AM</b>
-                    </p>
-                    <p class="text-gray-500 text-sm">Location: PetPal Center</p>
-                </div>
-                <button class="px-5 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">
-                    View
-                </button>
-            </div>
+        <select class="px-4 py-3 rounded-xl border focus:ring-2 focus:ring-indigo-500 outline-none">
+            <option>Location</option>
+            <option>Shelter</option>
+            <option>Clinic</option>
+            <option>Rescue Center</option>
+        </select>
 
-            <div class="flex items-center justify-between bg-white p-5 rounded-xl shadow-sm border">
-                <div>
-                    <h3 class="text-xl font-semibold">🐱 Mimi – Feeding</h3>
-                    <p class="text-gray-600">
-                        Date: <b>20 Nov</b> | Time: <b>02:00 PM</b>
-                    </p>
-                    <p class="text-gray-500 text-sm">Special diet required</p>
-                </div>
-                <button class="px-5 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">
-                    View
-                </button>
-            </div>
-
-            <div class="flex items-center justify-between bg-white p-5 rounded-xl shadow-sm border">
-                <div>
-                    <h3 class="text-xl font-semibold">🐾 Bella – Grooming Support</h3>
-                    <p class="text-gray-600">
-                        Date: <b>21 Nov</b> | Time: <b>10:00 AM</b>
-                    </p>
-                </div>
-                <button class="px-5 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">
-                    View
-                </button>
-            </div>
-
-        </div>
+        <button class="px-6 py-3 bg-indigo-600 text-white rounded-xl font-semibold hover:bg-indigo-700 transition">
+            Apply Filters
+        </button>
     </div>
-</section>
+</div>
 
-<!-- Completed Appointments -->
-<section>
-    <h2 class="text-2xl font-bold mb-4">Completed</h2>
+<!-- TASK GRID -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
 
-    <div class="glass p-6 rounded-xl shadow border">
-        <div class="space-y-6">
+{% for task in tasks %}
+<div class="glass-card rounded-3xl p-8 hover:shadow-xl transition">
 
-            <div class="flex items-center justify-between bg-gray-100 p-5 rounded-xl border">
-                <div>
-                    <h3 class="text-xl font-semibold">🐕 Rocky – Exercise Duty</h3>
-                    <p class="text-gray-600">Completed on: 15 Nov</p>
-                </div>
-                <span class="px-5 py-2 bg-green-600 text-white rounded-lg">
-                    Done
-                </span>
-            </div>
-
-            <div class="flex items-center justify-between bg-gray-100 p-5 rounded-xl border">
-                <div>
-                    <h3 class="text-xl font-semibold">🐈 Snowy – Care Session</h3>
-                    <p class="text-gray-600">Completed on: 14 Nov</p>
-                </div>
-                <span class="px-5 py-2 bg-green-600 text-white rounded-lg">
-                    Done
-                </span>
-            </div>
-
+    <!-- HEADER -->
+    <div class="flex justify-between items-start mb-6">
+        <div>
+            <h3 class="text-xl font-bold text-slate-800">{{ task.title }}</h3>
+            <p class="text-sm text-gray-500 mt-1">Professional Care Task</p>
         </div>
-    </div>
-</section>
 
-<!-- Footer -->
-<footer class="text-center text-gray-500 text-sm mt-12 py-6">
-    © 2025 PetPal — Volunteer Appointments
-</footer>
+        <span class="px-4 py-1 rounded-full text-sm font-semibold
+            {% if task.status == 'completed' %}
+                bg-green-100 text-green-700
+            {% else %}
+                bg-indigo-100 text-indigo-700
+            {% endif %}
+        ">
+            {{ task.status|title }}
+        </span>
+    </div>
+
+    <!-- BODY -->
+    <div class="space-y-4">
+
+        <div class="flex items-center gap-4 p-4 bg-slate-50 rounded-xl">
+            <span class="text-xl">🕒</span>
+            <div>
+                <p class="text-sm text-gray-500">Schedule</p>
+                <p class="font-semibold">{{ task.task_time|date:"d M Y • h:i A" }}</p>
+            </div>
+        </div>
+
+        <div class="flex items-center gap-4 p-4 bg-slate-50 rounded-xl">
+            <span class="text-xl">📍</span>
+            <div>
+                <p class="text-sm text-gray-500">Location</p>
+                <p class="font-semibold">{{ task.location }}</p>
+            </div>
+        </div>
+
+        <div class="flex items-center gap-4 p-4 bg-slate-50 rounded-xl">
+            <span class="text-xl">👤</span>
+            <div>
+                <p class="text-sm text-gray-500">Assigned Volunteer</p>
+                <p class="font-semibold">{{ request.session.volunteer_name }}</p>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- FOOTER -->
+    <div class="mt-8 flex justify-between items-center">
+        <p class="text-xs text-gray-400">System Generated Task</p>
+        <button class="px-6 py-2 bg-slate-800 text-white rounded-xl text-sm hover:bg-black transition">
+            View Details
+        </button>
+    </div>
+
+</div>
+{% empty %}
+<div class="col-span-full text-center py-24 text-gray-500">
+    No appointments scheduled
+</div>
+{% endfor %}
+
+</div>
 
 {% endblock %}

@@ -4,81 +4,129 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Doctor Dashboard | PetPal</title>
+<title>Doctor Portal | PetPal</title>
 
 <script src="https://cdn.tailwindcss.com"></script>
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 
 <style>
-*{font-family:"Poppins",sans-serif}
+*{font-family:"Inter",sans-serif}
 
-/* Sidebar */
+/* ========== GLOBAL ========== */
+body{
+  background:#f6f8fb;
+}
+
+/* ========== SIDEBAR ========== */
 .sidebar{
-  background:linear-gradient(180deg,#1e293b,#020617);
+  background:#0b1324;
+  border-right:1px solid #0f172a;
 }
 .sidebar a{
   display:flex;
   align-items:center;
-  gap:10px;
+  gap:12px;
   padding:12px 16px;
-  border-radius:12px;
-  color:#cbd5f5;
-  transition:.25s;
+  border-radius:8px;
+  color:#cbd5e1;
+  font-weight:500;
+  transition:.2s;
 }
 .sidebar a:hover{
-  background:rgba(255,255,255,.08);
+  background:#0f1c38;
   color:white;
 }
 .sidebar .active{
-  background:rgba(255,255,255,.15);
+  background:#0f1c38;
   color:white;
 }
 
-/* Cards */
-.card{
-  background:white;
-  border-radius:20px;
-  box-shadow:0 12px 40px rgba(0,0,0,.06);
+/* ========== CARDS ========== */
+.panel{
+  background:#ffffff;
+  border-radius:14px;
+  border:1px solid #e5eaf1;
 }
 
-/* Status badges */
+/* ========== TITLES ========== */
+.h-title{
+  font-size:1.4rem;
+  font-weight:700;
+  color:#0f172a;
+}
+.h-sub{
+  font-size:.85rem;
+  color:#64748b;
+}
+
+/* ========== BADGES ========== */
 .badge{
   padding:4px 12px;
   border-radius:999px;
-  font-size:12px;
+  font-size:11px;
   font-weight:600;
 }
-.badge-pending{background:#fff7ed;color:#f97316}
-.badge-confirmed{background:#ecfeff;color:#0ea5e9}
-.badge-completed{background:#ecfdf5;color:#10b981}
-.badge-cancelled{background:#fef2f2;color:#ef4444}
+.badge-pending{background:#fff7ed;color:#ea580c}
+.badge-confirmed{background:#eff6ff;color:#2563eb}
+.badge-completed{background:#ecfdf5;color:#059669}
+.badge-cancelled{background:#fef2f2;color:#dc2626}
+
+/* ========== BUTTONS ========== */
+.btn-primary{
+  background:#1d4ed8;
+  color:white;
+  padding:8px 18px;
+  border-radius:8px;
+  font-weight:600;
+}
+.btn-primary:hover{background:#1e40af}
+
+.btn-danger{
+  background:#b91c1c;
+  color:white;
+  padding:8px 18px;
+  border-radius:8px;
+  font-weight:600;
+}
+.btn-danger:hover{background:#7f1d1d}
+
+/* ========== TABLE ROWS ========== */
+.row-card{
+  background:#f9fbff;
+  border:1px solid #e6ecf5;
+  border-radius:10px;
+  padding:16px 18px;
+}
+.row-card:hover{
+  background:#ffffff;
+}
 </style>
 </head>
 
-<body class="bg-slate-100 min-h-screen flex">
+<body class="min-h-screen flex">
 
 <!-- ================= SIDEBAR ================= -->
 <aside class="sidebar w-64 min-h-screen p-6 flex flex-col justify-between">
 
   <div>
-    <!-- LOGO -->
-    <div class="flex items-center gap-3 mb-10">
-      <span class="text-3xl">🐾</span>
-      <h1 class="text-xl font-extrabold text-white">PetPal Doctor</h1>
+    <!-- BRAND -->
+    <div class="mb-12">
+      <div class="text-white text-lg font-extrabold tracking-wide">PetPal</div>
+      <div class="text-slate-400 text-xs tracking-wider uppercase">Doctor Portal</div>
     </div>
 
     <!-- NAV -->
-    <nav class="space-y-2 text-sm font-medium">
-      <a href="#dashboard" class="active">📊 Dashboard</a>
-      <a href="#appointments">📅 Appointments</a>
-      <a href="#profile">👤 My Profile</a>
-      <a href="#password">🔒 Change Password</a>
-      <a href="#chat">💬 Chat Admin</a>
+    <nav class="space-y-1 text-sm">
+      <a href="#dashboard" class="active">Dashboard</a>
+      <a href="#appointments">Appointments</a>
+      <a href="#profile">Profile</a>
+      <a href="#security">Security</a>
+      <a href="#support">Support</a>
     </nav>
   </div>
 
   <!-- LOGOUT -->
-  <a href="/" class="mt-10 text-sm bg-gradient-to-r from-red-500 to-pink-500 text-white text-center py-2 rounded-xl font-semibold">
+  <a href="/" class="text-sm bg-slate-800 hover:bg-slate-700 text-white text-center py-2 rounded-lg font-semibold">
     Logout
   </a>
 </aside>
@@ -86,195 +134,165 @@
 <!-- ================= MAIN ================= -->
 <main class="flex-1 p-10 space-y-10">
 
-<!-- ================= DASHBOARD ================= -->
-<section id="dashboard" class="card p-8">
+<!-- ================= HEADER ================= -->
+<section id="dashboard" class="panel p-8">
   <div class="flex justify-between items-center">
 
-    <!-- Doctor Info -->
+    <!-- Doctor Identity -->
     <div class="flex items-center gap-6">
-      <div class="w-20 h-20 rounded-full bg-gradient-to-r from-amber-500 to-pink-500 flex items-center justify-center text-white text-3xl font-bold">
+      <div class="w-16 h-16 rounded-lg bg-blue-700 flex items-center justify-center text-white text-2xl font-bold">
         {{ doctor.name|slice:":1" }}
       </div>
       <div>
-        <h2 class="text-2xl font-semibold">Dr. {{ doctor.name }}</h2>
-        <p class="text-gray-500">{{ doctor.specialization }}</p>
-        <p class="text-sm text-amber-600 font-medium mt-1">Veterinary Professional</p>
+        <div class="text-xl font-bold text-slate-900">Dr. {{ doctor.name }}</div>
+        <div class="text-slate-600 text-sm">{{ doctor.specialization }}</div>
+        <div class="text-xs text-blue-700 font-semibold mt-1">Licensed Veterinary Doctor</div>
       </div>
     </div>
 
-    <!-- Check In / Out -->
+    <!-- Status Actions -->
     <div class="flex gap-3">
-      <a href="{% url 'doctor:doctoractive' %}"
-         class="px-6 py-2 bg-green-500 hover:bg-green-600 text-white rounded-xl font-semibold">
-        Check In
-      </a>
-      <a href="{% url 'doctor:doctorcheckout' %}"
-         class="px-6 py-2 bg-red-500 hover:bg-red-600 text-white rounded-xl font-semibold">
-        Check Out
-      </a>
+      <a href="{% url 'doctor:doctoractive' %}" class="btn-primary">Check In</a>
+      <a href="{% url 'doctor:doctorcheckout' %}" class="btn-danger">Check Out</a>
     </div>
 
   </div>
 
-  <!-- Status -->
-  <p class="text-sm text-gray-500 mt-4">
+  <!-- Status Line -->
+  <div class="mt-4 text-sm text-slate-600">
     {% if doctor.is_active %}
-      Current Status: <span class="text-green-600 font-semibold">Checked In</span>
+      Status: <span class="text-green-700 font-semibold">Available for consultations</span>
     {% else %}
-      Current Status: <span class="text-red-600 font-semibold">Checked Out</span>
+      Status: <span class="text-red-700 font-semibold">Offline</span>
     {% endif %}
-  </p>
+  </div>
 </section>
 
 <!-- ================= APPOINTMENTS ================= -->
-<section id="appointments" class="card p-8">
-  <div class="flex justify-between items-center mb-6">
-    <h3 class="text-xl font-semibold">Appointments</h3>
-    <span class="text-sm text-gray-500">Manage your consultations</span>
+<section id="appointments" class="panel p-8">
+  <div class="mb-6">
+    <div class="h-title">Appointments</div>
+    <div class="h-sub">Consultation management</div>
   </div>
 
   {% if appointments %}
-    <div class="space-y-4">
-      {% for app in appointments %}
-      <div class="p-5 bg-slate-50 rounded-xl flex justify-between items-center border hover:bg-white transition">
+  <div class="space-y-3">
+    {% for app in appointments %}
+    <div class="row-card flex justify-between items-center">
 
-        <!-- LEFT -->
-        <div>
-          <p class="font-semibold text-gray-800">
-            {{ app.pet_name }} <span class="text-sm text-gray-500">({{ app.pet_type }})</span>
-          </p>
-          <p class="text-sm text-gray-500">
-            {{ app.date }} • {{ app.time }} • {{ app.reason }}
-          </p>
-
-          <!-- Status -->
-          <div class="mt-2">
-            {% if app.status == "pending" %}
-              <span class="badge badge-pending">Pending</span>
-            {% elif app.status == "confirmed" %}
-              <span class="badge badge-confirmed">Confirmed</span>
-            {% elif app.status == "completed" %}
-              <span class="badge badge-completed">Completed</span>
-            {% elif app.status == "cancelled" %}
-              <span class="badge badge-cancelled">Cancelled</span>
-            {% endif %}
-          </div>
+      <!-- Info -->
+      <div>
+        <div class="font-semibold text-slate-800">
+          {{ app.pet_name }} 
+          <span class="text-slate-500 text-sm">({{ app.pet_type }})</span>
+        </div>
+        <div class="text-sm text-slate-500">
+          {{ app.date }} • {{ app.time }} • {{ app.reason }}
         </div>
 
-        <!-- ACTIONS -->
-        <div class="flex gap-2">
+        <!-- Status -->
+        <div class="mt-2">
           {% if app.status == "pending" %}
-            <a href="{% url 'doctor:updateAppointment' app.id 'confirmed' %}"
-               class="px-4 py-1.5 bg-green-500 hover:bg-green-600 text-white rounded-lg text-sm font-medium">
-              Accept
-            </a>
-            <a href="{% url 'doctor:updateAppointment' app.id 'cancelled' %}"
-               class="px-4 py-1.5 bg-red-500 hover:bg-red-600 text-white rounded-lg text-sm font-medium">
-              Reject
-            </a>
+            <span class="badge badge-pending">Pending</span>
           {% elif app.status == "confirmed" %}
-            <a href="{% url 'doctor:updateAppointment' app.id 'completed' %}"
-               class="px-4 py-1.5 bg-indigo-500 hover:bg-indigo-600 text-white rounded-lg text-sm font-medium">
-              Mark Completed
-            </a>
+            <span class="badge badge-confirmed">Confirmed</span>
+          {% elif app.status == "completed" %}
+            <span class="badge badge-completed">Completed</span>
+          {% elif app.status == "cancelled" %}
+            <span class="badge badge-cancelled">Cancelled</span>
           {% endif %}
         </div>
-
       </div>
-      {% endfor %}
+
+      <!-- Actions -->
+      <div class="flex gap-2">
+        {% if app.status == "pending" %}
+          <a href="{% url 'doctor:updateAppointment' app.id 'confirmed' %}" class="btn-primary text-sm">Approve</a>
+          <a href="{% url 'doctor:updateAppointment' app.id 'cancelled' %}" class="btn-danger text-sm">Decline</a>
+        {% elif app.status == "confirmed" %}
+          <a href="{% url 'doctor:updateAppointment' app.id 'completed' %}" class="btn-primary text-sm">Complete</a>
+        {% endif %}
+      </div>
+
     </div>
+    {% endfor %}
+  </div>
   {% else %}
-    <p class="text-gray-500 text-center py-10">No appointments yet.</p>
+    <div class="text-slate-500 text-center py-10">No appointments scheduled.</div>
   {% endif %}
 </section>
 
 <!-- ================= PROFILE ================= -->
-<section id="profile" class="card p-8">
-  <h3 class="text-xl font-semibold mb-6">My Profile</h3>
+<section id="profile" class="panel p-8">
+  <div class="h-title mb-6">Professional Profile</div>
 
   <form method="POST" enctype="multipart/form-data">
     {% csrf_token %}
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 
       <div>
-        <label class="text-sm font-medium">Name</label>
-        <input type="text" name="name" value="{{ doctor.name }}"
-               class="w-full mt-1 p-3 border rounded-xl">
+        <label class="text-sm font-medium text-slate-600">Full Name</label>
+        <input type="text" name="name" value="{{ doctor.name }}" class="w-full mt-1 p-3 border rounded-md">
       </div>
 
       <div>
-        <label class="text-sm font-medium">Email</label>
-        <input type="email" name="email" value="{{ doctor.email }}"
-               class="w-full mt-1 p-3 border rounded-xl">
+        <label class="text-sm font-medium text-slate-600">Email Address</label>
+        <input type="email" name="email" value="{{ doctor.email }}" class="w-full mt-1 p-3 border rounded-md">
       </div>
 
       <div>
-        <label class="text-sm font-medium">Phone</label>
-        <input type="text" name="phone" value="{{ doctor.phone }}"
-               class="w-full mt-1 p-3 border rounded-xl">
+        <label class="text-sm font-medium text-slate-600">Phone</label>
+        <input type="text" name="phone" value="{{ doctor.phone }}" class="w-full mt-1 p-3 border rounded-md">
       </div>
 
       <div>
-        <label class="text-sm font-medium">Specialization</label>
-        <input type="text" name="specialization" value="{{ doctor.specialization }}"
-               class="w-full mt-1 p-3 border rounded-xl">
+        <label class="text-sm font-medium text-slate-600">Specialization</label>
+        <input type="text" name="specialization" value="{{ doctor.specialization }}" class="w-full mt-1 p-3 border rounded-md">
       </div>
 
       <div>
-        <label class="text-sm font-medium">Clinic</label>
-        <input type="text" name="clinic" value="{{ doctor.clinic }}"
-               class="w-full mt-1 p-3 border rounded-xl">
+        <label class="text-sm font-medium text-slate-600">Clinic Name</label>
+        <input type="text" name="clinic" value="{{ doctor.clinic }}" class="w-full mt-1 p-3 border rounded-md">
       </div>
 
       <div>
-        <label class="text-sm font-medium">City</label>
-        <input type="text" name="city" value="{{ doctor.city }}"
-               class="w-full mt-1 p-3 border rounded-xl">
+        <label class="text-sm font-medium text-slate-600">City</label>
+        <input type="text" name="city" value="{{ doctor.city }}" class="w-full mt-1 p-3 border rounded-md">
       </div>
 
     </div>
 
-    <button class="mt-6 bg-indigo-500 hover:bg-indigo-600 text-white px-8 py-2 rounded-xl font-semibold">
-      Update Profile
-    </button>
+    <button class="mt-6 btn-primary">Update Profile</button>
   </form>
 </section>
 
-<!-- ================= PASSWORD ================= -->
-<section id="password" class="card p-8">
-  <h3 class="text-xl font-semibold mb-6">Change Password</h3>
+<!-- ================= SECURITY ================= -->
+<section id="security" class="panel p-8">
+  <div class="h-title mb-6">Account Security</div>
 
   <form method="POST">
     {% csrf_token %}
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-      <input type="password" name="current_password" placeholder="Current Password"
-             class="p-3 border rounded-xl">
-      <input type="password" name="new_password" placeholder="New Password"
-             class="p-3 border rounded-xl">
-      <input type="password" name="confirm_password" placeholder="Confirm Password"
-             class="p-3 border rounded-xl">
+      <input type="password" name="current_password" placeholder="Current Password" class="p-3 border rounded-md">
+      <input type="password" name="new_password" placeholder="New Password" class="p-3 border rounded-md">
+      <input type="password" name="confirm_password" placeholder="Confirm Password" class="p-3 border rounded-md">
     </div>
 
-    <button class="mt-6 bg-indigo-500 hover:bg-indigo-600 text-white px-8 py-2 rounded-xl font-semibold">
-      Change Password
-    </button>
+    <button class="mt-6 btn-primary">Update Password</button>
   </form>
 </section>
 
-<!-- ================= CHAT ================= -->
-<section id="chat" class="card p-8">
-  <h3 class="text-xl font-semibold mb-4">Chat With Admin</h3>
-  <p class="text-sm text-gray-500 mb-4">Contact admin for system or schedule issues.</p>
+<!-- ================= SUPPORT ================= -->
+<section id="support" class="panel p-8">
+  <div class="h-title mb-2">Support Center</div>
+  <div class="h-sub mb-4">Administrative communication</div>
 
-  <textarea rows="4" placeholder="Type your message..."
-    class="w-full p-4 border rounded-xl focus:ring-2 focus:ring-indigo-400"></textarea>
+  <textarea rows="4" placeholder="Describe your issue..."
+    class="w-full p-4 border rounded-md"></textarea>
 
-  <button class="mt-4 bg-indigo-500 hover:bg-indigo-600 text-white px-8 py-2 rounded-xl font-semibold">
-    Send Message
-  </button>
+  <button class="mt-4 btn-primary">Submit Ticket</button>
 </section>
 
 </main>
-
 </body>
 </html>

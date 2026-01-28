@@ -1,59 +1,54 @@
-{% extends "petadmin/baseadmin.html" %}
-
+{% extends "petadmin/baseAdmin.html" %}
 {% block content %}
-<div class="p-10">
 
-  <h1 class="text-4xl font-extrabold mb-8">
-    Adoption Requests
-    {% if selected_user %}
-      <span class="text-indigo-600">— {{ selected_user.name }}</span>
-    {% endif %}
-  </h1>
+<h1 class="text-3xl font-bold mb-6">Adoption Requests</h1>
 
-  <div class="bg-white rounded-2xl shadow overflow-hidden">
-    <table class="w-full">
-      <thead class="bg-gray-100">
-        <tr>
-          <th class="p-4 text-left">User</th>
-          <th class="p-4 text-left">Pet</th>
-          <th class="p-4 text-left">Visit Date</th>
-          <th class="p-4 text-left">Status</th>
-          <th class="p-4 text-left">Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for a in adoptions %}
-        <tr class="border-b">
-          <td class="p-4">{{ a.user.name }}</td>
-          <td class="p-4">{{ a.pet.name }}</td>
-          <td class="p-4">{{ a.visit_date }}</td>
-          <td class="p-4 font-semibold">
-            {% if a.status == "Pending" %}
-              <span class="text-yellow-600">Pending</span>
-            {% elif a.status == "Approved" %}
-              <span class="text-green-600">Approved</span>
-            {% elif a.status == "Visited" %}
-              <span class="text-blue-600">Visited</span>
-            {% endif %}
-          </td>
-          <td class="p-4">
-          <a href="{% url 'petadmin:adminAdoptionView' a.id %}"
-   class="px-4 py-2 bg-indigo-100 text-indigo-700 rounded-lg hover:bg-indigo-200">
-   View
-</a>
-
-          </td>
-        </tr>
-        {% empty %}
-        <tr>
-          <td colspan="5" class="p-6 text-center text-gray-500">
-            No adoption requests found
-          </td>
-        </tr>
+<form method="get" class="flex gap-4 mb-6">
+    <select name="user">
+        <option value="">All Users</option>
+        {% for u in users %}
+            <option value="{{u.id}}" {% if selected_user == u.id|stringformat:"s" %}selected{% endif %}>
+                {{u.name}}
+            </option>
         {% endfor %}
-      </tbody>
-    </table>
-  </div>
+    </select>
 
-</div>
+    <select name="status">
+        <option value="">All Status</option>
+        <option value="Pending">Pending</option>
+        <option value="Approved">Approved</option>
+        <option value="Rejected">Rejected</option>
+    </select>
+
+    <button type="submit">Filter</button>
+</form>
+
+<table class="w-full">
+    <tr>
+        <th>User</th>
+        <th>Pet</th>
+        <th>Status</th>
+        <th>Action</th>
+    </tr>
+
+    {% for a in adoptions %}
+    <tr>
+        <td>{{ a.user.name }}</td>
+        <td>{{ a.pet.name }}</td>
+        <td>
+            <span class="
+                {% if a.status == 'Approved' %}text-green-600
+                {% elif a.status == 'Rejected' %}text-red-600
+                {% else %}text-yellow-600{% endif %}
+            ">
+                {{ a.status }}
+            </span>
+        </td>
+        <td>
+            <a href="{% url 'petadmin:adminAdoptionView' a.id %}">View</a>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+
 {% endblock %}

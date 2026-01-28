@@ -307,7 +307,6 @@ def editPetAdmin(request, id):
 
     return render(request, "petadmin/editPetAdmin.html", {"pet": pet})
 
-
 def deletePetAdmin(request, id):
     if "admin_id" not in request.session:
         return redirect("petadmin:loginAdmin")
@@ -318,13 +317,11 @@ def deletePetAdmin(request, id):
     messages.success(request, "Pet removed successfully")
     return redirect("petadmin:adoptionPetsAdmin")
 
-
-# ================== CONSULTATIONS ==================
+# ================= CONSULTATIONS ==================
 
 def consultationAdmin(request):
     consultations = Consultation.objects.all().order_by("-created_at")
     return render(request, "petadmin/consultationAdmin.html", {"consultations": consultations})
-
 
 # ================== ADOPTION REQUESTS ==================
 
@@ -342,43 +339,62 @@ def adoption_requests(request):
 
 
 def update_adoption_status(request, id, status):
-    adoption = get_object_or_404(AdoptionRequest, id=id)
-    adoption.status = status
-    adoption.save()
-    messages.success(request, f"Request {status} successfully.")
-    return redirect("petadmin:adoption_requests")
-
-def adminAdoptions(request):
-    user_id = request.GET.get("user")
-
-    adoptions = AdoptionRequest.objects.select_related("user", "pet")
-
-    if user_id:
-        adoptions = adoptions.filter(user_id=user_id)
-        selected_user = user_registration.objects.get(id=user_id)
-    else:
-        selected_user = None
-
-    return render(request, "Petadmin/adoptionRequest.html", {
-        "adoptions": adoptions,
-        "selected_user": selected_user
-    })
-
-def adminAdoptionView(request, id):
-
-
-    # Ensure admin is logged in
-    if not request.session.get("admin_id"):
+    if "admin_id" not in request.session:
         return redirect("petadmin:loginAdmin")
 
     adoption = get_object_or_404(AdoptionRequest, id=id)
 
-    return render(request, "petadmin/adminAdoptionView.html", {
-        "adoption": adoption
+    # Security validation
+    if status not in ["Approved", "Rejected", "Pending"]:
+        messages.error(request, "Invalid status")
+        return redirect("petadmin:adminAdoptions")
+
+    adoption.status = status
+    adoption.save()
+
+    messages.success(request, f"Adoption request {status} successfully.")
+
+    # ✅ correct redirect
+    return redirect("petadmin:adminAdoptions")
+
+def adminAdoptions(request):
+    if "admin_id" not in request.session:
+        return redirect("petadmin:loginAdmin")
+
+    user_id = request.GET.get("user")
+    status = request.GET.get("status")
+
+    adoptions = AdoptionRequest.objects.select_related("user", "pet")
+
+    # Filters
+    if user_id:
+        adoptions = adoptions.filter(user_id=user_id)
+
+    if status:
+        adoptions = adoptions.filter(status=status)
+
+    adoptions = adoptions.order_by("-id")
+
+    return render(request, "petadmin/adoptions_list.html", {
+        "adoptions": adoptions,
+        "users": user_registration.objects.all(),
+        "selected_user": user_id,
+        "selected_status": status,
     })
 
 
+def adminAdoptionView(request, id):
+    if "admin_id" not in request.session:
+        return redirect("petadmin:loginAdmin")
 
+    adoption = get_object_or_404(
+        AdoptionRequest.objects.select_related("user", "pet"),
+        id=id
+    )
+
+    return render(request, "petadmin/adoption_view.html", {
+        "adoption": adoption
+    })
 
 # ================== SERVICES ==================
 def addServiceAdmin(request):

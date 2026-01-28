@@ -38,10 +38,12 @@ urlpatterns = [
     # ================= CONSULTATIONS =================
     path('consultations/', views.consultationAdmin, name='consultationAdmin'),
 
-    # ================= ADOPTION REQUESTS =================
-    path('adoptions/', views.adminAdoptions, name='adminAdoptions'),
-    path('adoption/view/<int:id>/', views.adminAdoptionView, name='adminAdoptionView'),
-    path('adoption/update/<int:id>/<str:status>/', views.update_adoption_status, name='update_adoption_status'),
+# ================= ADOPTIONS =================
+
+path("adoptions/", views.adminAdoptions, name="adminAdoptions"),
+path("adoptions/view/<int:id>/", views.adminAdoptionView, name="adminAdoptionView"),
+path("adoptions/update/<int:id>/<str:status>/", views.update_adoption_status, name="update_adoption_status"),
+
 
    # ================= SERVICES =================
 path('services/', views.serviceAdmin, name='serviceAdmin'),

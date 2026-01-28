@@ -6,7 +6,7 @@ from django.utils import timezone
 from datetime import datetime, timedelta
 import json
 from .models import Service
-
+from .models import Service, GroomingBooking
 
 from .models import DaycareBooking, Pet, AdoptionRequest, user_registration, SlotLock
 from doctor.models import doctor_registration, Appointment
@@ -133,6 +133,7 @@ def change_password(request):
 
 
 # ================== MY BOOKINGS ==================
+# ================== MY BOOKINGS ==================
 CANCEL_LOCK_HOURS = 2
 
 def my_bookings(request):
@@ -178,19 +179,38 @@ def my_bookings(request):
     # ================= FETCH BOOKINGS =================
     bookings = Appointment.objects.filter(user_id=user_id).order_by("-created_at")
     daycare_bookings = DaycareBooking.objects.filter(user_id=user_id).order_by("-created_at")
+    grooming_bookings = GroomingBooking.objects.filter(user_id=user_id).order_by("-created_at")
 
     return render(request, "user/userBookings.html", {
         "bookings": bookings,
-        "daycare_bookings": daycare_bookings
+        "daycare_bookings": daycare_bookings,
+        "grooming_bookings": grooming_bookings,
     })
-
 
 
 # ================== GROOMING ==================
 def grooming(request):
-    services = Service.objects.all()  # ✅ NO icon
+    services = Service.objects.all()
 
+    # ------------------ LOAD BOOKED SLOTS ------------------
+    bookings = GroomingBooking.objects.all()
+
+    # Format: { "2026-01-28": ["10:00","11:00"] }
+    booked_slots = {}
+    for b in bookings:
+        d = str(b.date)
+        t = b.time.strftime("%H:%M")
+        if d not in booked_slots:
+            booked_slots[d] = []
+        booked_slots[d].append(t)
+
+    # ------------------ POST (BOOKING) ------------------
     if request.method == "POST":
+
+        # 🔐 LOGIN CHECK (SESSION-BASED AUTH)
+        if "user_id" not in request.session:
+            return redirect(f"/login/?next=/grooming/")
+
         date = request.POST.get("date")
         time = request.POST.get("time")
         phone = request.POST.get("phone")
@@ -199,33 +219,77 @@ def grooming(request):
         if not date or not time or not phone or not selected_services:
             return render(request, "user/grooming.html", {
                 "services": services,
-                "error": "Please fill all fields and select at least one service."
+                "booked_slots": booked_slots,
+                "error": "Please complete all fields."
             })
 
-        price_map = {s.name: int(s.price) for s in services}
-        total = sum(price_map[s] for s in selected_services)
+        # 🚫 Prevent double booking
+        if GroomingBooking.objects.filter(date=date, time=time).exists():
+            return render(request, "user/grooming.html", {
+                "services": services,
+                "booked_slots": booked_slots,
+                "error": "This slot is already booked."
+            })
 
-        request.session["groom_booking"] = {
-            "date": date,
-            "time": time,
-            "phone": phone,
-            "services": selected_services,
-            "total": total
-        }
+        # Price calculation
+        price_map = {str(s.id): int(s.price) for s in services}
+        total = sum(price_map.get(s, 0) for s in selected_services)
+
+        if total <= 0:
+            return render(request, "user/grooming.html", {
+                "services": services,
+                "booked_slots": booked_slots,
+                "error": "Invalid service selection."
+            })
+
+        # ✅ Save booking
+        GroomingBooking.objects.create(
+            user_id=request.session["user_id"],   # 🔥 correct user reference
+            date=date,
+            time=time,
+            phone=phone,
+            services=selected_services,
+            total=total
+        )
 
         return redirect("petapp:groomsuccess")
 
+    # ------------------ GET (PUBLIC PAGE) ------------------
     return render(request, "user/grooming.html", {
-        "services": services
+        "services": services,
+        "booked_slots": booked_slots
     })
 
+def groomsuccess(request):
 
-def groomSuccess(request):
-    booking = request.session.get("groom_booking")
+    # 🔐 Session-based login check
+    if "user_id" not in request.session:
+        return redirect("/login/")
+
+    user_id = request.session["user_id"]
+
+    # Get latest booking for this user
+    booking = GroomingBooking.objects.filter(user_id=user_id).order_by("-created_at").first()
+
     if not booking:
-        return HttpResponseBadRequest("No booking data found.")
-    return render(request, "user/groomingSuccess.html", booking)
+        return redirect("petapp:grooming")
 
+    # Convert service IDs → names
+    services = Service.objects.filter(id__in=booking.services)
+    service_names = [s.name for s in services]
+
+    context = {
+        "booking_id": booking.id,
+        "date": booking.date.strftime("%d %B %Y"),
+        "time": booking.time.strftime("%I:%M %p"),
+        "phone": booking.phone,
+        "services": service_names,
+        "total": booking.total,
+        "created": booking.created_at.strftime("%d %b %Y, %I:%M %p"),
+    }
+
+    # ✅ correct template path (based on your folder)
+    return render(request, "user/groomingSuccess.html", context)
 
 # ================== DAYCARE ==================
 def daycare(request):

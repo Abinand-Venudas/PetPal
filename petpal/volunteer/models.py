@@ -32,3 +32,36 @@ class VolunteerAttendance(models.Model):
 
     def __str__(self):
         return f"{self.volunteer.name} | {self.check_in}"
+
+class VolunteerTask(models.Model):
+    volunteer = models.ForeignKey(volunteer_registration, on_delete=models.CASCADE)
+    title = models.CharField(max_length=200)
+    location = models.CharField(max_length=200)
+    task_time = models.DateTimeField()
+    status = models.CharField(max_length=30, choices=[
+        ('upcoming', 'Upcoming'),
+        ('completed', 'Completed')
+    ], default='upcoming')
+
+    def __str__(self):
+        return f"{self.title} - {self.volunteer.name}"
+
+
+class VolunteerPet(models.Model):
+    volunteer = models.ForeignKey(volunteer_registration, on_delete=models.CASCADE)
+    pet_name = models.CharField(max_length=100)
+    species = models.CharField(max_length=50)
+    assigned_on = models.DateField(auto_now_add=True)
+
+    def __str__(self):
+        return self.pet_name
+
+
+class VolunteerNotification(models.Model):
+    volunteer = models.ForeignKey(volunteer_registration, on_delete=models.CASCADE)
+    message = models.TextField()
+    is_read = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.message[:40]

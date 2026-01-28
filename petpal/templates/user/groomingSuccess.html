@@ -1,72 +1,245 @@
 {% extends "user/base.html" %}
 {% load static %}
 
-{% block title %}Booking Confirmed — PetPal{% endblock %}
+{% block title %}Grooming Booking Receipt — PetPal{% endblock %}
+
+{% block extra_css %}
+<style>
+/* ---------- LAYOUT ---------- */
+.receipt-wrap{
+  min-height:80vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:40px 16px;
+}
+
+/* ---------- RECEIPT CARD ---------- */
+.receipt-card{
+  max-width:720px;
+  width:100%;
+  background:rgba(255,255,255,.95);
+  backdrop-filter:blur(20px);
+  border-radius:28px;
+  padding:40px;
+  box-shadow:0 30px 90px rgba(0,0,0,.1);
+}
+.dark .receipt-card{
+  background:rgba(15,23,42,.95);
+  border:1px solid rgba(255,255,255,.08);
+  box-shadow:0 40px 120px rgba(0,0,0,.7);
+}
+
+/* ---------- HEADER ---------- */
+.receipt-header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  border-bottom:1px dashed #e5e7eb;
+  padding-bottom:20px;
+  margin-bottom:20px;
+}
+.dark .receipt-header{
+  border-bottom:1px dashed #334155;
+}
+
+.brand{
+  font-size:1.5rem;
+  font-weight:800;
+  background:linear-gradient(135deg,#6366f1,#ec4899);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+}
+
+.status{
+  padding:6px 14px;
+  border-radius:999px;
+  font-size:.8rem;
+  font-weight:700;
+  background:#dcfce7;
+  color:#166534;
+}
+.dark .status{
+  background:#064e3b;
+  color:#6ee7b7;
+}
+
+/* ---------- BODY ---------- */
+.section{
+  margin-top:20px;
+}
+
+.row{
+  display:flex;
+  justify-content:space-between;
+  padding:10px 0;
+  border-bottom:1px solid #f1f5f9;
+}
+.dark .row{
+  border-bottom:1px solid #1e293b;
+}
+
+.label{
+  font-weight:600;
+  color:#64748b;
+}
+.dark .label{ color:#cbd5e1; }
+
+.value{
+  font-weight:600;
+  color:#0f172a;
+  text-align:right;
+}
+.dark .value{ color:#f8fafc; }
+
+/* ---------- SERVICES ---------- */
+.services{
+  margin-top:10px;
+}
+.service-item{
+  padding:6px 0;
+  font-size:.95rem;
+}
+
+/* ---------- TOTAL ---------- */
+.total-box{
+  margin-top:20px;
+  padding:18px;
+  border-radius:18px;
+  background:linear-gradient(135deg,#6366f1,#ec4899);
+  color:white;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  font-size:1.2rem;
+  font-weight:800;
+}
+
+/* ---------- ACTIONS ---------- */
+.actions{
+  margin-top:30px;
+  display:flex;
+  gap:16px;
+  justify-content:center;
+  flex-wrap:wrap;
+}
+
+.btn{
+  padding:12px 26px;
+  border-radius:14px;
+  font-weight:600;
+  text-decoration:none;
+  transition:.25s;
+}
+
+.btn-primary{
+  background:linear-gradient(135deg,#6366f1,#ec4899);
+  color:white;
+  box-shadow:0 10px 30px rgba(99,102,241,.35);
+}
+.btn-primary:hover{transform:translateY(-2px);}
+
+.btn-secondary{
+  background:#f1f5f9;
+  color:#0f172a;
+}
+.dark .btn-secondary{
+  background:#1e293b;
+  color:#f8fafc;
+}
+.btn-secondary:hover{transform:translateY(-2px);}
+
+/* ---------- ICON ---------- */
+.check-circle{
+  width:70px;
+  height:70px;
+  border-radius:50%;
+  background:linear-gradient(135deg,#6366f1,#ec4899);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:white;
+  font-size:32px;
+  font-weight:900;
+  margin:0 auto 16px;
+  box-shadow:0 15px 40px rgba(99,102,241,.4);
+}
+</style>
+{% endblock %}
 
 {% block content %}
+<section class="receipt-wrap">
 
-<div class="blob blob1"></div>
-<div class="blob blob2"></div>
+<div class="receipt-card">
 
-<section class="min-h-[70vh] flex items-center justify-center px-6">
+  <!-- HEADER -->
+  <div class="receipt-header">
+    <div class="brand">PetPal</div>
+    <div class="status">CONFIRMED</div>
+  </div>
 
-  <div class="success-card max-w-xl w-full">
+  <!-- ICON -->
+  <div class="check-circle">✓</div>
 
-    <!-- CHECK -->
-    <div class="check-wrap">
-      <div class="check">✓</div>
-    </div>
-
-    <h1 class="text-4xl font-extrabold mt-4">
-      Booking Confirmed!
-    </h1>
-
-    <p class="text-gray-600 mt-4 text-lg">
-      Your pet’s grooming session has been successfully booked.
+  <!-- TITLE -->
+  <div style="text-align:center;">
+    <h2 class="text-2xl font-extrabold dark:text-white">Grooming Booking Successful</h2>
+    <p class="text-gray-500 dark:text-gray-300 mt-1">
+      Booking ID: #{{ booking_id }}
     </p>
+  </div>
 
-    <!-- DETAILS -->
-    <div class="mt-8 text-left bg-white/70 p-6 rounded-2xl shadow-inner">
+  <!-- DETAILS -->
+  <div class="section">
 
-      <div class="grid grid-cols-2 gap-y-4 text-sm">
-        <div class="font-semibold text-gray-700">Appointment Date:</div>
-        <div>{{ date }}</div>
-
-        <div class="font-semibold text-gray-700">Time:</div>
-        <div>{{ time }}</div>
-
-        <div class="font-semibold text-gray-700">Phone:</div>
-        <div>{{ phone }}</div>
-
-        <div class="font-semibold text-gray-700">Services:</div>
-        <div>
-          <ul class="list-disc list-inside">
-            {% for s in services %}
-              <li>{{ s }}</li>
-            {% endfor %}
-          </ul>
-        </div>
-
-        <div class="font-semibold text-gray-700">Total Amount:</div>
-        <div class="font-bold text-lg text-indigo-600">₹{{ total }}</div>
-      </div>
-
+    <div class="row">
+      <div class="label">Date</div>
+      <div class="value">{{ date }}</div>
     </div>
 
-    <!-- ACTIONS -->
-    <div class="flex flex-col sm:flex-row gap-4 justify-center mt-10">
+    <div class="row">
+      <div class="label">Time Slot</div>
+      <div class="value">{{ time }}</div>
+    </div>
 
-      <a href="{% url 'grooming' %}" class="action-btn secondary-btn">
-        Book Another
-      </a>
+    <div class="row">
+      <div class="label">Phone</div>
+      <div class="value">{{ phone }}</div>
+    </div>
 
-      <a href="{% url 'home' %}" class="action-btn primary-btn">
-        Back to Home
-      </a>
-
+    <div class="row">
+      <div class="label">Booked On</div>
+      <div class="value">{{ created }}</div>
     </div>
 
   </div>
-</section>
 
+  <!-- SERVICES -->
+  <div class="section services">
+    <div class="label mb-2">Services Selected</div>
+    {% for s in services %}
+      <div class="service-item">• {{ s }}</div>
+    {% endfor %}
+  </div>
+
+  <!-- TOTAL -->
+  <div class="total-box">
+    <div>Total Payable</div>
+    <div>₹{{ total }}</div>
+  </div>
+
+  <!-- ACTIONS -->
+  <div class="actions">
+    <a href="{% url 'petapp:grooming' %}" class="btn btn-secondary">
+      Book Another
+    </a>
+
+    <a href="{% url 'petapp:home' %}" class="btn btn-primary">
+      Back to Home
+    </a>
+  </div>
+
+</div>
+
+</section>
 {% endblock %}

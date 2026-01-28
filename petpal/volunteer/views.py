@@ -4,7 +4,13 @@ from django.utils import timezone
 from django.contrib.auth.hashers import make_password, check_password
 
 from .models import volunteer_registration, VolunteerAttendance
-
+from .models import (
+    volunteer_registration,
+    VolunteerAttendance,
+    VolunteerTask,
+    VolunteerPet,
+    VolunteerNotification
+)
 
 # ---------------- SIGNUP ----------------
 def volunteerSignup(request):
@@ -76,14 +82,32 @@ def volunteerHome(request):
 
     checked_in = attendances.filter(check_out__isnull=True).exists()
 
+    pets_helped = VolunteerPet.objects.filter(volunteer=volunteer).count()
+
+    upcoming_tasks = VolunteerTask.objects.filter(
+        volunteer=volunteer,
+        status='upcoming'
+    ).count()
+
+    today_tasks = VolunteerTask.objects.filter(
+        volunteer=volunteer,
+        task_time__date=timezone.now().date()
+    ).order_by('task_time')
+
+    notifications = VolunteerNotification.objects.filter(
+        volunteer=volunteer,
+        is_read=False
+    ).count()
+
     return render(request, "volunteer/volunteerHome.html", {
         "volunteer": volunteer,
         "hours_completed": round(total_hours, 2),
         "checked_in": checked_in,
-        "pets_helped": 28,
-        "upcoming_tasks": 4
+        "pets_helped": pets_helped,
+        "upcoming_tasks": upcoming_tasks,
+        "today_tasks": today_tasks,
+        "notifications": notifications
     })
-
 
 # ---------------- CHECK-IN (ANTI DOUBLE) ----------------
 def volunteerCheckIn(request):
@@ -137,10 +161,40 @@ def volunteerAttendanceHistory(request):
 
 # ---------------- STATIC ----------------
 def volunteerAppointments(request):
-    return render(request, "volunteer/volunteerAppointments.html")
+    if 'volunteer_id' not in request.session:
+        return redirect('volunteer:volunteerLogin')
+
+    tasks = VolunteerTask.objects.filter(
+        volunteer_id=request.session['volunteer_id']
+    ).order_by("task_time")
+
+    return render(request, "volunteer/volunteerAppointments.html", {
+        "tasks": tasks
+    })
+
 
 def volunteerPets(request):
-    return render(request, "volunteer/volunteerPets.html")
+    if 'volunteer_id' not in request.session:
+        return redirect('volunteer:volunteerLogin')
+
+    pets = VolunteerPet.objects.filter(
+        volunteer_id=request.session['volunteer_id']
+    )
+
+    return render(request, "volunteer/volunteerPets.html", {
+        "pets": pets
+    })
+
 
 def volunteerNotification(request):
-    return render(request, "volunteer/volunteerNotification.html")
+    if 'volunteer_id' not in request.session:
+        return redirect('volunteer:volunteerLogin')
+
+    notes = VolunteerNotification.objects.filter(
+        volunteer_id=request.session['volunteer_id']
+    ).order_by("-created_at")
+
+    return render(request, "volunteer/volunteerNotification.html", {
+        "notes": notes
+    })
+

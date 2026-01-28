@@ -1,152 +1,241 @@
 {% extends "user/base.html" %}
 {% load static %}
 
-{% block title %}My Bookings{% endblock %}
+{% block title %}My Activity — PetPal{% endblock %}
 
 {% block extra_css %}
 <style>
-.glass-card{
-  background:rgba(255,255,255,.75);
-  backdrop-filter:blur(16px);
-  border:1px solid rgba(255,255,255,.45);
-  box-shadow:0 20px 60px rgba(0,0,0,.12);
-}
-.dark .glass-card{
-  background:rgba(15,23,42,.9);
-  border:1px solid rgba(255,255,255,.12);
-  box-shadow:0 30px 80px rgba(0,0,0,.7);
+/* ================= LAYOUT ================= */
+.page-wrap{
+  max-width:1200px;
+  margin:auto;
+  padding:60px 24px;
 }
 
-.tab-btn{
-  padding:10px 22px;
-  border-radius:999px;
-  font-weight:600;
-  background:#eef2ff;
-  color:#4f46e5;
-  transition:.3s;
+/* ================= HEADER ================= */
+.page-header{
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+  margin-bottom:50px;
 }
-.tab-btn.active{
+
+.page-title{
+  font-size:2.6rem;
+  font-weight:900;
+  color:#0f172a;
+}
+.dark .page-title{color:#f8fafc;}
+
+.page-sub{
+  color:#64748b;
+  font-size:1rem;
+}
+.dark .page-sub{color:#cbd5e1;}
+
+/* ================= TIMELINE ================= */
+.timeline{
+  position:relative;
+  padding-left:40px;
+}
+
+.timeline::before{
+  content:"";
+  position:absolute;
+  left:12px;
+  top:0;
+  bottom:0;
+  width:2px;
+  background:linear-gradient(to bottom,#6366f1,#ec4899);
+}
+
+/* ================= BLOCK ================= */
+.block{
+  margin-bottom:50px;
+}
+
+.block-title{
+  font-size:1.5rem;
+  font-weight:800;
+  margin-bottom:20px;
+  color:#0f172a;
+}
+.dark .block-title{color:#f8fafc;}
+
+/* ================= ITEM ================= */
+.item{
+  position:relative;
+  padding:20px 24px;
+  margin-bottom:20px;
+  background:#ffffff;
+  border-radius:16px;
+  box-shadow:0 10px 25px rgba(0,0,0,.06);
+  border:1px solid #f1f5f9;
+}
+.dark .item{
+  background:#0f172a;
+  border:1px solid #1e293b;
+  box-shadow:0 15px 40px rgba(0,0,0,.7);
+}
+
+.item::before{
+  content:"";
+  position:absolute;
+  left:-34px;
+  top:28px;
+  width:14px;
+  height:14px;
+  border-radius:50%;
   background:linear-gradient(135deg,#6366f1,#ec4899);
-  color:white;
+  box-shadow:0 0 0 6px rgba(99,102,241,.15);
 }
 
-.badge{padding:6px 14px;border-radius:999px;font-size:12px;font-weight:700;}
-.badge-pending{background:#fef3c7;color:#b45309;}
-.badge-approved{background:#dcfce7;color:#166534;}
-.badge-rejected{background:#fee2e2;color:#991b1b;}
-.badge-completed{background:#e0e7ff;color:#3730a3;}
+/* ================= GRID ================= */
+.item-grid{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:10px 24px;
+}
+
+/* ================= TEXT ================= */
+.label{
+  font-size:.8rem;
+  font-weight:700;
+  color:#64748b;
+  text-transform:uppercase;
+}
+.dark .label{color:#cbd5e1;}
+
+.value{
+  font-size:.95rem;
+  font-weight:700;
+  color:#0f172a;
+}
+.dark .value{color:#f8fafc;}
+
+/* ================= STATUS ================= */
+.status{
+  margin-top:14px;
+  display:inline-block;
+  padding:6px 14px;
+  border-radius:999px;
+  font-size:.75rem;
+  font-weight:800;
+}
+
+.status-success{background:#dcfce7;color:#166534;}
+.status-pending{background:#fef9c3;color:#854d0e;}
+.status-cancel{background:#fee2e2;color:#991b1b;}
+
+.dark .status-success{background:#064e3b;color:#6ee7b7;}
+.dark .status-pending{background:#78350f;color:#fde68a;}
+.dark .status-cancel{background:#3f1d1d;color:#fecaca;}
+
+/* ================= EMPTY ================= */
+.empty{
+  padding:30px;
+  border-radius:16px;
+  background:#f8fafc;
+  text-align:center;
+  color:#94a3b8;
+}
+.dark .empty{
+  background:#0f172a;
+  border:1px solid #1e293b;
+}
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="max-w-6xl mx-auto py-20 px-6">
+<section class="page-wrap">
 
-<h1 class="text-4xl font-extrabold mb-10">📅 My Bookings</h1>
-
-<!-- TABS -->
-<div class="flex gap-3 mb-12 flex-wrap">
-  <button class="tab-btn active" onclick="filterBookings('all', this)">All</button>
-  <button class="tab-btn" onclick="filterBookings('Pending', this)">Upcoming</button>
-  <button class="tab-btn" onclick="filterBookings('Completed', this)">Completed</button>
-  <button class="tab-btn" onclick="filterBookings('Rejected', this)">Cancelled</button>
+<div class="page-header">
+  <div class="page-title">My Activity</div>
+  <div class="page-sub">All your bookings and services in one timeline</div>
 </div>
+
+<div class="timeline">
 
 <!-- ================= CONSULTATIONS ================= -->
-<h2 class="text-2xl font-bold mb-6 text-indigo-600">🩺 Consultations</h2>
+<div class="block">
+  <div class="block-title">Consultations</div>
 
-{% if bookings %}
-<div class="grid md:grid-cols-2 gap-8 mb-20">
-{% for b in bookings %}
-<div class="glass-card rounded-3xl p-7 booking-item" data-status="{{ b.status }}">
-  <h2 class="text-lg font-bold text-indigo-600 mb-2">Dr. {{ b.doctor.name }}</h2>
+  {% if bookings %}
+    {% for b in bookings %}
+    <div class="item">
+      <div class="item-grid">
+        <div><div class="label">Doctor</div><div class="value">{{ b.doctor.name }}</div></div>
+        <div><div class="label">Date</div><div class="value">{{ b.date }}</div></div>
+        <div><div class="label">Time</div><div class="value">{{ b.time }}</div></div>
+        <div><div class="label">Issue</div><div class="value">{{ b.reason|truncatechars:30 }}</div></div>
+      </div>
 
-  <p><strong>Date:</strong> {{ b.date|date:"M d, Y" }}</p>
-  <p><strong>Time:</strong> {{ b.time }}</p>
-  <p><strong>Pet:</strong> {{ b.pet_name }}</p>
-  <p><strong>Issue:</strong> {{ b.issue }}</p>
-
-  <div class="flex gap-3 mt-5">
-    <a href="{% url 'petapp:download_booking_pdf' b.id %}"
-       class="px-4 py-2 rounded-lg bg-slate-700 text-white text-sm">📄 PDF</a>
-
-    {% if b.status == "Pending" or b.status == "Approved" %}
-      <a href="{% url 'petapp:my_bookings' %}?cancel={{ b.id }}"
-         class="px-4 py-2 rounded-lg bg-red-500 text-white text-sm"
-         onclick="return confirm('Cancel this consultation?');">
-        ❌ Cancel
-      </a>
-    {% endif %}
-  </div>
+      <div class="status
+        {% if b.status == 'Approved' %}status-success
+        {% elif b.status == 'pending' or b.status == 'Pending' %}status-pending
+        {% else %}status-cancel{% endif %}">
+        {{ b.status|upper }}
+      </div>
+    </div>
+    {% endfor %}
+  {% else %}
+    <div class="empty">No consultations yet</div>
+  {% endif %}
 </div>
-{% endfor %}
+
+<!-- ================= DAYCARE ================= -->
+<div class="block">
+  <div class="block-title">Daycare</div>
+
+  {% if daycare_bookings %}
+    {% for d in daycare_bookings %}
+    <div class="item">
+      <div class="item-grid">
+        <div><div class="label">Pet</div><div class="value">{{ d.pet_name }}</div></div>
+        <div><div class="label">Date</div><div class="value">{{ d.date }}</div></div>
+        <div><div class="label">Plan</div><div class="value">{{ d.plan }}</div></div>
+        <div><div class="label">Duration</div><div class="value">{{ d.duration }}</div></div>
+        <div><div class="label">Cost</div><div class="value">₹{{ d.total_cost }}</div></div>
+      </div>
+
+      <div class="status
+        {% if d.status == 'Confirmed' %}status-success
+        {% elif d.status == 'Pending' %}status-pending
+        {% else %}status-cancel{% endif %}">
+        {{ d.status|upper }}
+      </div>
+    </div>
+    {% endfor %}
+  {% else %}
+    <div class="empty">No daycare bookings yet</div>
+  {% endif %}
 </div>
-{% else %}
-<p>No consultations yet.</p>
-{% endif %}
 
-<!-- ================= DAYCARE BOOKINGS ================= -->
-<h2 class="text-2xl font-bold mb-6 text-pink-600">🐶 Daycare</h2>
+<!-- ================= GROOMING ================= -->
+<div class="block">
+  <div class="block-title">Grooming</div>
 
-{% if daycare_bookings %}
-<div class="grid md:grid-cols-2 gap-8">
-{% for d in daycare_bookings %}
-<div class="glass-card rounded-3xl p-7 booking-item" data-status="{{ d.status }}">
+  {% if grooming_bookings %}
+    {% for g in grooming_bookings %}
+    <div class="item">
+      <div class="item-grid">
+        <div><div class="label">Date</div><div class="value">{{ g.date }}</div></div>
+        <div><div class="label">Time</div><div class="value">{{ g.time }}</div></div>
+        <div><div class="label">Phone</div><div class="value">{{ g.phone }}</div></div>
+        <div><div class="label">Total</div><div class="value">₹{{ g.total }}</div></div>
+      </div>
 
-  <div class="flex justify-between items-center mb-3">
-    <h2 class="text-lg font-bold text-pink-600">{{ d.pet_name }}</h2>
-
-    {% if d.status == "Confirmed" %}
-      <span class="badge badge-approved">Confirmed</span>
-    {% elif d.status == "Completed" %}
-      <span class="badge badge-completed">Completed</span>
-    {% elif d.status == "Cancelled" %}
-      <span class="badge badge-rejected">Cancelled</span>
-    {% endif %}
-  </div>
-
-  <p><strong>Plan:</strong> {{ d.plan }}</p>
-  <p><strong>Duration:</strong> {{ d.duration }}</p>
-  <p><strong>Date:</strong> {{ d.date|date:"M d, Y" }}</p>
-  <p><strong>Time:</strong> {{ d.start_time }} – {{ d.end_time }}</p>
-  <p><strong>Total:</strong> ₹{{ d.total_cost }}</p>
-
-  <div class="flex gap-3 mt-5">
-    <a href="{% url 'petapp:daycareSuccess' d.id %}"
-       class="px-4 py-2 rounded-lg bg-pink-600 text-white text-sm">
-       👁 View
-    </a>
-
-    {% if d.status == "Confirmed" %}
-      <a href="{% url 'petapp:my_bookings' %}?cancel_daycare={{ d.id }}"
-         class="px-4 py-2 rounded-lg bg-red-500 text-white text-sm"
-         onclick="return confirm('Cancel this daycare booking?');">
-        ❌ Cancel
-      </a>
-    {% endif %}
-  </div>
+      <div class="status status-success">
+        CONFIRMED
+      </div>
+    </div>
+    {% endfor %}
+  {% else %}
+    <div class="empty">No grooming bookings yet</div>
+  {% endif %}
+</div>
 
 </div>
-{% endfor %}
-</div>
-{% else %}
-<p>No daycare bookings yet.</p>
-{% endif %}
-</div>
-{% endblock %}
 
-{% block extra_js %}
-<script>
-function filterBookings(status, btn){
-  document.querySelectorAll(".tab-btn").forEach(b=>b.classList.remove("active"));
-  btn.classList.add("active");
-
-  document.querySelectorAll(".booking-item").forEach(card=>{
-    if(status === "all"){
-      card.style.display="block";
-    }else{
-      card.style.display = card.dataset.status === status ? "block" : "none";
-    }
-  });
-}
-</script>
+</section>
 {% endblock %}
