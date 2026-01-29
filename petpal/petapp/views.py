@@ -1,3 +1,4 @@
+from urllib import request
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.http import JsonResponse, HttpResponse, HttpResponseBadRequest
@@ -6,7 +7,8 @@ from django.utils import timezone
 from datetime import datetime, timedelta
 import json
 from .models import Service
-from .models import Service, GroomingBooking
+from .models import Service, GroomingBooking, GroomingSlotLock
+from django.db import transaction
 
 from .models import DaycareBooking, Pet, AdoptionRequest, user_registration, SlotLock
 from doctor.models import doctor_registration, Appointment
@@ -189,76 +191,148 @@ def my_bookings(request):
 
 
 # ================== GROOMING ==================
+# =========================
+# TIME HELPERS
+# =========================
+def time_to_minutes(t):
+    return t.hour * 60 + t.minute
+
+def str_time_to_minutes(t):
+    h, m = map(int, t.split(":"))
+    return h * 60 + m
+
+# ================== GROOMING ==================
+
 def grooming(request):
+    user_id = request.session.get("user_id")
+    if not user_id:
+        return redirect("petapp:login")
+
+    user = user_registration.objects.get(id=user_id)
     services = Service.objects.all()
 
-    # ------------------ LOAD BOOKED SLOTS ------------------
+    # =========================
+    # LOAD EXISTING BOOKINGS WITH TIME RANGES
+    # =========================
     bookings = GroomingBooking.objects.all()
-
-    # Format: { "2026-01-28": ["10:00","11:00"] }
     booked_slots = {}
+
     for b in bookings:
         d = str(b.date)
-        t = b.time.strftime("%H:%M")
-        if d not in booked_slots:
-            booked_slots[d] = []
-        booked_slots[d].append(t)
+        start = b.time.strftime("%H:%M")
+        end = (datetime.combine(b.date, b.time) + timedelta(minutes=b.total_duration)).strftime("%H:%M")
 
-    # ------------------ POST (BOOKING) ------------------
+        booked_slots.setdefault(d, []).append({
+            "start": start,
+            "end": end
+        })
+
+    # =========================
+    # POST REQUEST (BOOKING)
+    # =========================
     if request.method == "POST":
+        try:
+            date_str = request.POST.get("date")
+            time_str = request.POST.get("time")
+            phone = request.POST.get("phone")
+            service_ids = request.POST.getlist("services")
 
-        # 🔐 LOGIN CHECK (SESSION-BASED AUTH)
-        if "user_id" not in request.session:
-            return redirect(f"/login/?next=/grooming/")
+            # ---------- Validation ----------
+            if not (date_str and time_str and phone and service_ids):
+                messages.error(request, "All fields are required")
+                return redirect("petapp:grooming")
 
-        date = request.POST.get("date")
-        time = request.POST.get("time")
-        phone = request.POST.get("phone")
-        selected_services = request.POST.getlist("services")
+            booking_date = datetime.strptime(date_str, "%Y-%m-%d").date()
 
-        if not date or not time or not phone or not selected_services:
-            return render(request, "user/grooming.html", {
-                "services": services,
-                "booked_slots": booked_slots,
-                "error": "Please complete all fields."
-            })
+            # 🔐 Block past dates
+            if booking_date < timezone.now().date():
+                messages.error(request, "You cannot book grooming for past dates.")
+                return redirect("petapp:grooming")
 
-        # 🚫 Prevent double booking
-        if GroomingBooking.objects.filter(date=date, time=time).exists():
-            return render(request, "user/grooming.html", {
-                "services": services,
-                "booked_slots": booked_slots,
-                "error": "This slot is already booked."
-            })
+            booking_time = datetime.strptime(time_str, "%H:%M").time()
 
-        # Price calculation
-        price_map = {str(s.id): int(s.price) for s in services}
-        total = sum(price_map.get(s, 0) for s in selected_services)
+            # ---------- Services ----------
+            services_qs = Service.objects.filter(id__in=service_ids)
 
-        if total <= 0:
-            return render(request, "user/grooming.html", {
-                "services": services,
-                "booked_slots": booked_slots,
-                "error": "Invalid service selection."
-            })
+            total = sum(int(s.price) for s in services_qs)
+            total_duration = sum(int(s.duration) for s in services_qs)
 
-        # ✅ Save booking
-        GroomingBooking.objects.create(
-            user_id=request.session["user_id"],   # 🔥 correct user reference
-            date=date,
-            time=time,
-            phone=phone,
-            services=selected_services,
-            total=total
-        )
+            if total_duration <= 0:
+                messages.error(request, "Service duration not configured. Contact admin.")
+                return redirect("petapp:grooming")
 
-        return redirect("petapp:groomsuccess")
+            # ---------- Time calc ----------
+            start_min = booking_time.hour * 60 + booking_time.minute
+            BUFFER = 1  # safety buffer
+            end_min = start_min + total_duration + BUFFER
 
-    # ------------------ GET (PUBLIC PAGE) ------------------
-    return render(request, "user/grooming.html", {
+            # ---------- Closing time ----------
+            if end_min > 22 * 60:
+                messages.error(request, "Selected services exceed closing time (10 PM).")
+                return redirect("petapp:grooming")
+
+            # ---------- Slot lock ----------
+            if GroomingSlotLock.objects.filter(date=booking_date, time=booking_time).exists():
+                messages.error(request, "This slot is temporarily locked. Try another slot.")
+                return redirect("petapp:grooming")
+
+            # =========================
+            # HARD OVERLAP ENGINE (BACKEND)
+            # =========================
+            same_day_bookings = GroomingBooking.objects.filter(date=booking_date)
+
+            for b in same_day_bookings:
+                b_start = b.time.hour * 60 + b.time.minute
+                b_end = b_start + b.total_duration
+
+                # HARD overlap rule
+                if start_min < b_end and end_min > b_start:
+                    messages.error(request, "Selected time overlaps with another booking.")
+                    return redirect("petapp:grooming")
+
+            # =========================
+            # ATOMIC BOOKING
+            # =========================
+            with transaction.atomic():
+
+                GroomingSlotLock.objects.create(
+                    user=user,
+                    date=booking_date,
+                    time=booking_time
+                )
+
+                if GroomingBooking.objects.filter(date=booking_date, time=booking_time).exists():
+                    messages.error(request, "Slot already booked.")
+                    return redirect("petapp:grooming")
+
+                GroomingBooking.objects.create(
+                    user=user,
+                    date=booking_date,
+                    time=booking_time,
+                    phone=phone,
+                    services=service_ids,
+                    total=total,
+                    total_duration=total_duration
+                )
+
+                GroomingSlotLock.objects.filter(date=booking_date, time=booking_time).delete()
+
+            messages.success(request, "Grooming booked successfully!")
+            return redirect("petapp:groomsuccess")
+
+        except Exception as e:
+            messages.error(request, f"Booking failed: {str(e)}")
+            return redirect("petapp:grooming")
+
+    # =========================
+    # GET REQUEST
+    # =========================
+    context = {
         "services": services,
         "booked_slots": booked_slots
-    })
+    }
+
+    return render(request, "user/grooming.html", context)
 
 def groomsuccess(request):
 

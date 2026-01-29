@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import get_object_or_404, render, redirect
 from django.contrib import messages
 from django.utils import timezone
 from django.contrib.auth.hashers import make_password, check_password
@@ -11,6 +11,9 @@ from .models import (
     VolunteerPet,
     VolunteerNotification
 )
+from .models import VolunteerNotification
+from petapp.models import GroomingBooking
+
 
 # ---------------- SIGNUP ----------------
 def volunteerSignup(request):
@@ -198,3 +201,41 @@ def volunteerNotification(request):
         "notes": notes
     })
 
+def volunteerTasks(request):
+    volunteer_id = request.session.get("volunteer_id")
+    if not volunteer_id:
+        return redirect("volunteer:volunteerLogin")
+
+    volunteer = volunteer_registration.objects.get(id=volunteer_id)
+
+    # Grooming tasks
+    tasks = GroomingBooking.objects.filter(
+        volunteer=volunteer
+    ).order_by("-created_at")
+
+    # Notifications
+    notifications = VolunteerNotification.objects.filter(
+        volunteer=volunteer
+    ).order_by("-created_at")
+
+    unread_count = notifications.filter(is_read=False).count()
+
+    return render(request, "volunteer/tasks.html", {
+        "tasks": tasks,
+        "notifications": notifications[:5],
+        "unread_count": unread_count
+    })
+
+def mark_notification_read(request, id):
+    volunteer_id = request.session.get("volunteer_id")
+    if not volunteer_id:
+        return redirect("volunteer:volunteerLogin")
+
+    note = get_object_or_404(VolunteerNotification, id=id, volunteer_id=volunteer_id)
+    note.is_read = True
+    note.save()
+
+    if note.link:
+        return redirect(note.link)
+
+    return redirect("volunteer:volunteerTasks")

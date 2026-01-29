@@ -17,4 +17,6 @@ urlpatterns = [
 
     # ✅ NEW
     path('attendance/', views.volunteerAttendanceHistory, name='volunteerAttendance'),
+    path("tasks/", views.volunteerTasks, name="volunteerTasks"),
+    path("notification/read/<int:id>/", views.mark_notification_read, name="mark_notification_read"),
 ]

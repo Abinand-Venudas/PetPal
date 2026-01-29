@@ -56,12 +56,21 @@ class VolunteerPet(models.Model):
     def __str__(self):
         return self.pet_name
 
-
 class VolunteerNotification(models.Model):
-    volunteer = models.ForeignKey(volunteer_registration, on_delete=models.CASCADE)
+    volunteer = models.ForeignKey(
+        volunteer_registration,
+        on_delete=models.CASCADE,
+        related_name="notifications"
+    )
+
+    title = models.CharField(max_length=200)
     message = models.TextField()
+
     is_read = models.BooleanField(default=False)
+
     created_at = models.DateTimeField(auto_now_add=True)
 
+    link = models.CharField(max_length=300, blank=True, null=True)
+
     def __str__(self):
-        return self.message[:40]
+        return f"{self.volunteer.name} - {self.title}"

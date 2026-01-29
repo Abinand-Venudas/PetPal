@@ -51,4 +51,9 @@ path('services/add/', views.addServiceAdmin, name='addServiceAdmin'),
 path('services/edit/<int:id>/', views.editServiceAdmin, name='editServiceAdmin'),
 path('services/delete/<int:id>/', views.deleteServiceAdmin, name='deleteServiceAdmin'),
 
-    ]
+# ================= GROOMING BOOKINGS =================
+path('grooming/bookings/', views.adminGroomingBookings, name='adminGroomingBookings'),
+path('grooming/assign/<int:booking_id>/', views.assignGroomingVolunteer, name='assignGroomingVolunteer'),
+path('grooming/status/<int:booking_id>/<str:status>/', views.updateGroomingStatus, name='updateGroomingStatus'),
+
+]

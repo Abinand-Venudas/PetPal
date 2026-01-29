@@ -1,11 +1,13 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.db.models import Q
-from petapp.models import AdoptionRequest, Consultation, Pet, user_registration
+from petapp.models import AdoptionRequest, Consultation, GroomingBooking, Pet, user_registration
 from .models import Pro_Admin
 from petapp.models import Service   # ✅ IMPORT FROM CORRECT APP
 from doctor.models import doctor_registration
 from volunteer.models import volunteer_registration
+from volunteer.models import VolunteerNotification
+
 
 
 # ================== AUTH ==================
@@ -451,3 +453,66 @@ def deleteServiceAdmin(request, id):
 
     messages.success(request, "Service deleted successfully")
     return redirect("petadmin:serviceAdmin")
+
+# ================= GROOMING BOOKINGS =================
+
+def adminGroomingBookings(request):
+    if "admin_id" not in request.session:
+        return redirect("petadmin:loginAdmin")
+
+    bookings = GroomingBooking.objects.select_related(
+        "user", "volunteer"
+    ).order_by("-created_at")
+
+    volunteers = volunteer_registration.objects.filter(is_available=True)
+
+    return render(request, "petadmin/groomingBookingsAdmin.html", {
+        "bookings": bookings,
+        "volunteers": volunteers
+    })
+
+
+# ================= ASSIGN VOLUNTEER =================
+
+def assignGroomingVolunteer(request, booking_id):
+    if "admin_id" not in request.session:
+        return redirect("petadmin:loginAdmin")
+
+    booking = get_object_or_404(GroomingBooking, id=booking_id)
+
+    if request.method == "POST":
+        volunteer_id = request.POST.get("volunteer_id")
+        volunteer = get_object_or_404(volunteer_registration, id=volunteer_id)
+
+        booking.volunteer = volunteer
+        booking.status = "Assigned"
+        booking.save()
+
+        # 🔔 CREATE NOTIFICATION
+        VolunteerNotification.objects.create(
+            volunteer=volunteer,
+            title="New Grooming Assignment",
+            message=f"You have been assigned a new grooming task for {booking.user.name} on {booking.date} at {booking.start_time}.",
+            link="/volunteer/tasks/"
+        )
+
+        messages.success(request, "Volunteer assigned and notified successfully")
+        return redirect("petadmin:adminGroomingBookings")
+
+# ================= UPDATE STATUS =================
+
+def updateGroomingStatus(request, booking_id, status):
+    if "admin_id" not in request.session:
+        return redirect("petadmin:loginAdmin")
+
+    booking = get_object_or_404(GroomingBooking, id=booking_id)
+
+    if status not in ["Pending", "Assigned", "In Progress", "Completed", "Cancelled"]:
+        messages.error(request, "Invalid status")
+        return redirect("petadmin:adminGroomingBookings")
+
+    booking.status = status
+    booking.save()
+
+    messages.success(request, f"Booking marked as {status}")
+    return redirect("petadmin:adminGroomingBookings")

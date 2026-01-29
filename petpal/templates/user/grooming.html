@@ -5,153 +5,218 @@
 
 {% block extra_css %}
 <style>
-/* ---------- LAYOUT ---------- */
-.glass{
-  background:rgba(255,255,255,.92);
-  backdrop-filter:blur(20px);
-  border-radius:28px;
-}
-.dark .glass{
-  background:rgba(15,23,42,.95);
-  border:1px solid rgba(255,255,255,.08);
+/* ===== Layout ===== */
+.page-wrap{
+  background:linear-gradient(180deg,#fafbff 0%, #f4f6ff 100%);
+  min-height:100vh;
 }
 
-/* ---------- SERVICE CARDS ---------- */
-.service-card{
-  display:flex;align-items:center;gap:14px;
-  padding:18px 20px;border-radius:16px;
-  background:#fff;border:1px solid #e5e7eb;
-  cursor:pointer;transition:.25s ease;color:#111;
+.card{
+  background:white;
+  border-radius:26px;
+  box-shadow:0 25px 80px rgba(0,0,0,.06);
+  padding:60px;
 }
-.dark .service-card{
-  background:#0f172a;border:1px solid #1e293b;color:#f8fafc;
+
+/* ===== Headings ===== */
+.section-title{
+  font-size:20px;
+  font-weight:700;
+  color:#0f172a;
+  margin-bottom:18px;
+}
+.section-sub{
+  font-size:14px;
+  color:#64748b;
+  margin-bottom:20px;
+}
+
+/* ===== Services ===== */
+.service-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+  gap:20px;
+}
+.service-card{
+  display:flex;align-items:center;gap:16px;
+  padding:18px 22px;
+  border-radius:18px;
+  border:1px solid #e5e7eb;
+  background:#fff;
+  cursor:pointer;
+  transition:.25s ease;
+}
+.service-card:hover{
+  transform:translateY(-2px);
+  box-shadow:0 12px 30px rgba(0,0,0,.06);
 }
 .service-card.active{
-  border-color:#6366f1;
-  box-shadow:0 10px 30px rgba(99,102,241,.3);
+  border:1.5px solid #6366f1;
+  box-shadow:0 12px 35px rgba(99,102,241,.25);
 }
 .service-card input{display:none;}
 
 .service-icon{
-  width:42px;height:42px;border-radius:50%;
-  background:#eef2ff;color:#6366f1;
+  width:44px;height:44px;border-radius:50%;
+  background:linear-gradient(135deg,#6366f1,#8b5cf6);
   display:flex;align-items:center;justify-content:center;
+  color:white;font-size:18px;
 }
-.dark .service-icon{
-  background:#1e293b;color:#a5b4fc;
+.service-meta{
+  display:flex;flex-direction:column;
 }
+.service-name{font-weight:600;color:#0f172a;}
+.service-time{font-size:13px;color:#64748b;}
+.service-price{margin-left:auto;font-weight:700;color:#0f172a;}
 
-/* ---------- INPUTS ---------- */
+/* ===== Inputs ===== */
 .input{
-  width:100%;padding:14px;border-radius:14px;
-  background:#f9fafb;border:1px solid #e5e7eb;color:#111;
+  width:100%;
+  padding:16px 18px;
+  border-radius:14px;
+  border:1px solid #e5e7eb;
+  background:#f9fafb;
+  font-size:15px;
 }
-.dark .input{
-  background:#0f172a;border:1px solid #1e293b;color:#f8fafc;
+.input:focus{
+  outline:none;border-color:#6366f1;
+  background:white;
 }
 
-/* ---------- SLOT BUTTONS ---------- */
+/* ===== Slots ===== */
 .slots{
   display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(90px,1fr));
-  gap:12px;
+  grid-template-columns:repeat(auto-fill,minmax(95px,1fr));
+  gap:14px;
 }
-
 .slot{
-  padding:10px 0;
-  border-radius:12px;
+  padding:12px 0;
+  border-radius:14px;
   text-align:center;
   font-weight:600;
+  font-size:14px;
   background:#eef2ff;
   color:#3730a3;
   cursor:pointer;
-  border:2px solid transparent;
   transition:.2s;
 }
 .slot:hover{transform:scale(1.05);}
 .slot.active{
-  background:#6366f1;
+  background:linear-gradient(135deg,#6366f1,#8b5cf6);
   color:white;
 }
-.slot.booked{
-  background:#fee2e2;
-  color:#991b1b;
+.slot.disabled{
+  background:#f1f5f9;
+  color:#94a3b8;
   cursor:not-allowed;
 }
-.dark .slot{
-  background:#1e293b;color:#e0e7ff;
+
+/* ===== Summary Bar ===== */
+.summary{
+  background:linear-gradient(135deg,#6366f1,#ec4899);
+  border-radius:22px;
+  padding:26px 30px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  color:white;
 }
-.dark .slot.booked{
-  background:#3f1d1d;color:#fecaca;
+.summary .label{font-size:13px;opacity:.85;}
+.summary .price{font-size:34px;font-weight:800;}
+.summary .time{font-size:14px;opacity:.9;}
+
+.book-btn{
+  background:white;
+  color:#4f46e5;
+  border:none;
+  padding:14px 36px;
+  border-radius:14px;
+  font-weight:700;
+  cursor:pointer;
+  transition:.2s;
+}
+.book-btn:hover{
+  transform:translateY(-2px);
+  box-shadow:0 10px 25px rgba(255,255,255,.35);
 }
 </style>
 {% endblock %}
 
 {% block content %}
-<section class="max-w-6xl mx-auto px-6 py-16">
+<div class="page-wrap py-20 px-6">
+<div class="max-w-6xl mx-auto card">
 
-<div class="text-center mb-12">
+<div class="text-center mb-16">
   <h1 class="text-4xl font-extrabold">Pet Grooming</h1>
-  <p class="mt-3 text-gray-500 dark:text-gray-300">
-    Smart booking • Clean slots • Real scheduling
-  </p>
+  <p class="mt-3 text-gray-500">Smart booking • Real scheduling • Premium experience</p>
 </div>
 
-<form method="POST" class="glass p-12 space-y-12">
+<form method="POST">
 {% csrf_token %}
 
 <!-- SERVICES -->
-<section>
-<h3 class="text-xl font-semibold mb-6">Choose Services</h3>
-<div class="grid md:grid-cols-2 gap-6">
-{% for service in services %}
-<label class="service-card">
-  <input type="checkbox" name="services" value="{{ service.id }}" data-price="{{ service.price }}">
-  <div class="service-icon"><i class="fa-solid {{ service.icon|default:'fa-paw' }}"></i></div>
-  <span>{{ service.name }}</span>
-  <span class="ml-auto font-bold">₹{{ service.price }}</span>
-</label>
-{% endfor %}
+<div class="mb-14">
+  <div class="section-title">Choose Services</div>
+  <div class="section-sub">Select one or more services for your pet</div>
+
+  <div class="service-grid">
+  {% for service in services %}
+    <label class="service-card">
+      <input type="checkbox"
+             name="services"
+             value="{{ service.id }}"
+             data-price="{{ service.price }}"
+             data-duration="{{ service.duration }}">
+      <div class="service-icon">
+        <i class="fa-solid fa-paw"></i>
+      </div>
+      <div class="service-meta">
+        <div class="service-name">{{ service.name }}</div>
+        <div class="service-time">{{ service.duration }} min</div>
+      </div>
+      <div class="service-price">₹{{ service.price }}</div>
+    </label>
+  {% endfor %}
+  </div>
 </div>
-</section>
 
 <!-- DATE -->
-<section>
-<h3 class="text-xl font-semibold mb-4">Select Date</h3>
-<input type="date" id="dateInput" name="date" class="input" required>
-</section>
-
-<!-- TIME SLOTS -->
-<section>
-<h3 class="text-xl font-semibold mb-4">Select Time Slot</h3>
-<div class="slots" id="slotContainer"></div>
-<input type="hidden" name="time" id="timeField" required>
-</section>
-
-<!-- PHONE -->
-<section>
-<input type="tel" name="phone" class="input"
-       placeholder="Phone Number"
-       pattern="[0-9]{10}" required>
-</section>
-
-<!-- TOTAL -->
-<section class="flex justify-between items-center p-6 rounded-2xl
-               bg-gradient-to-r from-indigo-600 to-pink-500 text-white">
-<div>
-  <div class="text-sm opacity-80">Estimated Total</div>
-  <div id="total" class="text-3xl font-extrabold">₹0</div>
+<div class="mb-14">
+  <div class="section-title">Select Date</div>
+  <input type="date" id="dateInput" name="date" class="input" required>
 </div>
 
-<button type="submit"
-        class="bg-white text-indigo-600 px-8 py-3 rounded-xl font-semibold">
-  Book Grooming
-</button>
-</section>
+<!-- TIME -->
+<div class="mb-14">
+  <div class="section-title">Select Time Slot</div>
+  <div class="slots" id="slotContainer"></div>
+  <input type="hidden" name="time" id="timeField" required>
+</div>
+
+<!-- PHONE -->
+<div class="mb-16">
+  <div class="section-title">Contact Number</div>
+  <input type="tel" name="phone" class="input"
+         placeholder="Enter phone number"
+         pattern="[0-9]{10}" required>
+</div>
+
+<!-- SUMMARY -->
+<div class="summary">
+  <div>
+    <div class="label">Estimated Total</div>
+    <div id="total" class="price">₹0</div>
+    <div id="duration" class="time">0 min</div>
+  </div>
+
+  <button type="submit" class="book-btn">
+    Book Grooming
+  </button>
+</div>
 
 </form>
-</section>
-
+</div>
+</div>
 {% endblock %}
 
 {% block extra_js %}
@@ -161,71 +226,97 @@ const slotContainer = document.getElementById("slotContainer");
 const dateInput = document.getElementById("dateInput");
 const timeField = document.getElementById("timeField");
 
-/* -------- Disable past dates -------- */
 const today = new Date().toISOString().split("T")[0];
 dateInput.min = today;
 
-/* -------- Slot generation (10AM - 10PM) -------- */
-const slots = [];
-for(let h=10; h<=22; h++){
-  let hh = h.toString().padStart(2,"0");
-  slots.push(`${hh}:00`);
+/* ==== Engine ==== */
+const OPEN = 10*60, CLOSE = 22*60, STEP = 60;
+
+function toMin(t){const[a,b]=t.split(":").map(Number);return a*60+b;}
+function toTime(m){return String(Math.floor(m/60)).padStart(2,"0")+":00";}
+function format(t){
+  let h=parseInt(t.split(":")[0]);
+  let am=h>=12?"PM":"AM";h=h%12||12;
+  return h+":00 "+am;
 }
 
-/* -------- Format time -------- */
-function formatTime(t){
-  let h = parseInt(t.split(":")[0]);
-  let ampm = h >= 12 ? "PM" : "AM";
-  h = h % 12 || 12;
-  return h + ":00 " + ampm;
+function generate(){
+  let arr=[];
+  for(let m=OPEN;m<=CLOSE;m+=STEP) arr.push(toTime(m));
+  return arr;
 }
 
-/* -------- Render slots -------- */
-function renderSlots(date){
-  slotContainer.innerHTML = "";
-  const booked = bookedSlots[date] || [];
+function render(date){
+  slotContainer.innerHTML="";
+  const day = bookedSlots[date] || [];
 
-  slots.forEach(t=>{
-    const div = document.createElement("div");
-    div.className = "slot";
-    div.innerText = formatTime(t);
+  let duration=0;
+  document.querySelectorAll("input[type=checkbox]:checked")
+    .forEach(i=>duration+=Number(i.dataset.duration));
 
-    if(booked.includes(t)){
-      div.classList.add("booked");
+  const now=new Date();
+  const nowMin=now.getHours()*60+now.getMinutes();
+  const isToday=date===today;
+
+  generate().forEach(t=>{
+    const start=toMin(t);
+    const end=start+duration;
+    let blocked=false;
+
+    if(isToday && start<nowMin) blocked=true;
+    if(end>CLOSE) blocked=true;
+
+    day.forEach(b=>{
+      const bs=toMin(b.start), be=toMin(b.end);
+      if(start<be && end>bs) blocked=true;
+    });
+
+    const div=document.createElement("div");
+    div.className="slot";
+    div.innerText=format(t);
+
+    if(blocked){
+      div.classList.add("disabled");
     }else{
-      div.onclick = ()=>{
+      div.onclick=()=>{
         document.querySelectorAll(".slot").forEach(s=>s.classList.remove("active"));
         div.classList.add("active");
-        timeField.value = t;
+        timeField.value=t;
       }
     }
     slotContainer.appendChild(div);
   });
 }
 
-/* -------- Initial render (SHOW SLOTS BY DEFAULT) -------- */
-renderSlots(today);
+/* Init */
+slotContainer.innerHTML=`<div style="grid-column:1/-1;text-align:center;padding:30px;color:#94a3b8;font-weight:600;">Select date & services</div>`;
 
-/* -------- Update when date changes -------- */
-dateInput.addEventListener("change", ()=>{
-  timeField.value = "";
-  renderSlots(dateInput.value);
+/* Events */
+dateInput.addEventListener("change",()=>{
+  timeField.value="";
+  render(dateInput.value);
 });
 
-/* -------- Total calc -------- */
-const totalEl = document.getElementById("total");
 document.querySelectorAll(".service-card").forEach(card=>{
-  const checkbox = card.querySelector("input");
-  card.onclick = ()=>{
-    checkbox.checked = !checkbox.checked;
-    card.classList.toggle("active",checkbox.checked);
+  const cb=card.querySelector("input");
+  card.onclick=()=>{
+    cb.checked=!cb.checked;
+    card.classList.toggle("active",cb.checked);
 
-    let total = 0;
-    document.querySelectorAll("input[type=checkbox]:checked")
-      .forEach(i=> total += Number(i.dataset.price));
-    totalEl.innerText = "₹"+total;
+    let total=0,duration=0;
+    document.querySelectorAll("input[type=checkbox]:checked").forEach(i=>{
+      total+=Number(i.dataset.price);
+      duration+=Number(i.dataset.duration);
+    });
+
+    document.getElementById("total").innerText="₹"+total;
+    document.getElementById("duration").innerText=duration+" min";
+
+    if(dateInput.value){
+      timeField.value="";
+      render(dateInput.value);
+    }
   }
 });
 </script>
 {% endblock %}
-
