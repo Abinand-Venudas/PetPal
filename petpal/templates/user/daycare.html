@@ -5,106 +5,80 @@
 
 {% block extra_css %}
 <style>
+:root{
+  --pink:#ec4899;
+  --purple:#8b5cf6;
+  --blur:blur(18px);
+}
+
+/* ================= DARK MODE ================= */
+.dark body{background:#0b1220 !important;color:#f9fafb !important;}
+.dark .card{background:#020617 !important;border:1px solid rgba(255,255,255,.12)!important;}
+.dark .input,.dark select.input{background:#020617!important;color:#fff!important;border:1px solid rgba(255,255,255,.18)!important;}
+.dark .summary{background:#020617!important;border:1px solid rgba(255,255,255,.15)!important;}
+.dark .time-btn{background:#020617!important;color:#fff!important;border:1px solid rgba(255,255,255,.18)!important;}
+.dark .time-btn.active{background:linear-gradient(135deg,var(--pink),var(--purple))!important;color:#fff!important;}
+.dark .hero-card{background:rgba(2,6,23,.75)!important;border:1px solid rgba(255,255,255,.15)!important;}
+.dark .hero-sub{color:#e5e7eb!important;}
+
+/* ================= BACKGROUND ================= */
 .paw-bg{
-  position:fixed;
-  inset:0;
+  position:fixed;inset:0;
   background-image:url("{% static 'img/paws4.jpeg' %}");
-  background-size:90px;
-  opacity:.25;
-  animation:paws 70s linear infinite;
-  pointer-events:none;
-  z-index:-1;
+  background-size:100px;opacity:.12;
+  animation:paws 90s linear infinite;
+  pointer-events:none;z-index:-1;
 }
-@keyframes paws{
-  from{background-position:0 0}
-  to{background-position:1400px 1400px}
-}
+@keyframes paws{from{background-position:0 0}to{background-position:2000px 2000px}}
 
-/* ===== CARDS ===== */
-.card{
-  background:white;
-  border-radius:24px;
-  box-shadow:0 30px 70px rgba(0,0,0,.08);
+/* ================= HERO ================= */
+.hero-overlay{
+  background:
+    radial-gradient(circle at 30% 30%, rgba(236,72,153,.25), transparent 40%),
+    radial-gradient(circle at 70% 60%, rgba(139,92,246,.25), transparent 40%),
+    linear-gradient(to bottom, rgba(0,0,0,.65), rgba(0,0,0,.65));
 }
-.dark .card{
-  background:rgba(30,41,59,.85);
-  box-shadow:0 30px 70px rgba(0,0,0,.6);
-  border:1px solid rgba(255,255,255,.08);
-}
+.hero-content{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;text-align:center;z-index:5;padding:20px;}
+.hero-card{padding:70px 80px;border-radius:40px;background:linear-gradient(145deg,rgba(255,255,255,.10),rgba(255,255,255,.03));backdrop-filter:blur(25px);border:1px solid rgba(255,255,255,.15);box-shadow:0 50px 140px rgba(0,0,0,.6);}
+.hero-badge{display:inline-block;padding:10px 26px;border-radius:999px;background:linear-gradient(135deg,var(--pink),var(--purple));color:white;font-weight:700;margin-bottom:28px;}
+.hero-title{font-size:3.5rem;font-weight:900;background:linear-gradient(90deg,#fff,#fde2f3,#e0e7ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.hero-sub{font-size:1.2rem;color:#e5e7eb;max-width:720px;margin:28px auto 0;line-height:1.8;}
 
-/* ===== PLANS ===== */
-.plan{
-  cursor:pointer;
-  transition:.35s;
-}
-.plan:hover{transform:translateY(-8px)}
-.plan.active{
-  border:2px solid #ec4899;
-  box-shadow:0 30px 80px rgba(236,72,153,.35);
-}
+/* ================= CARDS ================= */
+.card{background:linear-gradient(145deg,rgba(255,255,255,.95),rgba(255,255,255,.85));backdrop-filter:var(--blur);border-radius:28px;box-shadow:0 40px 90px rgba(0,0,0,.12);border:1px solid rgba(255,255,255,.4);}
 
-/* ===== INPUTS ===== */
-.input{
-  width:100%;
-  padding:16px;
-  border-radius:16px;
-  border:1.5px solid #e5e7eb;
-  background:#fff;
-  color:#111827;
-}
-.input:focus{
-  outline:none;
-  border-color:#ec4899;
-  box-shadow:0 0 0 4px rgba(236,72,153,.2);
-}
-.dark .input{
-  background:#0f172a;
-  border-color:#334155;
-  color:#f1f5f9;
-}
+/* ================= INPUTS ================= */
+.input{width:100%;padding:18px 20px;border-radius:18px;border:1.5px solid #e5e7eb;background:rgba(255,255,255,.85);font-weight:500;}
 
-/* ===== SUMMARY ===== */
-.summary{
-  background:linear-gradient(135deg,#fff1f8,#eef2ff);
-  border-radius:24px;
-  padding:28px;
-}
-.dark .summary{
-  background:linear-gradient(135deg,#1e293b,#0f172a);
-  border:1px solid rgba(255,255,255,.08);
-}
-.total{
-  font-size:1.6rem;
-  font-weight:800;
-  color:#ec4899;
-}
-
-/* ===== CLOCK TIME PICKER ===== */
+/* ================= TIME GRID ================= */
 .time-grid{
   display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(90px,1fr));
-  gap:12px;
+  grid-template-columns:repeat(auto-fill,minmax(95px,1fr));
+  gap:14px;
+  margin-top:10px;
 }
 .time-btn{
-  padding:10px 0;
-  border-radius:12px;
-  background:#f8fafc;
+  padding:12px 0;
+  border-radius:14px;
+  background:#fff;
   border:1px solid #e5e7eb;
-  font-weight:600;
+  font-weight:700;
   cursor:pointer;
-  transition:.2s;
+  transition:.25s;
 }
-.time-btn:hover{background:#fde2f3;}
+.time-btn:hover{transform:translateY(-2px)}
 .time-btn.active{
-  background:#ec4899;
+  background:linear-gradient(135deg,var(--pink),var(--purple));
   color:white;
-  border-color:#ec4899;
+  border-color:transparent;
 }
 
-/* ===== MOBILE ===== */
-@media(max-width:768px){
-  .hero-video{display:none;}
-}
+/* ================= SUMMARY ================= */
+.summary{background:linear-gradient(135deg,#fff1f8,#eef2ff);border-radius:32px;padding:36px;box-shadow:0 40px 100px rgba(0,0,0,.15);}
+.total{font-size:2rem;font-weight:900;background:linear-gradient(90deg,var(--pink),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+
+/* ================= BUTTON ================= */
+.premium-btn{background:linear-gradient(135deg,var(--pink),var(--purple));box-shadow:0 25px 60px rgba(236,72,153,.55);}
 </style>
 {% endblock %}
 
@@ -112,75 +86,54 @@
 
 <div class="paw-bg"></div>
 
-<!-- HERO -->
 <section class="relative h-[85vh] overflow-hidden">
-  <video autoplay muted loop playsinline
-    class="hero-video absolute inset-0 w-full h-full object-cover">
+  <video autoplay muted loop playsinline class="absolute inset-0 w-full h-full object-cover">
     <source src="{% static 'img/daycare.mp4' %}" type="video/mp4">
   </video>
-  <div class="absolute inset-0 bg-black/45"></div>
+  <div class="absolute inset-0 hero-overlay"></div>
+
+  <div class="hero-content">
+    <div class="hero-card">
+      <div class="hero-badge">Welcome to PetPal Daycare</div>
+      <h1 class="hero-title">Where Your Pet’s Day Feels Like Home</h1>
+      <p class="hero-sub">Safe, loving and professional daycare for your pets.</p>
+    </div>
+  </div>
 </section>
 
-<!-- PLANS -->
-<section id="plans" class="max-w-7xl mx-auto px-6 mt-32 space-y-16">
-<h2 class="text-4xl font-extrabold text-center">Choose a Daycare Plan</h2>
+<section class="max-w-7xl mx-auto px-6 mt-32">
 
-<div class="grid md:grid-cols-3 gap-10">
-  <div class="card plan p-10" onclick="selectPlan('Basic',this)">
-    <h3 class="text-xl font-bold mb-3">Basic</h3>
-    <p class="text-4xl font-extrabold mb-6">₹499</p>
-  </div>
-
-  <div class="card plan p-10 active" onclick="selectPlan('Standard',this)">
-    <h3 class="text-xl font-bold mb-3">Standard</h3>
-    <p class="text-4xl font-extrabold mb-6">₹899</p>
-  </div>
-
-  <div class="card plan p-10" onclick="selectPlan('Premium',this)">
-    <h3 class="text-xl font-bold mb-3">Premium</h3>
-    <p class="text-4xl font-extrabold mb-6">₹1499</p>
-  </div>
-</div>
-
-<!-- =================== SINGLE FORM =================== -->
-<form method="POST" action="{% url 'petapp:confirmbook' %}">
+<form method="POST" action="{% url 'petapp:confirmbook' %}" id="daycareForm">
 {% csrf_token %}
 
-<!-- DETAILS -->
-<div class="card p-12 max-w-4xl mx-auto mt-24">
-  <h3 class="text-3xl font-extrabold mb-8 text-center">Pet & Owner Details</h3>
+<div class="card p-14 max-w-5xl mx-auto mt-28">
 
-  <div class="grid md:grid-cols-2 gap-6">
+  <h3 class="text-4xl font-extrabold mb-12 text-center">Pet & Owner Information</h3>
 
-    <input class="input" name="pet_name" id="pet_name"
-      placeholder="Your pet’s name (e.g., Bruno, Luna)" required>
+  <div class="grid md:grid-cols-2 gap-8">
 
-    <select class="input" id="petType" name="pet_type" onchange="toggleOtherAnimal()">
+    <input class="input" name="pet_name" placeholder="Pet name" required>
+
+    <select class="input" id="petType" name="pet_type">
       <option value="Dog">Dog</option>
       <option value="Cat">Cat</option>
       <option value="Other">Other</option>
     </select>
 
-    <!-- OTHER ANIMAL FIELD -->
-    <input class="input md:col-span-2 hidden" id="otherAnimal"
-      name="other_animal"
-      placeholder="Please specify the animal (e.g., Rabbit, Parrot)">
+    <input class="input md:col-span-2 hidden" id="otherAnimal" name="other_animal"
+      placeholder="Specify animal (Rabbit, Parrot, etc)">
 
-    <input class="input" type="number" name="pet_age"
-      placeholder="Pet age in years (e.g., 2)" min="0">
+    <input class="input" name="pet_age" placeholder="Pet age">
 
-    <input class="input" name="owner_name"
-      placeholder="Your full name" required>
+    <input class="input" name="owner_name" placeholder="Owner name" required>
 
-    <input class="input" type="tel" name="phone"
-      placeholder="Contact number" required>
+    <input class="input" name="phone" placeholder="Contact number" required>
 
-    <input class="input md:col-span-2" type="email" name="email"
-      placeholder="Email for booking updates" required>
+    <input class="input md:col-span-2" name="email" placeholder="Email" required>
 
     <input class="input md:col-span-2" type="date" name="date" id="date" required>
 
-    <select class="input md:col-span-2" id="duration" name="duration" onchange="updatePrice()">
+    <select class="input md:col-span-2" id="duration" name="duration">
       <option value="half">Half Day</option>
       <option value="full" selected>Full Day</option>
       <option value="overnight">Overnight</option>
@@ -188,107 +141,145 @@
 
   </div>
 
-  <!-- CLOCK TIME PICKER -->
-  <div class="mt-10">
-    <label class="block text-sm font-medium mb-3">Choose Drop-off Time</label>
+  <div class="mt-14">
+    <label class="block text-sm font-semibold mb-4">Select Drop-off Time</label>
     <div class="time-grid" id="timeGrid"></div>
-    <p class="text-xs text-gray-400 mt-3">Available between 10:00 AM – 10:00 PM</p>
   </div>
+
 </div>
 
-<!-- SUMMARY -->
-<div class="summary max-w-xl mx-auto mt-16 text-center">
-  <p class="text-gray-600 mb-2">Selected Plan</p>
-  <h3 class="text-xl font-bold mb-2" id="planName">Standard</h3>
-  <p class="text-gray-500 mb-4" id="durationName">Full Day</p>
+<div class="summary max-w-xl mx-auto mt-20 text-center">
+  <p>Selected Plan</p>
+  <h3 id="planName">Standard</h3>
+  <p id="durationName">FULL</p>
+  <p>Total Amount</p>
+  <div class="total">₹<span id="total">899</span></div>
 
-  <p class="text-gray-600">Total Amount</p>
-  <div class="total mb-6">₹<span id="total">899</span></div>
-
-  <input type="hidden" name="plan" id="plan_input">
+  <input type="hidden" name="plan" id="plan_input" value="Standard">
   <input type="hidden" name="total_cost" id="total_cost_input">
   <input type="hidden" name="start_time" id="start_time">
   <input type="hidden" name="end_time" id="end_time">
 
-  <button type="submit"
-    class="block w-full py-4 bg-pink-600 hover:bg-pink-700 text-white rounded-xl font-semibold">
+  <button class="block w-full py-5 text-white rounded-2xl font-bold text-lg premium-btn">
     Confirm Booking
   </button>
 </div>
 
 </form>
 </section>
+
 {% endblock %}
 
 {% block extra_js %}
 <script>
-let selectedPlan = "Standard";
-let selectedTime = "";
+document.addEventListener("DOMContentLoaded",()=>{
 
-const prices = {
-  Basic: { half: 299, full: 499, overnight: 799 },
-  Standard: { half: 499, full: 899, overnight: 1299 },
-  Premium: { half: 799, full: 1499, overnight: 1999 }
-};
+let ALL_SLOTS=[];
 
-function selectPlan(plan, el){
-  selectedPlan = plan;
-  document.querySelectorAll('.plan').forEach(p=>p.classList.remove('active'));
-  el.classList.add('active');
-  updatePrice();
+/* ELEMENTS */
+const petType=document.getElementById("petType");
+const otherAnimal=document.getElementById("otherAnimal");
+const duration=document.getElementById("duration");
+const dateInput=document.getElementById("date");
+const timeGrid=document.getElementById("timeGrid");
+
+/* DISABLE PAST DATES */
+const today=new Date();
+dateInput.min=today.toISOString().split("T")[0];
+
+/* OTHER ANIMAL */
+petType.addEventListener("change",()=>{
+  if(petType.value==="Other"){ otherAnimal.classList.remove("hidden"); }
+  else{ otherAnimal.classList.add("hidden"); otherAnimal.value=""; }
+});
+
+/* BUILD SLOTS */
+function buildSlots(){
+  ALL_SLOTS=[];
+  for(let h=10;h<=21;h++){
+    ["00","30"].forEach(m=>{
+      ALL_SLOTS.push(`${h.toString().padStart(2,"0")}:${m}`);
+    });
+  }
+  ALL_SLOTS.push("22:00");
 }
+buildSlots();
 
-function updatePrice(){
-  const duration = document.getElementById("duration").value;
-  document.getElementById("planName").textContent = selectedPlan;
-  document.getElementById("durationName").textContent = duration.toUpperCase();
-  document.getElementById("total").textContent = prices[selectedPlan][duration];
-}
+/* 🔥 RENDER (HIDE BOOKED) */
+function renderSlots(booked=[]){
+  timeGrid.innerHTML="";
 
-/* SHOW OTHER ANIMAL FIELD */
-function toggleOtherAnimal(){
-  const type = document.getElementById("petType").value;
-  document.getElementById("otherAnimal").classList.toggle("hidden", type !== "Other");
-}
+  const bookedSet = new Set(booked.map(t=>String(t).slice(0,5)));
 
-/* TIME PICKER */
-const timeGrid = document.getElementById("timeGrid");
-for(let h=10; h<=21; h++){
-  ["00","30"].forEach(m=>{
-    const t = `${h.toString().padStart(2,"0")}:${m}`;
-    const btn = document.createElement("button");
-    btn.type = "button";
-    btn.className = "time-btn";
-    btn.textContent = t;
-    btn.onclick = ()=>selectTime(t, btn);
+  let count=0;
+
+  ALL_SLOTS.forEach(time=>{
+    if(bookedSet.has(time)) return;  // 🔥 HARD HIDE
+
+    count++;
+
+    const btn=document.createElement("button");
+    btn.type="button";
+    btn.className="time-btn";
+    btn.innerText=time;
+
+    btn.onclick=()=>{
+      document.querySelectorAll(".time-btn").forEach(b=>b.classList.remove("active"));
+      btn.classList.add("active");
+      document.getElementById("start_time").value=time;
+      document.getElementById("end_time").value=time;
+    };
+
     timeGrid.appendChild(btn);
   });
-}
-const lastBtn = document.createElement("button");
-lastBtn.type = "button";
-lastBtn.className = "time-btn";
-lastBtn.textContent = "22:00";
-lastBtn.onclick = ()=>selectTime("22:00", lastBtn);
-timeGrid.appendChild(lastBtn);
 
-function selectTime(time, el){
-  selectedTime = time;
-  document.querySelectorAll(".time-btn").forEach(b=>b.classList.remove("active"));
-  el.classList.add("active");
-  document.getElementById("start_time").value = time;
-  document.getElementById("end_time").value = time;
-}
-
-/* SUBMIT VALIDATION */
-document.querySelector("form").addEventListener("submit", function(e){
-  const date = document.getElementById("date").value;
-  if(!date || !selectedTime){
-    alert("Please select date and time.");
-    e.preventDefault();
-    return;
+  if(count===0){
+    timeGrid.innerHTML = `
+      <div style="grid-column:1/-1;text-align:center;
+      padding:18px;background:#fee2e2;color:#b91c1c;
+      border-radius:14px;font-weight:800;">
+        No available slots for this date
+      </div>
+    `;
   }
-  document.getElementById("plan_input").value = selectedPlan;
-  document.getElementById("total_cost_input").value = document.getElementById("total").textContent;
+}
+
+/* API LOAD */
+function loadSlots(date){
+  fetch(`/api/daycare-slots/?date=${date}`)
+    .then(r=>r.json())
+    .then(d=>{
+      console.log("BOOKED TIMES:", d.times);  // debug
+      renderSlots(d.times || []);
+    })
+    .catch(e=>{
+      console.error("API ERROR",e);
+      renderSlots([]);
+    });
+}
+
+
+/* DATE CHANGE */
+dateInput.addEventListener("change",()=>{
+  if(dateInput.value){
+    loadSlots(dateInput.value);
+  }
+});
+
+/* SUBMIT */
+document.getElementById("daycareForm").addEventListener("submit",e=>{
+  if(!document.getElementById("start_time").value){
+    alert("Please select a time slot.");
+    e.preventDefault();
+  }
+});
+
+/* AUTO LOAD */
+if(dateInput.value){
+  loadSlots(dateInput.value);
+}
+
 });
 </script>
 {% endblock %}
+

@@ -133,13 +133,30 @@ class PasswordResetOTP(models.Model):
 
 
 # =========================
+# DAYCARE SLOT LOCK
+# =========================
+class DaycareSlotLock(models.Model):
+    user = models.ForeignKey(user_registration, on_delete=models.CASCADE)
+    date = models.DateField()
+    time = models.TimeField()
+    locked_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ("date", "time")
+
+    def is_expired(self):
+        return timezone.now() > self.locked_at + timedelta(minutes=5)
+
+
+# =========================
 # DAYCARE BOOKING
 # =========================
 class DaycareBooking(models.Model):
     user = models.ForeignKey(user_registration, on_delete=models.CASCADE)
 
     pet_name = models.CharField(max_length=100)
-    pet_type = models.CharField(max_length=50, null=True, blank=True)
+    pet_type = models.CharField(max_length=50)
+    other_animal = models.CharField(max_length=100, blank=True, null=True)
 
     plan = models.CharField(max_length=50)
     duration = models.CharField(max_length=50)
@@ -152,15 +169,19 @@ class DaycareBooking(models.Model):
 
     status = models.CharField(
         max_length=20,
-        choices=[("Pending","Pending"),("Confirmed","Confirmed"),
-                 ("Completed","Completed"),("Cancelled","Cancelled")],
+        choices=[
+            ("Pending","Pending"),
+            ("Confirmed","Confirmed"),
+            ("Completed","Completed"),
+            ("Cancelled","Cancelled"),
+        ],
         default="Confirmed"
     )
 
     created_at = models.DateTimeField(auto_now_add=True)
 
-    def __str__(self):
-        return f"{self.user.name} → {self.pet_name} ({self.date})"
+    class Meta:
+        unique_together = ("date", "start_time")
 
 
 # =========================
@@ -168,17 +189,14 @@ class DaycareBooking(models.Model):
 # =========================
 class Service(models.Model):
     name = models.CharField(max_length=100)
-
-    price = models.PositiveIntegerField()   # ✅ FIXED TYPE
-
+    price = models.PositiveIntegerField()
     icon = models.CharField(
         max_length=10,
         blank=True,
         null=True,
         help_text="Emoji icon (🛁 ✂️ 💅 🐾)"
     )
-
-    duration = models.PositiveIntegerField(help_text="Duration in minutes")  # ✅ real scheduling
+    duration = models.PositiveIntegerField(help_text="Duration in minutes")
 
     def __str__(self):
         return self.name
@@ -239,6 +257,9 @@ class GroomingBooking(models.Model):
     )
 
     created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ("date", "start_time")  # 🔒 HARD booking protection
 
     def __str__(self):
         return f"{self.user.name} | {self.date} {self.start_time}"

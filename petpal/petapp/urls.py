@@ -32,10 +32,11 @@ urlpatterns = [
     path("adoption/success/<int:id>/", views.adoptionSuccess, name="adoptionSuccess"),
     path("confirmbook/", views.confirmbook, name="confirmbook"),
     path("daycareSuccess/<int:id>/", views.daycareSuccess, name="daycareSuccess"),
-    path("api/daycare-booked-slots/", views.get_daycare_booked_slots, name="get_daycare_booked_slots"),
 
     # API
     path("api/booked-slots/", views.get_booked_slots, name="get_booked_slots"),
     path("api/lock-slot/", views.lock_slot, name="lock_slot"),
     path("api/release-slot/", views.release_slot, name="release_slot"),
+     path("api/daycare-slots/", views.get_daycare_booked_slots, name="daycare_slots"),
+
 ]
