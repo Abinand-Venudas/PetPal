@@ -1,0 +1,29 @@
+{% extends "Petadmin/baseadmin.html" %}
+{% block title %}Edit Daycare Plan{% endblock %}
+
+{% block content %}
+<h1 class="text-3xl font-bold mb-8">Edit Daycare Plan</h1>
+
+<form method="post" class="glass p-8 rounded-2xl max-w-xl">
+  {% csrf_token %}
+
+  <label class="block mb-4">
+    <span>Name</span>
+    <input name="name" value="{{ service.name }}" class="w-full mt-1 p-3 rounded-xl border">
+  </label>
+
+  <label class="block mb-4">
+    <span>Price</span>
+    <input name="price" value="{{ service.price }}" class="w-full mt-1 p-3 rounded-xl border">
+  </label>
+
+  <label class="block mb-6">
+    <span>Description</span>
+    <textarea name="description" rows="3" class="w-full mt-1 p-3 rounded-xl border">{{ service.description }}</textarea>
+  </label>
+
+  <button class="px-6 py-3 rounded-xl text-white bg-indigo-600">
+    Update Plan
+  </button>
+</form>
+{% endblock %}

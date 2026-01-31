@@ -7,6 +7,10 @@ from petapp.models import Service   # ✅ IMPORT FROM CORRECT APP
 from doctor.models import doctor_registration
 from volunteer.models import volunteer_registration
 from volunteer.models import VolunteerNotification
+from django.contrib import messages
+from django.shortcuts import render, redirect, get_object_or_404
+from petapp.models import Service
+
 
 
 
@@ -398,61 +402,73 @@ def adminAdoptionView(request, id):
         "adoption": adoption
     })
 
+
 # ================== SERVICES ==================
-def addServiceAdmin(request):
+
+def groomingServicesAdmin(request):
     if "admin_id" not in request.session:
         return redirect("petadmin:loginAdmin")
 
-    if request.method == "POST":
-        Service.objects.create(
-            name=request.POST.get("name"),
-            price=request.POST.get("price"),
-            icon=request.POST.get("icon"),
-        )
+    services = Service.objects.filter(service_type="grooming")
 
-        messages.success(request, "Service added successfully")
-        return redirect("petadmin:serviceAdmin")
-
-    return render(request, "petadmin/addServiceAdmin.html")
-
-
-def serviceAdmin(request):
-    if "admin_id" not in request.session:
-        return redirect("petadmin:loginAdmin")
-
-    services = Service.objects.all()
-    return render(request, "petadmin/servicesAdmin.html", {
+    return render(request, "Petadmin/servicesAdmin.html", {
         "services": services
     })
 
-def editServiceAdmin(request, id):
+
+def addGroomingServiceAdmin(request):
     if "admin_id" not in request.session:
         return redirect("petadmin:loginAdmin")
 
-    service = Service.objects.get(id=id)
+    form = ServiceForm(request.POST or None, initial={"service_type": "grooming"})
 
-    if request.method == "POST":
-        service.name = request.POST.get("name")
-        service.price = request.POST.get("price")
-        service.description = request.POST.get("description")
+    if form.is_valid():
+        service = form.save(commit=False)
+        service.service_type = "grooming"
         service.save()
 
-        messages.success(request, "Service updated successfully")
-        return redirect("petadmin:serviceAdmin")
+        messages.success(request, "Grooming service added successfully")
+        return redirect("petadmin:groomingServicesAdmin")
 
-    return render(request, "petadmin/editServiceAdmin.html", {
-        "service": service
+    return render(request, "petadmin/services/service_form.html", {
+        "form": form,
+        "title": "Add Grooming Service"
     })
 
-def deleteServiceAdmin(request, id):    
+
+def editGroomingServiceAdmin(request, id):
     if "admin_id" not in request.session:
         return redirect("petadmin:loginAdmin")
 
-    service = get_object_or_404(Service, id=id)
+    service = get_object_or_404(Service, id=id, service_type="grooming")
+
+    form = ServiceForm(request.POST or None, instance=service)
+
+    if form.is_valid():
+        form.save()
+        messages.success(request, "Grooming service updated successfully")
+        return redirect("petadmin:groomingServicesAdmin")
+
+    return render(request, "petadmin/services/service_form.html", {
+        "form": form,
+        "title": "Edit Grooming Service"
+    })
+
+
+def deleteGroomingServiceAdmin(request, id):
+    if "admin_id" not in request.session:
+        return redirect("petadmin:loginAdmin")
+
+    if request.method != "POST":
+        return redirect("petadmin:groomingServicesAdmin")
+
+    service = get_object_or_404(Service, id=id, service_type="grooming")
     service.delete()
 
-    messages.success(request, "Service deleted successfully")
-    return redirect("petadmin:serviceAdmin")
+    messages.success(request, "Grooming service deleted successfully")
+    return redirect("petadmin:groomingServicesAdmin")
+
+
 
 # ================= GROOMING BOOKINGS =================
 
@@ -516,3 +532,65 @@ def updateGroomingStatus(request, booking_id, status):
 
     messages.success(request, f"Booking marked as {status}")
     return redirect("petadmin:adminGroomingBookings")
+
+# ================= DAYCARE SERVICES ADMIN =================
+
+def daycarePlansAdmin(request):
+    if "admin_id" not in request.session:
+        return redirect("petadmin:loginAdmin")
+
+    plans = Service.objects.filter(service_type="daycare")
+
+    return render(request, "petadmin/daycareServicesAdmin.html", {
+        "plans": plans
+    })
+
+
+def addDaycarePlanAdmin(request):
+    if "admin_id" not in request.session:
+        return redirect("petadmin:loginAdmin")
+
+    form = ServiceForm(request.POST or None, initial={"service_type": "daycare"})
+
+    if form.is_valid():
+        plan = form.save(commit=False)
+        plan.service_type = "daycare"
+        plan.save()
+
+        messages.success(request, "Daycare plan added successfully")
+        return redirect("petadmin:daycarePlansAdmin")
+
+    return render(request, "petadmin/services/service_form.html", {
+        "form": form,
+        "title": "Add Daycare Plan"
+    })
+
+
+def editDaycarePlanAdmin(request, id):
+    if "admin_id" not in request.session:
+        return redirect("petadmin:loginAdmin")
+
+    plan = get_object_or_404(Service, id=id, service_type="daycare")
+
+    form = ServiceForm(request.POST or None, instance=plan)
+
+    if form.is_valid():
+        form.save()
+        messages.success(request, "Daycare plan updated successfully")
+        return redirect("petadmin:daycarePlansAdmin")
+
+    return render(request, "petadmin/services/service_form.html", {
+        "form": form,
+        "title": "Edit Daycare Plan"
+    })
+
+
+def deleteDaycarePlanAdmin(request, id):
+    if "admin_id" not in request.session:
+        return redirect("petadmin:loginAdmin")
+
+    plan = get_object_or_404(Service, id=id, service_type="daycare")
+    plan.delete()
+
+    messages.success(request, "Daycare plan deleted successfully")
+    return redirect("petadmin:daycarePlansAdmin")

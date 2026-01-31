@@ -6,27 +6,30 @@
 
 {% block content %}
 
-<!-- HEADER -->
-<div class="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-12 gap-6">
+<!-- ================= PAGE HEADER ================= -->
+<div class="flex flex-col xl:flex-row justify-between items-start xl:items-center mb-12 gap-6">
 
+    <!-- LEFT -->
     <div>
         <h1 class="text-4xl font-extrabold text-slate-800 tracking-tight">
-            Welcome, {{ volunteer.name }}
+            Welcome back, {{ volunteer.name }}
         </h1>
-        <p class="text-slate-500 mt-2 max-w-xl">
-            Manage your tasks, attendance, pets, and daily responsibilities from one unified professional dashboard.
+        <p class="text-slate-500 mt-2 max-w-2xl leading-relaxed">
+            This dashboard gives you a real-time overview of your work hours, assigned care duties,
+            and daily responsibilities within the PetPal Care system.
         </p>
     </div>
 
-    <div class="flex gap-4">
+    <!-- RIGHT ACTION -->
+    <div>
         {% if checked_in %}
             <a href="{% url 'volunteer:volunteerCheckOut' %}"
-               class="px-8 py-3 rounded-xl bg-red-600 text-white font-semibold shadow-lg hover:bg-red-700 transition">
+               class="inline-flex items-center px-8 py-3 rounded-xl bg-red-600 text-white font-semibold shadow hover:bg-red-700 transition">
                 End Shift
             </a>
         {% else %}
             <a href="{% url 'volunteer:volunteerCheckIn' %}"
-               class="px-8 py-3 rounded-xl bg-green-600 text-white font-semibold shadow-lg hover:bg-green-700 transition">
+               class="inline-flex items-center px-8 py-3 rounded-xl bg-green-600 text-white font-semibold shadow hover:bg-green-700 transition">
                 Start Shift
             </a>
         {% endif %}
@@ -34,58 +37,92 @@
 
 </div>
 
-<!-- KPI GRID -->
-<div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-8 mb-14">
+<!-- ================= KPI SECTION ================= -->
+<div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-8 mb-16">
 
-    <div class="glass-card rounded-3xl p-7">
-        <p class="text-sm text-gray-500">Total Hours</p>
-        <p class="text-4xl font-extrabold text-indigo-700 mt-3">{{ hours_completed }}</p>
-        <p class="text-xs text-gray-400 mt-2">System calculated</p>
+    <!-- TOTAL WORKING TIME -->
+    <div class="glass-card rounded-3xl p-8">
+        <p class="text-sm text-gray-500 uppercase tracking-wide">
+            Total Working Time
+        </p>
+        <p class="text-4xl font-extrabold text-indigo-700 mt-3">
+            {{ hours_completed }}
+        </p>
+        <p class="text-xs text-gray-400 mt-2">
+            Cumulative time across all completed shifts
+        </p>
     </div>
 
-    <div class="glass-card rounded-3xl p-7">
-        <p class="text-sm text-gray-500">Pets Assisted</p>
-        <p class="text-4xl font-extrabold text-indigo-700 mt-3">{{ pets_helped }}</p>
-        <p class="text-xs text-gray-400 mt-2">Care assignments</p>
+    <!-- PETS ASSISTED -->
+    <div class="glass-card rounded-3xl p-8">
+        <p class="text-sm text-gray-500 uppercase tracking-wide">
+            Pets Assisted
+        </p>
+        <p class="text-4xl font-extrabold text-indigo-700 mt-3">
+            {{ pets_helped }}
+        </p>
+        <p class="text-xs text-gray-400 mt-2">
+            Care assignments completed
+        </p>
     </div>
 
-    <div class="glass-card rounded-3xl p-7">
-        <p class="text-sm text-gray-500">Upcoming Tasks</p>
-        <p class="text-4xl font-extrabold text-indigo-700 mt-3">{{ upcoming_tasks }}</p>
-        <p class="text-xs text-gray-400 mt-2">Scheduled activities</p>
+    <!-- UPCOMING TASKS -->
+    <div class="glass-card rounded-3xl p-8">
+        <p class="text-sm text-gray-500 uppercase tracking-wide">
+            Upcoming Tasks
+        </p>
+        <p class="text-4xl font-extrabold text-indigo-700 mt-3">
+            {{ upcoming_tasks }}
+        </p>
+        <p class="text-xs text-gray-400 mt-2">
+            Scheduled responsibilities
+        </p>
     </div>
 
-    <div class="glass-card rounded-3xl p-7">
-        <p class="text-sm text-gray-500">Status</p>
+    <!-- STATUS -->
+    <div class="glass-card rounded-3xl p-8">
+        <p class="text-sm text-gray-500 uppercase tracking-wide">
+            Current Status
+        </p>
         <p class="text-xl font-bold mt-4">
             {% if checked_in %}
-                <span class="text-green-600">🟢 Active Shift</span>
+                <span class="inline-flex items-center gap-2 text-green-600">
+                    <span class="w-2.5 h-2.5 bg-green-500 rounded-full"></span>
+                    Active Shift
+                </span>
             {% else %}
-                <span class="text-red-600">🔴 Off Duty</span>
+                <span class="inline-flex items-center gap-2 text-red-600">
+                    <span class="w-2.5 h-2.5 bg-red-500 rounded-full"></span>
+                    Off Duty
+                </span>
             {% endif %}
         </p>
-        <p class="text-xs text-gray-400 mt-2">Live system status</p>
+        <p class="text-xs text-gray-400 mt-2">
+            Live system status
+        </p>
     </div>
 
 </div>
 
-<!-- MAIN GRID -->
+<!-- ================= MAIN GRID ================= -->
 <div class="grid grid-cols-1 xl:grid-cols-3 gap-10">
 
-    <!-- SCHEDULE -->
-    <div class="xl:col-span-2 glass-card rounded-3xl p-8">
+    <!-- TODAY'S SCHEDULE -->
+    <div class="xl:col-span-2 glass-card rounded-3xl p-10">
 
-        <div class="flex justify-between items-center mb-8">
-            <div>
-                <h2 class="text-2xl font-bold text-slate-800">Today's Schedule</h2>
-                <p class="text-sm text-gray-500">Real-time assigned responsibilities</p>
-            </div>
+        <div class="mb-8">
+            <h2 class="text-2xl font-bold text-slate-800">
+                Today's Schedule
+            </h2>
+            <p class="text-sm text-gray-500 mt-1">
+                Assigned duties and care activities for today
+            </p>
         </div>
 
         <div class="space-y-5">
 
             {% for task in today_tasks %}
-            <div class="flex justify-between items-center p-5 rounded-2xl bg-slate-50 border hover:shadow-md transition">
+            <div class="flex justify-between items-center p-6 rounded-2xl bg-slate-50 border hover:shadow-md transition">
 
                 <div>
                     <p class="font-semibold text-slate-800 text-lg">
@@ -96,15 +133,13 @@
                     </p>
                 </div>
 
-                <div class="flex flex-col items-end">
-                    <span class="px-4 py-1 rounded-full bg-indigo-100 text-indigo-700 text-sm font-semibold">
-                        {{ task.status|title }}
-                    </span>
-                </div>
+                <span class="px-4 py-1 rounded-full bg-indigo-100 text-indigo-700 text-sm font-semibold">
+                    {{ task.status|title }}
+                </span>
 
             </div>
             {% empty %}
-            <div class="text-center py-16 text-gray-500">
+            <div class="text-center py-20 text-gray-500 text-sm">
                 No scheduled tasks for today
             </div>
             {% endfor %}
@@ -113,37 +148,45 @@
 
     </div>
 
-    <!-- INFO PANEL -->
-    <div class="glass-card rounded-3xl p-8">
+    <!-- PROFESSIONAL SUMMARY -->
+    <div class="glass-card rounded-3xl p-10">
 
-        <h3 class="text-xl font-bold text-slate-800 mb-6">
+        <h3 class="text-xl font-bold text-slate-800 mb-8">
             Professional Summary
         </h3>
 
         <div class="space-y-6">
 
             <div class="p-4 bg-slate-50 rounded-xl">
-                <p class="text-sm text-gray-500">Availability</p>
-                <p class="font-semibold">
+                <p class="text-xs text-gray-500 uppercase tracking-wide">
+                    Availability
+                </p>
+                <p class="font-semibold mt-1">
                     {% if checked_in %} On Duty {% else %} Off Duty {% endif %}
                 </p>
             </div>
 
             <div class="p-4 bg-slate-50 rounded-xl">
-                <p class="text-sm text-gray-500">Role</p>
-                <p class="font-semibold">Volunteer Care Specialist</p>
+                <p class="text-xs text-gray-500 uppercase tracking-wide">
+                    Role
+                </p>
+                <p class="font-semibold mt-1">
+                    Volunteer Care Specialist
+                </p>
             </div>
 
             <div class="p-4 bg-slate-50 rounded-xl">
-                <p class="text-sm text-gray-500">System Access</p>
-                <p class="font-semibold">Standard Access Level</p>
+                <p class="text-xs text-gray-500 uppercase tracking-wide">
+                    System Access
+                </p>
+                <p class="font-semibold mt-1">
+                    Standard Access Level
+                </p>
             </div>
 
-            <div class="divider my-4"></div>
-
-            <p class="text-xs text-gray-400 leading-relaxed">
-                This professional portal is designed to provide structured workflows, 
-                accountability, transparency, and efficiency in animal care operations.
+            <p class="text-xs text-gray-400 leading-relaxed pt-4">
+                This portal ensures accountability, transparency, and operational
+                efficiency in daily animal care activities.
             </p>
 
         </div>

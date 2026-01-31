@@ -1,224 +1,167 @@
 {% load static %}
 <!DOCTYPE html>
-<html lang="en" data-theme="light">
+<html lang="en">
 <head>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script>
-    console.log("Chart.js loaded:", typeof Chart);
-  </script>
+  <meta charset="UTF-8">
+  <title>{% block title %}PetPal Admin{% endblock %}</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<meta charset="UTF-8">
-<title>{% block title %}PetPal Admin{% endblock %}</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Tailwind & Icons -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
 
-<script src="https://cdn.tailwindcss.com"></script>
-<script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
 
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    body{
+      font-family:"Poppins",sans-serif;
+      background:
+        radial-gradient(circle at top right,#eef2ff,transparent 45%),
+        radial-gradient(circle at bottom left,#fde7f3,transparent 45%),
+        #f8fafc;
+    }
 
-<style>
-body{
-  font-family:"Poppins",sans-serif;
-  background:
-    radial-gradient(circle at top right,#eef2ff,transparent 45%),
-    radial-gradient(circle at bottom left,#fde7f3,transparent 45%),
-    #f8fafc;
-}
+    /* Glass effect */
+    .glass{
+      background:rgba(255,255,255,.82);
+      backdrop-filter:blur(16px);
+      border:1px solid rgba(255,255,255,.55);
+    }
 
-/* ================= GLASS ================= */
-.glass{
-  background:rgba(255,255,255,.82);
-  backdrop-filter:blur(16px);
-  border:1px solid rgba(255,255,255,.55);
-}
+    /* Sidebar */
+    #sidebar{
+      width:18rem;
+      transition:all .25s ease;
+    }
+    #sidebar.collapsed{
+      width:5.5rem;
+    }
+    #sidebar.collapsed span,
+    #sidebar.collapsed h2{
+      display:none;
+    }
 
-/* ================= SIDEBAR ================= */
-#sidebar{
-  width:18rem;
-  transition:.25s ease;
-}
-#sidebar.collapsed{
-  width:5.5rem;
-}
-#sidebar.collapsed span,
-#sidebar.collapsed h2{
-  display:none;
-}
-.sidebar a{
-  display:flex;
-  align-items:center;
-  gap:14px;
-}
-.sidebar a:hover{
-  background:linear-gradient(135deg,#6366f1,#ec4899);
-  color:white;
-}
+    /* Sidebar links */
+    .sidebar a{
+      display:flex;
+      align-items:center;
+      gap:14px;
+      padding:12px 20px;
+      border-radius:9999px;
+      transition:all .25s ease;
+      color:#334155;
+    }
 
-/* ================= FAST UI ================= */
-*{
-  transition-duration:0.15s !important;
-  animation-duration:0.25s !important;
-}
+    .sidebar a:hover{
+      background:linear-gradient(135deg,#6366f1,#ec4899);
+      color:white;
+      transform:translateX(4px);
+    }
 
-/* ================= SKELETON LOADER ================= */
-.skeleton{
-  position:relative;
-  overflow:hidden;
-  background:#e5e7eb;
-  border-radius:8px;
-}
-.skeleton::after{
-  content:"";
-  position:absolute;
-  inset:0;
-  background:linear-gradient(
-    100deg,
-    transparent 40%,
-    rgba(255,255,255,.6) 50%,
-    transparent 60%
-  );
-  animation:shimmer 1.2s infinite;
-}
-
-@keyframes shimmer{
-  from{transform:translateX(-100%)}
-  to{transform:translateX(100%)}
-}
-
-/* ================= PAGE SKELETON ================= */
-#page-skeleton{
-  position:absolute;
-  inset:0;
-  background:#f8fafc;
-  z-index:50;
-  padding:40px;
-}
-.skel-card{
-  height:120px;
-  margin-bottom:20px;
-}
-.skel-line{
-  height:16px;
-  margin-bottom:12px;
-  width:100%;
-}
-.skel-line.sm{width:60%;}
-.skel-line.xs{width:40%;}
-
-/* Hide skeleton when page ready */
-body.loaded #page-skeleton{
-  display:none;
-}
-</style>
-
+    /* Active capsule */
+    .sidebar a.active{
+      background:linear-gradient(135deg,#6366f1,#ec4899);
+      color:white;
+      box-shadow:0 8px 24px rgba(99,102,241,0.35);
+    }
+  </style>
 </head>
 
 <body>
 
-<!-- ================= PAGE SKELETON ================= -->
-<div id="page-skeleton">
-  <div class="skeleton skel-line sm"></div>
-  <div class="skeleton skel-line xs"></div>
-
-  <div class="mt-10">
-    <div class="skeleton skel-card"></div>
-    <div class="skeleton skel-card"></div>
-    <div class="skeleton skel-card"></div>
-  </div>
-</div>
-
 <div class="flex min-h-screen">
 
-<!-- SIDEBAR -->
-<aside id="sidebar" class="glass px-8 py-12 sidebar hidden md:block">
+  <!-- SIDEBAR -->
+  <aside id="sidebar" class="glass px-6 py-10 sidebar hidden md:block">
 
-  <button onclick="toggleSidebar()"
-          class="mb-8 p-3 rounded-xl bg-indigo-100 text-indigo-600">
-    <i data-lucide="menu"></i>
-  </button>
+    <!-- Toggle -->
+    <button onclick="toggleSidebar()"
+            class="mb-8 p-3 rounded-xl bg-indigo-100 text-indigo-600 hover:bg-indigo-200">
+      <i data-lucide="menu"></i>
+    </button>
 
-  <h2 class="text-4xl font-extrabold text-indigo-600 mb-14">PetPal</h2>
+    <!-- Logo -->
+    <h2 class="text-4xl font-extrabold text-indigo-600 mb-14">PetPal</h2>
 
-  <nav class="space-y-4 text-sm font-semibold">
+    <nav class="space-y-2 text-sm font-semibold">
 
-    <a href="{% url 'petadmin:homeAdmin' %}" class="px-5 py-3 rounded-xl">
-      <i data-lucide="layout-dashboard"></i><span>Dashboard</span>
-    </a>
+      <a href="{% url 'petadmin:homeAdmin' %}"
+         class="{% if request.path == '/petadmin/home/' or request.path == '/petadmin/' %}active{% endif %}">
+        <i data-lucide="layout-dashboard"></i><span>Dashboard</span>
+      </a>
 
-    <a href="{% url 'petadmin:doctorAdmin' %}" class="px-5 py-3 rounded-xl">
-      <i data-lucide="stethoscope"></i><span>Doctors</span>
-    </a>
+      <a href="{% url 'petadmin:doctorAdmin' %}"
+         class="{% if '/petadmin/doctor/' in request.path %}active{% endif %}">
+        <i data-lucide="stethoscope"></i><span>Doctors</span>
+      </a>
 
-    <a href="{% url 'petadmin:volunteerAdmin' %}" class="px-5 py-3 rounded-xl">
-      <i data-lucide="scissors"></i><span>Volunteers</span>
-    </a>
+      <a href="{% url 'petadmin:volunteerAdmin' %}"
+         class="{% if '/petadmin/volunteer/' in request.path %}active{% endif %}">
+        <i data-lucide="scissors"></i><span>Volunteers</span>
+      </a>
 
-    <li>
-  <a href="{% url 'petadmin:adminGroomingBookings' %}" class="px-5 py-3 rounded-xl">
-    Grooming Bookings
-  </a>
-</li>
+      <a href="{% url 'petadmin:adminGroomingBookings' %}"
+         class="{% if '/petadmin/grooming/' in request.path %}active{% endif %}">
+        <i data-lucide="calendar"></i><span>Grooming Bookings</span>
+      </a>
 
-    <a href="{% url 'petadmin:userAdmin' %}" class="px-5 py-3 rounded-xl">
-      <i data-lucide="users"></i><span>Users</span>
-    </a>
+      <a href="{% url 'petadmin:userAdmin' %}"
+         class="{% if '/petadmin/users/' in request.path %}active{% endif %}">
+        <i data-lucide="users"></i><span>Users</span>
+      </a>
 
-    <a href="{% url 'petadmin:adoptionPetsAdmin' %}" class="px-5 py-3 rounded-xl">
-      <i data-lucide="paw-print"></i><span>Adoption Pets</span>
-    </a>
+      <a href="{% url 'petadmin:adoptionPetsAdmin' %}"
+         class="{% if '/petadmin/adoption/' in request.path %}active{% endif %}">
+        <i data-lucide="paw-print"></i><span>Adoption Pets</span>
+      </a>
 
-    <a href="{% url 'petadmin:serviceAdmin' %}" class="px-5 py-3 rounded-xl">
-      <i data-lucide="paw-print"></i><span>Services</span>
-    </a>
-    <!-- LOGOUT -->
-    <form method="post" action="{% url 'petadmin:logoutAdmin' %}" class="pt-8">
-      {% csrf_token %}
-      <button
-        type="submit"
-        onclick="return confirm('Are you sure you want to logout?')"
-        class="w-full px-5 py-3 rounded-xl flex items-center gap-3
-               text-red-600 hover:text-white
-               hover:bg-gradient-to-r hover:from-red-500 hover:to-pink-500">
-        <i data-lucide="log-out"></i>
-        <span>Logout</span>
-      </button>
-    </form>
+      <!-- SERVICES -->
+      <div class="pt-6 pb-2 text-xs text-gray-400 uppercase tracking-wider">
+        Services
+      </div>
 
-  </nav>
-</aside>
+      <a href="{% url 'petadmin:groomingServicesAdmin' %}"
+         class="{% if '/petadmin/services/grooming/' in request.path %}active{% endif %}">
+        <i data-lucide="sparkles"></i><span>Grooming Services</span>
+      </a>
 
-<!-- MAIN CONTENT -->
-<main class="flex-1 px-12 py-10 relative">
-  {% block content %}{% endblock %}
-</main>
+      <a href="{% url 'petadmin:daycarePlansAdmin' %}"
+         class="{% if '/petadmin/services/daycare/' in request.path %}active{% endif %}">
+        <i data-lucide="home"></i><span>Daycare Plans</span>
+      </a>
+
+      <!-- LOGOUT -->
+      <form method="post" action="{% url 'petadmin:logoutAdmin' %}" class="pt-8">
+        {% csrf_token %}
+        <button type="submit"
+                onclick="return confirm('Are you sure you want to logout?')"
+                class="w-full flex items-center gap-3 px-5 py-3 rounded-full
+                       text-red-600 hover:text-white
+                       hover:bg-gradient-to-r hover:from-red-500 hover:to-pink-500
+                       transition">
+          <i data-lucide="log-out"></i><span>Logout</span>
+        </button>
+      </form>
+
+    </nav>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <main class="flex-1 px-12 py-10">
+    <div class="max-w-7xl mx-auto">
+      {% block content %}{% endblock %}
+    </div>
+  </main>
 
 </div>
 
 <script>
-lucide.createIcons();
-
-function toggleSidebar(){
-  document.getElementById("sidebar").classList.toggle("collapsed");
-}
-
-/* ================= SKELETON AUTO HIDE ================= */
-window.addEventListener("load", () => {
-  document.body.classList.add("loaded");
-});
-/* ================= SKELETON AUTO HIDE ================= */
-window.addEventListener("load", () => {
-  document.body.classList.add("loaded");
-});
-
-/* ================= FIX FOR BACK BUTTON (bfcache) ================= */
-window.addEventListener("pageshow", function (event) {
-  if (event.persisted) {
-    // Page restored from cache -> hide skeleton immediately
-    document.body.classList.add("loaded");
+  lucide.createIcons();
+  function toggleSidebar(){
+    document.getElementById("sidebar").classList.toggle("collapsed");
   }
-});
 </script>
 
-{% block extra_js %}{% endblock %}
 </body>
 </html>

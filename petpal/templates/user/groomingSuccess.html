@@ -5,164 +5,202 @@
 
 {% block extra_css %}
 <style>
-/* ---------- LAYOUT ---------- */
+/* ================= THEME VARIABLES ================= */
+:root{
+  --bg-main:#f4f6ff;
+  --bg-card:#ffffff;
+  --text-main:#0f172a;
+  --text-sub:#64748b;
+  --border:#e5e7eb;
+  --soft:#f8fafc;
+  --success:#22c55e;
+  --summary-grad:linear-gradient(135deg,#6366f1,#ec4899);
+}
+
+.dark{
+  --bg-main:#0b1220;
+  --bg-card:#0f172a;
+  --text-main:#f9fafb;
+  --text-sub:#94a3b8;
+  --border:#1e293b;
+  --soft:#020617;
+  --success:#4ade80;
+  --summary-grad:linear-gradient(135deg,#4f46e5,#db2777);
+}
+
+/* ================= LAYOUT ================= */
 .receipt-wrap{
-  min-height:80vh;
+  min-height:100vh;
   display:flex;
   align-items:center;
   justify-content:center;
-  padding:40px 16px;
+  padding:50px 16px;
+  background:var(--bg-main);
 }
 
-/* ---------- RECEIPT CARD ---------- */
+/* ================= CARD ================= */
 .receipt-card{
-  max-width:720px;
+  max-width:760px;
   width:100%;
-  background:rgba(255,255,255,.95);
-  backdrop-filter:blur(20px);
+  background:var(--bg-card);
   border-radius:28px;
-  padding:40px;
-  box-shadow:0 30px 90px rgba(0,0,0,.1);
-}
-.dark .receipt-card{
-  background:rgba(15,23,42,.95);
-  border:1px solid rgba(255,255,255,.08);
-  box-shadow:0 40px 120px rgba(0,0,0,.7);
+  padding:48px;
+  box-shadow:0 40px 120px rgba(0,0,0,.15);
+  color:var(--text-main);
+  border:1px solid var(--border);
 }
 
-/* ---------- HEADER ---------- */
+/* ================= HEADER ================= */
 .receipt-header{
   display:flex;
   align-items:center;
   justify-content:space-between;
-  border-bottom:1px dashed #e5e7eb;
+  border-bottom:1px dashed var(--border);
   padding-bottom:20px;
-  margin-bottom:20px;
-}
-.dark .receipt-header{
-  border-bottom:1px dashed #334155;
+  margin-bottom:28px;
 }
 
 .brand{
-  font-size:1.5rem;
-  font-weight:800;
+  font-size:1.6rem;
+  font-weight:900;
   background:linear-gradient(135deg,#6366f1,#ec4899);
   -webkit-background-clip:text;
   -webkit-text-fill-color:transparent;
+  letter-spacing:.5px;
 }
 
 .status{
-  padding:6px 14px;
+  padding:8px 18px;
   border-radius:999px;
   font-size:.8rem;
-  font-weight:700;
-  background:#dcfce7;
-  color:#166534;
-}
-.dark .status{
-  background:#064e3b;
-  color:#6ee7b7;
+  font-weight:800;
+  background:rgba(34,197,94,.15);
+  color:var(--success);
+  border:1px solid rgba(34,197,94,.3);
 }
 
-/* ---------- BODY ---------- */
-.section{
-  margin-top:20px;
+/* ================= ICON ================= */
+.check-circle{
+  width:80px;
+  height:80px;
+  border-radius:50%;
+  background:var(--summary-grad);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:white;
+  font-size:36px;
+  font-weight:900;
+  margin:0 auto 18px;
+  box-shadow:0 20px 50px rgba(99,102,241,.45);
+}
+
+/* ================= TITLE ================= */
+.success-title{
+  text-align:center;
+  margin-bottom:30px;
+}
+.success-title h2{
+  font-size:2rem;
+  font-weight:900;
+  margin-bottom:6px;
+}
+.success-title p{
+  color:var(--text-sub);
+  font-size:.95rem;
+}
+
+/* ================= INFO GRID ================= */
+.info-box{
+  background:var(--soft);
+  border-radius:18px;
+  padding:26px;
+  border:1px solid var(--border);
+  margin-bottom:24px;
 }
 
 .row{
   display:flex;
   justify-content:space-between;
   padding:10px 0;
-  border-bottom:1px solid #f1f5f9;
+  border-bottom:1px solid var(--border);
+  font-size:.95rem;
 }
-.dark .row{
-  border-bottom:1px solid #1e293b;
-}
+.row:last-child{border-bottom:none;}
 
 .label{
   font-weight:600;
-  color:#64748b;
+  color:var(--text-sub);
 }
-.dark .label{ color:#cbd5e1; }
-
 .value{
-  font-weight:600;
-  color:#0f172a;
+  font-weight:700;
+  color:var(--text-main);
   text-align:right;
 }
-.dark .value{ color:#f8fafc; }
 
-/* ---------- SERVICES ---------- */
+/* ================= SERVICES ================= */
 .services{
   margin-top:10px;
+}
+.services h4{
+  font-size:1rem;
+  font-weight:800;
+  margin-bottom:10px;
 }
 .service-item{
   padding:6px 0;
   font-size:.95rem;
+  color:var(--text-main);
 }
 
-/* ---------- TOTAL ---------- */
+/* ================= TOTAL ================= */
 .total-box{
-  margin-top:20px;
-  padding:18px;
-  border-radius:18px;
-  background:linear-gradient(135deg,#6366f1,#ec4899);
+  margin-top:24px;
+  padding:22px 26px;
+  border-radius:20px;
+  background:var(--summary-grad);
   color:white;
   display:flex;
   justify-content:space-between;
   align-items:center;
   font-size:1.2rem;
-  font-weight:800;
+  font-weight:900;
+  box-shadow:0 15px 40px rgba(99,102,241,.4);
 }
 
-/* ---------- ACTIONS ---------- */
+/* ================= ACTIONS ================= */
 .actions{
-  margin-top:30px;
+  margin-top:34px;
   display:flex;
-  gap:16px;
+  gap:18px;
   justify-content:center;
   flex-wrap:wrap;
 }
 
 .btn{
-  padding:12px 26px;
-  border-radius:14px;
-  font-weight:600;
+  padding:14px 34px;
+  border-radius:16px;
+  font-weight:800;
   text-decoration:none;
   transition:.25s;
+  font-size:.95rem;
 }
 
 .btn-primary{
-  background:linear-gradient(135deg,#6366f1,#ec4899);
+  background:var(--summary-grad);
   color:white;
-  box-shadow:0 10px 30px rgba(99,102,241,.35);
+  box-shadow:0 12px 35px rgba(99,102,241,.45);
 }
 .btn-primary:hover{transform:translateY(-2px);}
 
 .btn-secondary{
-  background:#f1f5f9;
-  color:#0f172a;
+  background:var(--soft);
+  color:var(--text-main);
+  border:1px solid var(--border);
 }
-.dark .btn-secondary{
-  background:#1e293b;
-  color:#f8fafc;
-}
-.btn-secondary:hover{transform:translateY(-2px);}
-
-/* ---------- ICON ---------- */
-.check-circle{
-  width:70px;
-  height:70px;
-  border-radius:50%;
-  background:linear-gradient(135deg,#6366f1,#ec4899);
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  color:white;
-  font-size:32px;
-  font-weight:900;
-  margin:0 auto 16px;
-  box-shadow:0 15px 40px rgba(99,102,241,.4);
+.btn-secondary:hover{
+  transform:translateY(-2px);
+  box-shadow:0 8px 25px rgba(0,0,0,.15);
 }
 </style>
 {% endblock %}
@@ -175,25 +213,23 @@
   <!-- HEADER -->
   <div class="receipt-header">
     <div class="brand">PetPal</div>
-    <div class="status">CONFIRMED</div>
+    <div class="status">BOOKING CONFIRMED</div>
   </div>
 
   <!-- ICON -->
   <div class="check-circle">✓</div>
 
   <!-- TITLE -->
-  <div style="text-align:center;">
-    <h2 class="text-2xl font-extrabold dark:text-white">Grooming Booking Successful</h2>
-    <p class="text-gray-500 dark:text-gray-300 mt-1">
-      Booking ID: #{{ booking_id }}
-    </p>
+  <div class="success-title">
+    <h2>Grooming Booking Successful</h2>
+    <p>Booking ID : <strong>#{{ booking_id }}</strong></p>
   </div>
 
-  <!-- DETAILS -->
-  <div class="section">
+  <!-- INFO -->
+  <div class="info-box">
 
     <div class="row">
-      <div class="label">Date</div>
+      <div class="label">Appointment Date</div>
       <div class="value">{{ date }}</div>
     </div>
 
@@ -203,7 +239,7 @@
     </div>
 
     <div class="row">
-      <div class="label">Phone</div>
+      <div class="label">Guardian Phone</div>
       <div class="value">{{ phone }}</div>
     </div>
 
@@ -215,10 +251,10 @@
   </div>
 
   <!-- SERVICES -->
-  <div class="section services">
-    <div class="label mb-2">Services Selected</div>
+  <div class="info-box services">
+    <h4>Selected Grooming Services</h4>
     {% for s in services %}
-      <div class="service-item">• {{ s }}</div>
+      <div class="service-item">🐾 {{ s }}</div>
     {% endfor %}
   </div>
 
@@ -231,11 +267,11 @@
   <!-- ACTIONS -->
   <div class="actions">
     <a href="{% url 'petapp:grooming' %}" class="btn btn-secondary">
-      Book Another
+      Book Another Grooming
     </a>
 
     <a href="{% url 'petapp:home' %}" class="btn btn-primary">
-      Back to Home
+      Back to Dashboard
     </a>
   </div>
 

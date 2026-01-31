@@ -1,0 +1,42 @@
+{% extends "Petadmin/baseadmin.html" %}
+{% block title %}Daycare Plans{% endblock %}
+
+{% block content %}
+<h1 class="text-3xl font-bold mb-8">Daycare Plans</h1>
+
+<a href="{% url 'petadmin:addDaycarePlanAdmin' %}"
+   class="mb-6 inline-block px-6 py-3 rounded-xl text-white
+          bg-gradient-to-r from-indigo-500 to-pink-500">
+  + Add Daycare Plan
+</a>
+
+<div class="glass rounded-2xl p-6">
+  <table class="w-full text-sm">
+    <thead>
+      <tr class="text-left text-gray-500 border-b">
+        <th class="py-3">Name</th>
+        <th>Price</th>
+        <th>Description</th>
+        <th class="text-right">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for s in services %}
+      <tr class="border-b last:border-none">
+        <td class="py-4 font-semibold">{{ s.name }}</td>
+        <td>₹{{ s.price }}</td>
+        <td class="text-gray-500">{{ s.description }}</td>
+        <td class="text-right space-x-3">
+          <a href="{% url 'petadmin:editDaycareServiceAdmin' s.id %}" class="text-indigo-600">Edit</a>
+          <a href="{% url 'petadmin:deleteDaycareServiceAdmin' s.id %}"
+             onclick="return confirm('Delete this plan?')"
+             class="text-red-600">Delete</a>
+        </td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="4" class="py-6 text-center text-gray-400">No daycare plans added</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

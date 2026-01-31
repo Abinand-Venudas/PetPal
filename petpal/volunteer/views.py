@@ -13,6 +13,8 @@ from .models import (
 )
 from .models import VolunteerNotification
 from petapp.models import GroomingBooking
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth import logout, update_session_auth_hash
 
 
 # ---------------- SIGNUP ----------------
@@ -79,13 +81,36 @@ def volunteerHome(request):
         id=request.session['volunteer_id']
     )
 
-    attendances = VolunteerAttendance.objects.filter(volunteer=volunteer)
+    attendances = VolunteerAttendance.objects.filter(
+        volunteer=volunteer,
+        check_out__isnull=False  # only completed sessions
+    )
 
-    total_hours = sum(a.worked_hours() for a in attendances)
+    # ================================
+    # FIXED WORKING HOURS CALCULATION
+    # ================================
+    total_minutes = 0
 
-    checked_in = attendances.filter(check_out__isnull=True).exists()
+    for attendance in attendances:
+        hours_decimal = attendance.worked_hours()  # e.g. 1.75
+        total_minutes += int(hours_decimal * 60)
 
-    pets_helped = VolunteerPet.objects.filter(volunteer=volunteer).count()
+    hours = total_minutes // 60
+    minutes = total_minutes % 60
+
+    hours_completed_display = f"{hours}h {minutes}m"
+
+    # ================================
+    # STATUS & OTHER DATA
+    # ================================
+    checked_in = VolunteerAttendance.objects.filter(
+        volunteer=volunteer,
+        check_out__isnull=True
+    ).exists()
+
+    pets_helped = VolunteerPet.objects.filter(
+        volunteer=volunteer
+    ).count()
 
     upcoming_tasks = VolunteerTask.objects.filter(
         volunteer=volunteer,
@@ -104,12 +129,12 @@ def volunteerHome(request):
 
     return render(request, "volunteer/volunteerHome.html", {
         "volunteer": volunteer,
-        "hours_completed": round(total_hours, 2),
+        "hours_completed": hours_completed_display,  # ✅ FIXED
         "checked_in": checked_in,
         "pets_helped": pets_helped,
         "upcoming_tasks": upcoming_tasks,
         "today_tasks": today_tasks,
-        "notifications": notifications
+        "notifications": notifications,
     })
 
 # ---------------- CHECK-IN (ANTI DOUBLE) ----------------
@@ -239,3 +264,44 @@ def mark_notification_read(request, id):
         return redirect(note.link)
 
     return redirect("volunteer:volunteerTasks")
+
+# =========================
+# VOLUNTEER PROFILE
+# =========================
+@login_required
+def volunteerProfile(request):
+    volunteer = request.user  # assuming volunteer is authenticated user
+
+    return render(request, 'volunteer/volunteerProfile.html', {
+        'volunteer': volunteer
+    })
+
+
+# =========================
+# CHANGE PASSWORD
+# =========================
+@login_required
+def volunteerChangePassword(request):
+
+    if request.method == 'POST':
+        form = PasswordChangeForm(request.user, request.POST)
+        if form.is_valid():
+            user = form.save()
+            update_session_auth_hash(request, user)  # IMPORTANT
+            messages.success(request, "Password updated successfully.")
+            return redirect('volunteer:volunteerHome')
+    else:
+        form = PasswordChangeForm(request.user)
+
+    return render(request, 'volunteer/volunteerChangePassword.html', {
+        'form': form
+    })
+
+
+# =========================
+# LOGOUT
+# =========================
+@login_required
+def volunteerLogout(request):
+    logout(request)
+    return redirect('volunteer:volunteerLogin')

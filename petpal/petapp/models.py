@@ -188,18 +188,24 @@ class DaycareBooking(models.Model):
 # GROOMING SERVICE
 # =========================
 class Service(models.Model):
+    SERVICE_TYPE_CHOICES = (
+        ("grooming", "Grooming"),
+        ("daycare", "Daycare"),
+    )
+
     name = models.CharField(max_length=100)
     price = models.PositiveIntegerField()
-    icon = models.CharField(
-        max_length=10,
-        blank=True,
-        null=True,
-        help_text="Emoji icon (🛁 ✂️ 💅 🐾)"
+    duration = models.CharField(max_length=50, blank=True, null=True)
+    icon = models.CharField(max_length=50, blank=True, null=True)
+    description = models.TextField(blank=True, null=True)
+    service_type = models.CharField(
+        max_length=20,
+        choices=SERVICE_TYPE_CHOICES,
+        default="grooming"
     )
-    duration = models.PositiveIntegerField(help_text="Duration in minutes")
 
     def __str__(self):
-        return self.name
+        return f"{self.name} ({self.service_type})"
 
 
 # =========================
@@ -222,7 +228,7 @@ class GroomingSlotLock(models.Model):
 
 
 # =========================
-# GROOMING BOOKING MODEL
+# GROOMING BOOKING MODEL (UPDATED)
 # =========================
 class GroomingBooking(models.Model):
     user = models.ForeignKey(user_registration, on_delete=models.CASCADE)
@@ -234,15 +240,31 @@ class GroomingBooking(models.Model):
         blank=True
     )
 
+    # ===== PET DETAILS =====
+    animal_type = models.CharField(max_length=50)
+    pet_name = models.CharField(max_length=100)
+    breed = models.CharField(max_length=100, blank=True, null=True)
+    age = models.PositiveIntegerField(blank=True, null=True)
+    weight = models.DecimalField(max_digits=5, decimal_places=2, blank=True, null=True)
+    condition = models.CharField(max_length=200, blank=True, null=True)
+
+    # ===== GUARDIAN DETAILS =====
+    guardian_name = models.CharField(max_length=100)
+    guardian_phone = models.CharField(max_length=15)
+    emergency_contact = models.CharField(max_length=15, blank=True, null=True)
+    email = models.EmailField(blank=True, null=True)
+    address = models.TextField(blank=True, null=True)
+
+    # ===== BOOKING DETAILS =====
     date = models.DateField()
     start_time = models.TimeField()
     end_time = models.TimeField()
 
-    phone = models.CharField(max_length=15)
-
     services = models.JSONField()
     total = models.IntegerField()
     total_duration = models.IntegerField()
+
+    instructions = models.TextField(blank=True, null=True)
 
     status = models.CharField(
         max_length=30,
@@ -262,4 +284,4 @@ class GroomingBooking(models.Model):
         unique_together = ("date", "start_time")  # 🔒 HARD booking protection
 
     def __str__(self):
-        return f"{self.user.name} | {self.date} {self.start_time}"
+        return f"GROOMING → {self.pet_name} | {self.date} {self.start_time}"

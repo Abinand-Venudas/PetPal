@@ -8,52 +8,59 @@
     <!-- Tailwind -->
     <script src="https://cdn.tailwindcss.com"></script>
 
-    <!-- Fonts -->
+    <!-- Font -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 
     <style>
-        *{
-            font-family: 'Inter', sans-serif;
-        }
+        * { font-family: 'Inter', sans-serif; }
 
+        /* ---------- CARDS ---------- */
         .glass-card{
-            background: rgba(255,255,255,0.85);
+            background: rgba(255,255,255,.85);
             backdrop-filter: blur(18px);
-            border: 1px solid rgba(255,255,255,0.5);
-            box-shadow: 0 30px 80px rgba(0,0,0,0.08);
+            border: 1px solid rgba(255,255,255,.5);
+            box-shadow: 0 30px 80px rgba(0,0,0,.08);
         }
 
-        .sidebar-item{
+        .soft-shadow{
+            box-shadow: 0 15px 45px rgba(0,0,0,.08);
+        }
+
+        /* ---------- SIDEBAR LINKS ---------- */
+        .sidebar-link{
             display:flex;
             align-items:center;
             gap:14px;
-            padding:14px 18px;
-            border-radius:14px;
-            color:#475569;
+            padding:12px 18px;
+            border-radius:9999px;
             font-weight:500;
-            transition:all .25s ease;
+            color:#475569;
+            transition:
+                background-color .25s ease,
+                color .25s ease,
+                transform .25s ease;
         }
 
-        .sidebar-item:hover{
+        /* Hover ONLY for inactive items */
+        .sidebar-link:not(.sidebar-active):hover{
             background:#EEF2FF;
             color:#4338CA;
             transform: translateX(4px);
         }
 
+        /* ---------- ACTIVE CAPSULE ---------- */
         .sidebar-active{
-            background:#E0E7FF;
-            color:#3730A3;
-            font-weight:700;
-            box-shadow: inset 4px 0 0 #4338CA;
+            background: linear-gradient(135deg, #4F46E5, #6366F1);
+            color:#ffffff !important;
+            font-weight:600;
+            box-shadow: 0 10px 28px rgba(79,70,229,.35);
         }
 
-        .soft-shadow{
-            box-shadow: 0 15px 50px rgba(0,0,0,.08);
-        }
-
-        .divider{
-            height:1px;
-            background: linear-gradient(to right, transparent, #E5E7EB, transparent);
+        /* Disable hover effects on active */
+        .sidebar-active:hover{
+            background: linear-gradient(135deg, #4F46E5, #6366F1);
+            transform: none;
+            box-shadow: 0 10px 28px rgba(79,70,229,.35);
         }
     </style>
 </head>
@@ -62,77 +69,116 @@
 
 <div class="flex min-h-screen">
 
-    <!-- SIDEBAR -->
-    <aside class="w-80 bg-white soft-shadow hidden lg:flex flex-col relative z-10">
+    <!-- ================= SIDEBAR ================= -->
+    <aside class="w-80 bg-white soft-shadow hidden lg:flex flex-col z-10">
 
         <!-- LOGO -->
         <div class="p-8 border-b">
-            <h1 class="text-2xl font-extrabold text-indigo-700 tracking-tight">PetPal Care</h1>
-            <p class="text-sm text-gray-500 mt-1">Volunteer Management System</p>
+            <h1 class="text-2xl font-extrabold text-indigo-700 tracking-tight">
+                PetPal Care
+            </h1>
+            <p class="text-sm text-gray-500 mt-1">
+                Volunteer Management System
+            </p>
         </div>
 
         <!-- NAV -->
         <nav class="flex-1 p-6 space-y-3">
 
-            <a href="{% url 'volunteer:volunteerHome' %}" 
-               class="sidebar-item sidebar-active">
+            <a href="{% url 'volunteer:volunteerHome' %}"
+               class="sidebar-link {% if request.resolver_match.url_name == 'volunteerHome' %}sidebar-active{% endif %}">
                 <span class="text-xl">🏠</span>
                 <span>Dashboard</span>
             </a>
 
-            <a href="{% url 'volunteer:volunteerAppointments' %}" 
-               class="sidebar-item">
+            <a href="{% url 'volunteer:volunteerAppointments' %}"
+               class="sidebar-link {% if request.resolver_match.url_name == 'volunteerAppointments' %}sidebar-active{% endif %}">
                 <span class="text-xl">📅</span>
                 <span>Appointments</span>
             </a>
 
-            <a href="{% url 'volunteer:volunteerPets' %}" 
-               class="sidebar-item">
+            <a href="{% url 'volunteer:volunteerPets' %}"
+               class="sidebar-link {% if request.resolver_match.url_name == 'volunteerPets' %}sidebar-active{% endif %}">
                 <span class="text-xl">🐾</span>
                 <span>My Pets</span>
             </a>
 
-            <a href="{% url 'volunteer:volunteerAttendance' %}" 
-               class="sidebar-item">
+            <a href="{% url 'volunteer:volunteerAttendance' %}"
+               class="sidebar-link {% if request.resolver_match.url_name == 'volunteerAttendance' %}sidebar-active{% endif %}">
                 <span class="text-xl">⏱</span>
                 <span>Attendance</span>
             </a>
 
-            <a href="{% url 'volunteer:volunteerNotification' %}" 
-               class="sidebar-item">
+            <a href="{% url 'volunteer:volunteerNotification' %}"
+               class="sidebar-link {% if request.resolver_match.url_name == 'volunteerNotification' %}sidebar-active{% endif %}">
                 <span class="text-xl">🔔</span>
                 <span>Notifications</span>
             </a>
 
         </nav>
 
-        <!-- PROFILE -->
+        <!-- FOOTER USER -->
         <div class="p-6 border-t">
             <div class="glass-card rounded-2xl p-4">
-                <p class="text-xs text-gray-500">Logged in as</p>
-                <p class="font-semibold text-gray-800">{{ request.session.volunteer_name }}</p>
-                <p class="text-xs text-gray-500">{{ request.session.volunteer_email }}</p>
+                <p class="text-xs text-gray-500 uppercase tracking-wide">
+                    Logged in as
+                </p>
+                <p class="font-semibold text-gray-800 mt-1">
+                    {{ request.session.volunteer_name }}
+                </p>
+                <p class="text-xs text-gray-500">
+                    {{ request.session.volunteer_email }}
+                </p>
             </div>
         </div>
 
     </aside>
 
-    <!-- MAIN -->
+    <!-- ================= MAIN ================= -->
     <main class="flex-1 relative overflow-y-auto">
 
-        <!-- TOP BAR -->
-        <header class="bg-white soft-shadow p-6 flex justify-between items-center sticky top-0 z-20">
+        <!-- HEADER -->
+        <header class="bg-white soft-shadow p-6 flex justify-between items-center sticky top-0 z-30">
             <div>
-                <h2 class="text-lg font-semibold text-gray-800">{% block header_title %}Dashboard{% endblock %}</h2>
-                <p class="text-xs text-gray-500">{% block header_subtitle %}Volunteer Portal{% endblock %}</p>
+                <h2 class="text-lg font-semibold text-gray-800">
+                    {% block header_title %}{% endblock %}
+                </h2>
+                <p class="text-xs text-gray-500">
+                    {% block header_subtitle %}{% endblock %}
+                </p>
             </div>
 
-            <div class="flex items-center gap-4">
-                <div class="text-sm text-gray-600">
-                    {{ request.session.volunteer_name }}
-                </div>
-                <div class="w-10 h-10 rounded-full bg-indigo-600 flex items-center justify-center text-white font-bold">
-                    {{ request.session.volunteer_name|first }}
+            <!-- PROFILE -->
+            <div class="relative">
+                <button id="profileBtn"
+                        class="flex items-center gap-2 px-3 py-2 rounded-full bg-white border hover:shadow-md transition">
+                    <div class="w-8 h-8 rounded-full bg-indigo-600 flex items-center justify-center text-white font-semibold">
+                        {{ request.session.volunteer_name|first }}
+                    </div>
+                    <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M19 9l-7 7-7-7"/>
+                    </svg>
+                </button>
+
+                <div id="profileMenu"
+                     class="hidden absolute right-0 mt-3 w-64 rounded-xl bg-white border shadow-xl z-40">
+                    <div class="px-5 py-4 border-b bg-slate-50">
+                        <p class="font-semibold">{{ request.session.volunteer_name }}</p>
+                        <p class="text-xs text-gray-500">{{ request.session.volunteer_email }}</p>
+                    </div>
+                    <a href="{% url 'volunteer:volunteerProfile' %}" class="block px-5 py-3 text-sm hover:bg-slate-100">
+                        My Profile
+                    </a>
+                    <a href="{% url 'volunteer:volunteerChangePassword' %}" class="block px-5 py-3 text-sm hover:bg-slate-100">
+                        Change Password
+                    </a>
+                    <div class="border-t">
+                        <a href="{% url 'volunteer:volunteerLogout' %}"
+                           class="block px-5 py-3 text-sm text-red-600 hover:bg-red-50">
+                            Logout
+                        </a>
+                    </div>
                 </div>
             </div>
         </header>
@@ -145,6 +191,19 @@
     </main>
 
 </div>
+
+<!-- DROPDOWN JS -->
+<script>
+    const btn = document.getElementById("profileBtn");
+    const menu = document.getElementById("profileMenu");
+
+    btn.onclick = e => {
+        e.stopPropagation();
+        menu.classList.toggle("hidden");
+    };
+    document.onclick = () => menu.classList.add("hidden");
+    document.onkeydown = e => e.key === "Escape" && menu.classList.add("hidden");
+</script>
 
 </body>
 </html>

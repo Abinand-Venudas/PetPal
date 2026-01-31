@@ -28,7 +28,7 @@ urlpatterns = [
 
     # Success
     path("consultation/success/<int:id>/", views.consultationSuccess, name="consultationSuccess"),
-    path("grooming/success/", views.groomsuccess, name="groomsuccess"),
+    path("grooming/success/<int:id>/", views.groomsuccess, name="groomsuccess"),
     path("adoption/success/<int:id>/", views.adoptionSuccess, name="adoptionSuccess"),
     path("confirmbook/", views.confirmbook, name="confirmbook"),
     path("daycareSuccess/<int:id>/", views.daycareSuccess, name="daycareSuccess"),
@@ -38,5 +38,12 @@ urlpatterns = [
     path("api/lock-slot/", views.lock_slot, name="lock_slot"),
     path("api/release-slot/", views.release_slot, name="release_slot"),
      path("api/daycare-slots/", views.get_daycare_booked_slots, name="daycare_slots"),
+
+# Grooming Actions
+path("grooming/cancel/<int:id>/", views.cancel_grooming, name="cancel_grooming"),
+path("grooming/rebook/<int:id>/", views.rebook_grooming, name="rebook_grooming"),
+path("grooming/invoice/<int:id>/", views.grooming_invoice_pdf, name="grooming_invoice"),
+# Grooming Actions
+path("grooming/rebook/<int:id>/", views.rebook_grooming, name="rebook_grooming"),
 
 ]

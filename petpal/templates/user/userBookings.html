@@ -5,144 +5,198 @@
 
 {% block extra_css %}
 <style>
+/* ================= THEME VARIABLES ================= */
+:root{
+  --bg-main:#f4f6ff;
+  --bg-card:#ffffff;
+  --text-main:#0f172a;
+  --text-sub:#64748b;
+  --border:#e5e7eb;
+  --soft:#f8fafc;
+  --grad:linear-gradient(135deg,#6366f1,#ec4899);
+}
+
+.dark{
+  --bg-main:#0b1220;
+  --bg-card:#0f172a;
+  --text-main:#f9fafb;
+  --text-sub:#94a3b8;
+  --border:#1e293b;
+  --soft:#020617;
+  --grad:linear-gradient(135deg,#4f46e5,#db2777);
+}
+
 /* ================= LAYOUT ================= */
 .page-wrap{
-  max-width:1200px;
+  max-width:1300px;
   margin:auto;
-  padding:60px 24px;
+  padding:70px 24px;
+  background:var(--bg-main);
 }
 
 /* ================= HEADER ================= */
 .page-header{
   display:flex;
   flex-direction:column;
-  gap:6px;
+  gap:8px;
   margin-bottom:50px;
 }
 
 .page-title{
   font-size:2.6rem;
   font-weight:900;
-  color:#0f172a;
+  color:var(--text-main);
 }
-.dark .page-title{color:#f8fafc;}
 
 .page-sub{
-  color:#64748b;
+  color:var(--text-sub);
   font-size:1rem;
 }
-.dark .page-sub{color:#cbd5e1;}
 
-/* ================= TIMELINE ================= */
-.timeline{
-  position:relative;
-  padding-left:40px;
+/* ================= SECTION ================= */
+.section{
+  margin-bottom:60px;
 }
 
-.timeline::before{
-  content:"";
-  position:absolute;
-  left:12px;
-  top:0;
-  bottom:0;
-  width:2px;
-  background:linear-gradient(to bottom,#6366f1,#ec4899);
+.section-title{
+  font-size:1.6rem;
+  font-weight:900;
+  margin-bottom:24px;
+  color:var(--text-main);
+  display:flex;
+  align-items:center;
+  gap:10px;
 }
 
-/* ================= BLOCK ================= */
-.block{
-  margin-bottom:50px;
-}
-
-.block-title{
-  font-size:1.5rem;
-  font-weight:800;
-  margin-bottom:20px;
-  color:#0f172a;
-}
-.dark .block-title{color:#f8fafc;}
-
-/* ================= ITEM ================= */
-.item{
-  position:relative;
-  padding:20px 24px;
-  margin-bottom:20px;
-  background:#ffffff;
-  border-radius:16px;
-  box-shadow:0 10px 25px rgba(0,0,0,.06);
-  border:1px solid #f1f5f9;
-}
-.dark .item{
-  background:#0f172a;
-  border:1px solid #1e293b;
-  box-shadow:0 15px 40px rgba(0,0,0,.7);
-}
-
-.item::before{
-  content:"";
-  position:absolute;
-  left:-34px;
-  top:28px;
-  width:14px;
-  height:14px;
-  border-radius:50%;
-  background:linear-gradient(135deg,#6366f1,#ec4899);
-  box-shadow:0 0 0 6px rgba(99,102,241,.15);
+.section-title span{
+  font-size:.8rem;
+  padding:6px 12px;
+  border-radius:999px;
+  background:var(--soft);
+  border:1px solid var(--border);
+  color:var(--text-sub);
 }
 
 /* ================= GRID ================= */
-.item-grid{
+.cards{
   display:grid;
-  grid-template-columns:repeat(2,1fr);
-  gap:10px 24px;
+  grid-template-columns:repeat(auto-fill,minmax(320px,1fr));
+  gap:24px;
 }
 
-/* ================= TEXT ================= */
-.label{
-  font-size:.8rem;
-  font-weight:700;
-  color:#64748b;
-  text-transform:uppercase;
+/* ================= CARD ================= */
+.card{
+  background:var(--bg-card);
+  border-radius:20px;
+  padding:22px 24px;
+  border:1px solid var(--border);
+  box-shadow:0 10px 35px rgba(0,0,0,.08);
+  transition:.25s;
+  position:relative;
+  overflow:hidden;
 }
-.dark .label{color:#cbd5e1;}
+.card:hover{
+  transform:translateY(-4px);
+  box-shadow:0 20px 50px rgba(0,0,0,.15);
+}
 
-.value{
-  font-size:.95rem;
-  font-weight:700;
-  color:#0f172a;
+/* ================= CARD HEADER ================= */
+.card-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:14px;
 }
-.dark .value{color:#f8fafc;}
+
+.card-title{
+  font-weight:900;
+  font-size:1.1rem;
+  color:var(--text-main);
+}
 
 /* ================= STATUS ================= */
 .status{
-  margin-top:14px;
-  display:inline-block;
   padding:6px 14px;
   border-radius:999px;
-  font-size:.75rem;
-  font-weight:800;
+  font-size:.7rem;
+  font-weight:900;
 }
 
-.status-success{background:#dcfce7;color:#166534;}
-.status-pending{background:#fef9c3;color:#854d0e;}
-.status-cancel{background:#fee2e2;color:#991b1b;}
+.success{background:#dcfce7;color:#166534;}
+.pending{background:#fef9c3;color:#854d0e;}
+.cancel{background:#fee2e2;color:#991b1b;}
 
-.dark .status-success{background:#064e3b;color:#6ee7b7;}
-.dark .status-pending{background:#78350f;color:#fde68a;}
-.dark .status-cancel{background:#3f1d1d;color:#fecaca;}
+.dark .success{background:#064e3b;color:#6ee7b7;}
+.dark .pending{background:#78350f;color:#fde68a;}
+.dark .cancel{background:#3f1d1d;color:#fecaca;}
+
+/* ================= BODY ================= */
+.info{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px 18px;
+  font-size:.9rem;
+}
+
+.label{
+  font-weight:700;
+  color:var(--text-sub);
+  font-size:.75rem;
+  text-transform:uppercase;
+}
+
+.value{
+  font-weight:800;
+  color:var(--text-main);
+}
 
 /* ================= EMPTY ================= */
 .empty{
   padding:30px;
   border-radius:16px;
-  background:#f8fafc;
+  background:var(--soft);
+  border:1px solid var(--border);
   text-align:center;
-  color:#94a3b8;
+  color:var(--text-sub);
+  font-weight:600;
 }
-.dark .empty{
-  background:#0f172a;
-  border:1px solid #1e293b;
+
+.btn{
+  padding:10px 18px;
+  border-radius:12px;
+  font-weight:800;
+  text-decoration:none;
+  font-size:.75rem;
+  transition:.25s;
 }
+
+.btn-primary{
+  background:var(--grad);
+  color:white;
+}
+
+.btn-secondary{
+  background:var(--soft);
+  border:1px solid var(--border);
+  color:var(--text-main);
+}
+
+.btn-danger{
+  background:#fee2e2;
+  color:#991b1b;
+  border:1px solid #fecaca;
+}
+
+.dark .btn-danger{
+  background:#3f1d1d;
+  color:#fecaca;
+  border:1px solid #7f1d1d;
+}
+
+.btn:hover{
+  transform:translateY(-2px);
+}
+
 </style>
 {% endblock %}
 
@@ -151,91 +205,158 @@
 
 <div class="page-header">
   <div class="page-title">My Activity</div>
-  <div class="page-sub">All your bookings and services in one timeline</div>
+  <div class="page-sub">All your bookings, services and history in one place</div>
 </div>
 
-<div class="timeline">
-
 <!-- ================= CONSULTATIONS ================= -->
-<div class="block">
-  <div class="block-title">Consultations</div>
+<div class="section">
+  <div class="section-title">Consultations <span>{{ bookings|length }}</span></div>
 
   {% if bookings %}
+  <div class="cards">
     {% for b in bookings %}
-    <div class="item">
-      <div class="item-grid">
-        <div><div class="label">Doctor</div><div class="value">{{ b.doctor.name }}</div></div>
-        <div><div class="label">Date</div><div class="value">{{ b.date }}</div></div>
-        <div><div class="label">Time</div><div class="value">{{ b.time }}</div></div>
-        <div><div class="label">Issue</div><div class="value">{{ b.reason|truncatechars:30 }}</div></div>
+    <div class="card">
+      <div class="card-head">
+        <div class="card-title">{{ b.doctor.name }}</div>
+        <div class="status 
+          {% if b.status == 'Approved' %}success
+          {% elif b.status == 'pending' or b.status == 'Pending' %}pending
+          {% else %}cancel{% endif %}">
+          {{ b.status|upper }}
+        </div>
       </div>
 
-      <div class="status
-        {% if b.status == 'Approved' %}status-success
-        {% elif b.status == 'pending' or b.status == 'Pending' %}status-pending
-        {% else %}status-cancel{% endif %}">
-        {{ b.status|upper }}
+      <div class="info">
+        <div>
+          <div class="label">Date</div>
+          <div class="value">{{ b.date }}</div>
+        </div>
+        <div>
+          <div class="label">Time</div>
+          <div class="value">{{ b.time }}</div>
+        </div>
+        <div>
+          <div class="label">Issue</div>
+          <div class="value">{{ b.reason|default:"General Consultation"|truncatechars:25 }}</div>
+        </div>
+        <div>
+          <div class="label">Type</div>
+          <div class="value">Consultation</div>
+        </div>
       </div>
     </div>
     {% endfor %}
+  </div>
   {% else %}
-    <div class="empty">No consultations yet</div>
+    <div class="empty">No consultations booked yet</div>
   {% endif %}
 </div>
 
 <!-- ================= DAYCARE ================= -->
-<div class="block">
-  <div class="block-title">Daycare</div>
+<div class="section">
+  <div class="section-title">Daycare <span>{{ daycare_bookings|length }}</span></div>
 
   {% if daycare_bookings %}
+  <div class="cards">
     {% for d in daycare_bookings %}
-    <div class="item">
-      <div class="item-grid">
-        <div><div class="label">Pet</div><div class="value">{{ d.pet_name }}</div></div>
-        <div><div class="label">Date</div><div class="value">{{ d.date }}</div></div>
-        <div><div class="label">Plan</div><div class="value">{{ d.plan }}</div></div>
-        <div><div class="label">Duration</div><div class="value">{{ d.duration }}</div></div>
-        <div><div class="label">Cost</div><div class="value">₹{{ d.total_cost }}</div></div>
+    <div class="card">
+      <div class="card-head">
+        <div class="card-title">{{ d.pet_name }}</div>
+        <div class="status 
+          {% if d.status == 'Confirmed' %}success
+          {% elif d.status == 'Pending' %}pending
+          {% else %}cancel{% endif %}">
+          {{ d.status|upper }}
+        </div>
       </div>
 
-      <div class="status
-        {% if d.status == 'Confirmed' %}status-success
-        {% elif d.status == 'Pending' %}status-pending
-        {% else %}status-cancel{% endif %}">
-        {{ d.status|upper }}
+      <div class="info">
+        <div>
+          <div class="label">Date</div>
+          <div class="value">{{ d.date }}</div>
+        </div>
+        <div>
+          <div class="label">Plan</div>
+          <div class="value">{{ d.plan }}</div>
+        </div>
+        <div>
+          <div class="label">Duration</div>
+          <div class="value">{{ d.duration }}</div>
+        </div>
+        <div>
+          <div class="label">Total</div>
+          <div class="value">₹{{ d.total_cost }}</div>
+        </div>
       </div>
     </div>
     {% endfor %}
+  </div>
   {% else %}
     <div class="empty">No daycare bookings yet</div>
   {% endif %}
 </div>
 
 <!-- ================= GROOMING ================= -->
-<div class="block">
-  <div class="block-title">Grooming</div>
+<div class="section">
+  <div class="section-title">Grooming <span>{{ grooming_bookings|length }}</span></div>
 
   {% if grooming_bookings %}
+  <div class="cards">
     {% for g in grooming_bookings %}
-    <div class="item">
-      <div class="item-grid">
-        <div><div class="label">Date</div><div class="value">{{ g.date }}</div></div>
-        <div><div class="label">Time</div><div class="value">{{ g.time }}</div></div>
-        <div><div class="label">Phone</div><div class="value">{{ g.phone }}</div></div>
-        <div><div class="label">Total</div><div class="value">₹{{ g.total }}</div></div>
+    <div class="card">
+      <div class="card-head">
+        <div class="card-title">{{ g.pet_name }}</div>
+        <div class="status 
+          {% if g.status == 'Cancelled' %}cancel
+          {% elif g.status == 'Completed' %}success
+          {% else %}pending{% endif %}">
+          {{ g.status|upper }}
+        </div>
       </div>
 
-      <div class="status status-success">
-        CONFIRMED
+      <div class="info">
+        <div>
+          <div class="label">Date</div>
+          <div class="value">{{ g.date }}</div>
+        </div>
+        <div>
+          <div class="label">Time</div>
+          <div class="value">{{ g.start_time }} - {{ g.end_time }}</div>
+        </div>
+        <div>
+          <div class="label">Guardian</div>
+          <div class="value">{{ g.guardian_name }}</div>
+        </div>
+        <div>
+          <div class="label">Total</div>
+          <div class="value">₹{{ g.total }}</div>
+        </div>
+      </div>
+
+      <!-- ACTIONS -->
+      <div style="margin-top:16px;display:flex;gap:10px;flex-wrap:wrap;">
+        <a href="{% url 'petapp:grooming_invoice' g.id %}" class="btn btn-secondary">
+          📄 Invoice
+        </a>
+
+        {% if g.status != 'Cancelled' and g.status != 'Completed' %}
+        <a href="{% url 'petapp:cancel_grooming' g.id %}" class="btn btn-danger">
+          ❌ Cancel
+        </a>
+        {% endif %}
+<a href="{% url 'petapp:rebook_grooming' g.id %}" class="btn btn-primary">
+  Rebook
+</a>
+
       </div>
     </div>
     {% endfor %}
+  </div>
   {% else %}
     <div class="empty">No grooming bookings yet</div>
   {% endif %}
 </div>
 
-</div>
 
 </section>
 {% endblock %}
