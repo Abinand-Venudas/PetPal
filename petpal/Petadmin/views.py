@@ -1,3 +1,4 @@
+from urllib import request
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.db.models import Q
@@ -10,9 +11,11 @@ from volunteer.models import VolunteerNotification
 from django.contrib import messages
 from django.shortcuts import render, redirect, get_object_or_404
 from petapp.models import Service
-
-
-
+from .forms import ServiceForm
+from .models import DaycarePlan
+from .forms import DaycarePlanForm
+from django.views.decorators.http import require_POST
+from decimal import Decimal, InvalidOperation
 
 # ================== AUTH ==================
 
@@ -463,11 +466,13 @@ def deleteGroomingServiceAdmin(request, id):
         return redirect("petadmin:groomingServicesAdmin")
 
     service = get_object_or_404(Service, id=id, service_type="grooming")
-    service.delete()
 
-    messages.success(request, "Grooming service deleted successfully")
+    # ✅ SOFT DELETE
+    service.is_active = False
+    service.save(update_fields=["is_active"])
+
+    messages.success(request, "Grooming service removed successfully")
     return redirect("petadmin:groomingServicesAdmin")
-
 
 
 # ================= GROOMING BOOKINGS =================
@@ -535,62 +540,94 @@ def updateGroomingStatus(request, booking_id, status):
 
 # ================= DAYCARE SERVICES ADMIN =================
 
+
 def daycarePlansAdmin(request):
     if "admin_id" not in request.session:
         return redirect("petadmin:loginAdmin")
 
-    plans = Service.objects.filter(service_type="daycare")
+    plans = DaycarePlan.objects.all()   # ✅ CORRECT
 
     return render(request, "petadmin/daycareServicesAdmin.html", {
         "plans": plans
     })
 
-
+# ===============================
+# ADD DAYCARE PLAN (ADMIN)
+# ===============================
 def addDaycarePlanAdmin(request):
     if "admin_id" not in request.session:
         return redirect("petadmin:loginAdmin")
 
-    form = ServiceForm(request.POST or None, initial={"service_type": "daycare"})
+    if request.method == "POST":
+        form = DaycarePlanForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect("petadmin:daycarePlansAdmin")
+        else:
+            print(form.errors)  # 🔥 DEBUG LINE
+    else:
+        form = DaycarePlanForm()
 
-    if form.is_valid():
-        plan = form.save(commit=False)
-        plan.service_type = "daycare"
-        plan.save()
-
-        messages.success(request, "Daycare plan added successfully")
-        return redirect("petadmin:daycarePlansAdmin")
-
-    return render(request, "petadmin/services/service_form.html", {
+    return render(request, "Petadmin/serviceformAdmin.html", {
         "form": form,
         "title": "Add Daycare Plan"
     })
 
-
+# ===============================
+# EDIT DAYCARE PLAN (ADMIN)
+# ===============================
 def editDaycarePlanAdmin(request, id):
-    if "admin_id" not in request.session:
-        return redirect("petadmin:loginAdmin")
+    plan = get_object_or_404(DaycarePlan, id=id)
 
-    plan = get_object_or_404(Service, id=id, service_type="daycare")
+    if request.method == "POST":
+        name = request.POST.get("name", "").strip()
+        price = request.POST.get("price", "").strip()
+        duration = request.POST.get("duration_days", "").strip()
+        description = request.POST.get("description", "")
+        is_active = request.POST.get("is_active") == "on"
 
-    form = ServiceForm(request.POST or None, instance=plan)
+        # 🔒 Validation
+        if not name or not price or not duration:
+            messages.error(request, "Please fill all required fields.")
+            return render(request, "Petadmin/editDaycarePlanAdmin.html", {"plan": plan})
 
-    if form.is_valid():
-        form.save()
-        messages.success(request, "Daycare plan updated successfully")
+        try:
+            price = Decimal(price)
+        except InvalidOperation:
+            messages.error(request, "Price must be a valid number.")
+            return render(request, "Petadmin/editDaycarePlanAdmin.html", {"plan": plan})
+
+        # ✅ Save safely
+        plan.name = name
+        plan.price = price
+        plan.duration_days = duration
+        plan.description = description
+        plan.is_active = is_active
+        plan.save()
+
+        messages.success(request, "Daycare plan updated successfully.")
         return redirect("petadmin:daycarePlansAdmin")
 
-    return render(request, "petadmin/services/service_form.html", {
-        "form": form,
-        "title": "Edit Daycare Plan"
-    })
+    return render(request, "Petadmin/editDaycarePlanAdmin.html", {"plan": plan})
 
-
+# ===============================
+# DELETE DAYCARE PLAN (ADMIN)
+# ===============================
+@require_POST
 def deleteDaycarePlanAdmin(request, id):
-    if "admin_id" not in request.session:
-        return redirect("petadmin:loginAdmin")
+    plan = get_object_or_404(DaycarePlan, id=id)
 
-    plan = get_object_or_404(Service, id=id, service_type="daycare")
     plan.delete()
+    messages.success(request, "Daycare plan deleted successfully.")
+    return redirect("petadmin:daycarePlansAdmin")
 
-    messages.success(request, "Daycare plan deleted successfully")
+@require_POST
+def toggleDaycarePlanStatusAdmin(request, id):
+    plan = get_object_or_404(DaycarePlan, id=id)
+    plan.is_active = not plan.is_active
+    plan.save(update_fields=["is_active"])
+
+    status = "activated" if plan.is_active else "deactivated"
+    messages.success(request, f"Daycare plan {status} successfully.")
+
     return redirect("petadmin:daycarePlansAdmin")

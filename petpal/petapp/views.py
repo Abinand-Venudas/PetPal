@@ -21,6 +21,10 @@ from Petadmin.models import *
 
 from reportlab.lib.pagesizes import A4
 from reportlab.pdfgen import canvas
+from django.contrib.auth.decorators import login_required
+from django.http import Http404
+from .models import Consultation
+
 
 
 # ================= HOME =================
@@ -157,9 +161,17 @@ def my_bookings(request):
 
     user_id = request.session["user_id"]
 
-    bookings = Appointment.objects.filter(user_id=user_id).order_by("-created_at")
-    daycare_bookings = DaycareBooking.objects.filter(user_id=user_id).order_by("-created_at")
-    grooming_bookings = GroomingBooking.objects.filter(user_id=user_id).order_by("-created_at")
+    bookings = Consultation.objects.filter(
+        user_id=user_id
+    ).order_by("-created_at")
+
+    daycare_bookings = DaycareBooking.objects.filter(
+        user_id=user_id
+    ).order_by("-created_at")
+
+    grooming_bookings = GroomingBooking.objects.filter(
+        user_id=user_id
+    ).order_by("-created_at")
 
     return render(request, "user/userBookings.html", {
         "bookings": bookings,
@@ -167,14 +179,18 @@ def my_bookings(request):
         "grooming_bookings": grooming_bookings,
     })
 
-
 # ================== GROOMING ==================
 def grooming(request):
     if not request.session.get("user_id"):
         return redirect("petapp:login")
 
     user = user_registration.objects.get(id=request.session["user_id"])
-    services = Service.objects.all()
+
+    # ✅ Only ACTIVE grooming services
+    services = Service.objects.filter(
+        service_type="grooming",
+        is_active=True
+    )
 
     # ===== PREPARE BOOKED SLOTS DATA =====
     bookings = GroomingBooking.objects.all()
@@ -193,7 +209,10 @@ def grooming(request):
         date_str = l.date.strftime("%Y-%m-%d")
         booked_slots.setdefault(date_str, []).append({
             "start": l.time.strftime("%H:%M"),
-            "end": (datetime.combine(l.date, l.time) + timedelta(minutes=60)).time().strftime("%H:%M"),
+            "end": (
+                datetime.combine(l.date, l.time)
+                + timedelta(minutes=60)
+            ).time().strftime("%H:%M"),
         })
 
     # ================= POST =================
@@ -220,26 +239,44 @@ def grooming(request):
         instructions = request.POST.get("instructions")
         service_ids = request.POST.getlist("services")
 
-        if not all([animal_type, pet_name, guardian_name, guardian_phone, date_str, time_str, service_ids]):
+        if not all([
+            animal_type, pet_name, guardian_name,
+            guardian_phone, date_str, time_str, service_ids
+        ]):
             messages.error(request, "All required fields must be filled.")
             return redirect("petapp:grooming")
 
         booking_date = datetime.strptime(date_str, "%Y-%m-%d").date()
         start_time = datetime.strptime(time_str, "%H:%M").time()
 
-        services_qs = Service.objects.filter(id__in=service_ids)
+        # ✅ SAFETY: only active services
+        services_qs = Service.objects.filter(
+            id__in=service_ids,
+            service_type="grooming",
+            is_active=True
+        )
+
+        if not services_qs.exists():
+            messages.error(request, "Selected service is no longer available.")
+            return redirect("petapp:grooming")
 
         total = sum(int(s.price) for s in services_qs)
         total_duration = sum(int(s.duration) for s in services_qs)
 
-        end_time = (datetime.combine(booking_date, start_time) + timedelta(minutes=total_duration)).time()
+        end_time = (
+            datetime.combine(booking_date, start_time)
+            + timedelta(minutes=total_duration)
+        ).time()
 
         # ===== TRANSACTION SAFE BOOKING =====
         try:
             with transaction.atomic():
 
                 # 🔐 TEMP LOCK
-                if GroomingSlotLock.objects.filter(date=booking_date, time=start_time).exists():
+                if GroomingSlotLock.objects.filter(
+                    date=booking_date,
+                    time=start_time
+                ).exists():
                     messages.error(request, "Slot temporarily locked. Try another time.")
                     return redirect("petapp:grooming")
 
@@ -250,8 +287,14 @@ def grooming(request):
                 )
 
                 # 🔒 HARD CHECK
-                if GroomingBooking.objects.filter(date=booking_date, start_time=start_time).exists():
-                    GroomingSlotLock.objects.filter(date=booking_date, time=start_time).delete()
+                if GroomingBooking.objects.filter(
+                    date=booking_date,
+                    start_time=start_time
+                ).exists():
+                    GroomingSlotLock.objects.filter(
+                        date=booking_date,
+                        time=start_time
+                    ).delete()
                     messages.error(request, "This slot is already booked.")
                     return redirect("petapp:grooming")
 
@@ -283,34 +326,41 @@ def grooming(request):
                 )
 
                 # 🔓 RELEASE LOCK
-                GroomingSlotLock.objects.filter(date=booking_date, time=start_time).delete()
+                GroomingSlotLock.objects.filter(
+                    date=booking_date,
+                    time=start_time
+                ).delete()
 
         except IntegrityError:
-            GroomingSlotLock.objects.filter(date=booking_date, time=start_time).delete()
+            GroomingSlotLock.objects.filter(
+                date=booking_date,
+                time=start_time
+            ).delete()
             messages.error(request, "Slot just booked by another user.")
             return redirect("petapp:grooming")
 
         except Exception as e:
-            GroomingSlotLock.objects.filter(date=booking_date, time=start_time).delete()
+            GroomingSlotLock.objects.filter(
+                date=booking_date,
+                time=start_time
+            ).delete()
             messages.error(request, f"Booking failed: {str(e)}")
             return redirect("petapp:grooming")
 
         # ✅ SUCCESS
         return redirect("petapp:groomsuccess", id=booking.id)
 
-   # ================= PREFILL (REBOOK MODE) =================
+    # ================= PREFILL (REBOOK MODE) =================
     prefill = request.session.pop("rebook_data", None)
 
     return render(request, "user/grooming.html", {
-    "services": services,
-    "booked_slots": json.dumps(booked_slots),
-    "prefill": prefill
-})
+        "services": services,
+        "booked_slots": json.dumps(booked_slots),
+        "prefill": prefill
+    })
 
 
-
-
-
+# ================== GROOMING SUCCESS ==================
 def groomsuccess(request, id):
     if "user_id" not in request.session:
         return redirect("petapp:login")
@@ -414,21 +464,137 @@ def grooming_invoice_pdf(request, id):
 
     return response
 
-
-
 # ================== DAYCARE ==================
+
 def daycare(request):
+    """
+    Daycare booking page
+    Stores form data & forces login if needed
+    """
+
+    if request.method == "POST":
+
+        # Store form data temporarily
+        request.session["daycare_form"] = {
+            "pet_name": request.POST.get("pet_name"),
+            "pet_type": request.POST.get("pet_type"),
+            "date": request.POST.get("date"),
+            "time": request.POST.get("time"),
+        }
+
+        # Force login
+        if "user_id" not in request.session:
+            messages.info(request, "Please login to continue booking.")
+            return redirect("petapp:login")
+
+        return redirect("petapp:daycare_confirm")
+
     return render(request, "user/daycare.html")
 
 
-def daycareSuccess(request, id):
+def daycare_confirm(request):
+    """
+    Finalizes daycare booking after login
+    """
+
     if "user_id" not in request.session:
         return redirect("petapp:login")
 
-    booking = get_object_or_404(DaycareBooking, id=id)
+    data = request.session.get("daycare_form")
+    if not data:
+        return redirect("petapp:daycare")
+
+    user = user_registration.objects.get(id=request.session["user_id"])
+
+    # ----------- VALIDATION (PAST DATE / TIME) -----------
+    booking_date = datetime.strptime(data["date"], "%Y-%m-%d").date()
+    booking_time = datetime.strptime(data["time"], "%H:%M").time()
+    booking_dt = datetime.combine(booking_date, booking_time)
+
+    if booking_dt < timezone.now():
+        del request.session["daycare_form"]
+        messages.error(request, "You cannot book past date or time.")
+        return redirect("petapp:daycare")
+
+    # ----------- CLEAN EXPIRED LOCKS -----------
+    cleanup_daycare_locks()
+
+    try:
+        with transaction.atomic():
+
+            # 🔐 TEMP LOCK
+            if DaycareSlotLock.objects.filter(
+                date=booking_date,
+                time=booking_time
+            ).exists():
+                messages.error(request, "This slot is temporarily locked.")
+                return redirect("petapp:daycare")
+
+            DaycareSlotLock.objects.create(
+                user=user,
+                date=booking_date,
+                time=booking_time
+            )
+
+            # 🔒 HARD CHECK
+            if DaycareBooking.objects.filter(
+                booking_date=booking_date,
+                booking_time=booking_time
+            ).exists():
+                DaycareSlotLock.objects.filter(
+                    date=booking_date,
+                    time=booking_time
+                ).delete()
+                messages.error(request, "This slot is already booked.")
+                return redirect("petapp:daycare")
+
+            # ✅ CREATE BOOKING
+            booking = DaycareBooking.objects.create(
+                user=user,
+                pet_name=data["pet_name"],
+                pet_type=data["pet_type"],
+                booking_date=booking_date,
+                booking_time=booking_time,
+                status="Confirmed"
+            )
+
+            # 🔓 RELEASE LOCK
+            DaycareSlotLock.objects.filter(
+                date=booking_date,
+                time=booking_time
+            ).delete()
+
+    except IntegrityError:
+        DaycareSlotLock.objects.filter(
+            date=booking_date,
+            time=booking_time
+        ).delete()
+        messages.error(request, "Slot was just booked by another user.")
+        return redirect("petapp:daycare")
+
+    # Cleanup session
+    del request.session["daycare_form"]
+
+    return redirect("petapp:daycareSuccess", id=booking.id)
+
+
+def daycareSuccess(request, id):
+    """
+    Daycare booking success page
+    """
+
+    if "user_id" not in request.session:
+        return redirect("petapp:login")
+
+    booking = get_object_or_404(
+        DaycareBooking,
+        id=id,
+        user_id=request.session["user_id"]
+    )
+
     return render(request, "user/daycareSuccess.html", {"booking": booking})
 
-
+# ================== CONFIRM DAYCARE BOOKING ==================
 def confirmbook(request):
     if request.method == "POST":
 
@@ -570,28 +736,38 @@ def get_daycare_booked_slots(request):
 
 
 # ================= API: FETCH BOOKED CONSULTATION SLOTS =================
+
+def cleanup_expired_locks():
+    expiry_time = timezone.now() - timedelta(minutes=5)
+    SlotLock.objects.filter(locked_at__lt=expiry_time).delete()
+
+
 def get_booked_slots(request):
     date = request.GET.get("date")
     if not date:
         return JsonResponse({})
 
-    # Clean expired locks
     cleanup_expired_locks()
 
-    bookings = Appointment.objects.filter(date=date)
+    bookings = Consultation.objects.filter(date=date)
     locks = SlotLock.objects.filter(date=date)
 
     data = {}
 
-    # Booked slots
+    # Booked consultations
     for b in bookings:
-        data.setdefault(str(b.doctor_id), []).append(str(b.time))
+        data.setdefault(str(b.doctor_id), []).append(
+            b.time.strftime("%H:%M")
+        )
 
     # Locked slots
     for lock in locks:
-        data.setdefault(str(lock.doctor_id), []).append(str(lock.time))
+        data.setdefault(str(lock.doctor_id), []).append(
+            lock.time.strftime("%H:%M")
+        )
 
     return JsonResponse(data)
+
 
 # ================= LOCK SLOT (CONSULTATION) =================
 @csrf_exempt
@@ -692,29 +868,57 @@ def consultation(request):
     dc = doctor_registration.objects.all()
 
     if request.method == "POST":
+        if "user_id" not in request.session:
+            messages.error(request, "Please login to place a booking.")
+            return redirect("petapp:login")
+
         doctor_id = request.POST.get("doctor_id")
         date = request.POST.get("date")
         time = request.POST.get("time")
+        pet_name = request.POST.get("pet_name")
+        pet_type = request.POST.get("pet_type")
+        reason = request.POST.get("reason")
 
-        doctor = doctor_registration.objects.get(id=doctor_id)
-        user = user_registration.objects.get(id=request.session["user_id"])
+        if not all([doctor_id, date, time, pet_name, pet_type, reason]):
+            messages.error(request, "All fields are required.")
+            return render(request, "user/consultation.html", {"dc": dc})
 
-        appointment = Appointment.objects.create(
+        doctor = get_object_or_404(doctor_registration, id=doctor_id)
+        user = get_object_or_404(user_registration, id=request.session["user_id"])
+
+        consultation = Consultation.objects.create(
             user=user,
             doctor=doctor,
             date=date,
             time=time,
-            status="pending"
+            pet_name=pet_name,
+            pet_type=pet_type,
+            issue=reason,
+            status="Pending"
         )
 
-        return redirect("petapp:consultationSuccess", id=appointment.id)
+        return redirect("petapp:consultationSuccess", id=consultation.id)
 
     return render(request, "user/consultation.html", {"dc": dc})
 
 
+
 def consultationSuccess(request, id):
-    appointment = get_object_or_404(Appointment, id=id)
-    return render(request, "user/consultationSuccess.html", {"consultation": appointment})
+    if "user_id" not in request.session:
+        return redirect("petapp:login")
+
+    consultation = get_object_or_404(
+        Consultation,
+        id=id,
+        user_id=request.session["user_id"]
+    )
+
+    return render(
+        request,
+        "user/consultationSuccess.html",
+        {"consultation": consultation}
+    )
+
 
 
 # ================= PDF =================

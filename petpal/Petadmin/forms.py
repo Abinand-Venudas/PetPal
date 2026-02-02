@@ -1,6 +1,6 @@
 from django import forms
 
-from petpal.petapp.models import Service
+from petapp.models import Service
 from .models import GroomingService, DaycarePlan
 
 class GroomingServiceForm(forms.ModelForm):
@@ -11,7 +11,7 @@ class GroomingServiceForm(forms.ModelForm):
 class DaycarePlanForm(forms.ModelForm):
     class Meta:
         model = DaycarePlan
-        fields = ["name", "price", "duration_days", "is_active"]
+        fields = ["name", "price", "duration_days", "description", "is_active"]
 
 class ServiceForm(forms.ModelForm):
     class Meta:

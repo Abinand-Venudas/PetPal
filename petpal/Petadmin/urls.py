@@ -61,4 +61,10 @@ urlpatterns = [
     path("services/daycare/add/", views.addDaycarePlanAdmin, name="addDaycarePlanAdmin"),
     path("services/daycare/edit/<int:id>/",views.editDaycarePlanAdmin,name="editDaycarePlanAdmin"),
     path("services/daycare/delete/<int:id>/",views.deleteDaycarePlanAdmin,name="deleteDaycarePlanAdmin"),
+    path(
+    "services/daycare/toggle/<int:id>/",
+    views.toggleDaycarePlanStatusAdmin,
+    name="toggleDaycarePlanStatusAdmin"
+),
+
 ]

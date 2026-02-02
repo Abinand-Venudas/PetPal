@@ -5,36 +5,100 @@
 <h1 class="text-3xl font-bold mb-8">Daycare Plans</h1>
 
 <a href="{% url 'petadmin:addDaycarePlanAdmin' %}"
-   class="mb-6 inline-block px-6 py-3 rounded-xl text-white
-          bg-gradient-to-r from-indigo-500 to-pink-500">
+   class="mb-6 inline-flex items-center gap-2 px-6 py-3 rounded-xl text-white
+          bg-gradient-to-r from-indigo-500 to-pink-500 shadow hover:opacity-90">
   + Add Daycare Plan
 </a>
 
-<div class="glass rounded-2xl p-6">
-  <table class="w-full text-sm">
+<div class="glass rounded-2xl p-6 mt-4">
+  <table class="w-full text-sm border-collapse">
     <thead>
-      <tr class="text-left text-gray-500 border-b">
-        <th class="py-3">Name</th>
-        <th>Price</th>
-        <th>Description</th>
-        <th class="text-right">Actions</th>
-      </tr>
-    </thead>
+  <tr class="text-left text-gray-500 border-b">
+    <th class="py-4">Name</th>
+    <th>Price</th>
+    <th>Description</th>
+    <th>Status</th>
+    <th class="text-right">Actions</th>
+  </tr>
+</thead>
+
+
     <tbody>
-      {% for s in services %}
-      <tr class="border-b last:border-none">
-        <td class="py-4 font-semibold">{{ s.name }}</td>
-        <td>₹{{ s.price }}</td>
-        <td class="text-gray-500">{{ s.description }}</td>
-        <td class="text-right space-x-3">
-          <a href="{% url 'petadmin:editDaycareServiceAdmin' s.id %}" class="text-indigo-600">Edit</a>
-          <a href="{% url 'petadmin:deleteDaycareServiceAdmin' s.id %}"
-             onclick="return confirm('Delete this plan?')"
-             class="text-red-600">Delete</a>
-        </td>
-      </tr>
+      {% for s in plans %}
+      <tr class="border-b last:border-none hover:bg-gray-50/50 transition">
+  <td class="py-4 font-semibold align-middle">
+    {{ s.name }}
+  </td>
+
+  <td class="align-middle">
+    ₹{{ s.price }}
+  </td>
+
+  <td class="text-gray-500 align-middle max-w-md">
+    {{ s.description }}
+  </td>
+
+<!-- STATUS COLUMN -->
+<td class="align-middle">
+  {% if s.is_active %}
+    <span class="inline-flex items-center px-3 py-1 text-xs font-medium
+                 rounded-full bg-green-100 text-green-700">
+      Active
+    </span>
+  {% else %}
+    <span class="inline-flex items-center px-3 py-1 text-xs font-medium
+                 rounded-full bg-gray-200 text-gray-600">
+      Inactive
+    </span>
+  {% endif %}
+</td>
+
+<td class="align-middle text-right">
+  <div class="inline-flex items-center gap-3">
+
+    <!-- 🔁 TOGGLE BUTTON -->
+    <form method="POST"
+          action="{% url 'petadmin:toggleDaycarePlanStatusAdmin' s.id %}">
+      {% csrf_token %}
+      <button type="submit"
+              class="px-3 py-1.5 text-sm rounded-lg
+              {% if s.is_active %}
+                bg-yellow-50 text-yellow-700 hover:bg-yellow-100
+              {% else %}
+                bg-green-50 text-green-700 hover:bg-green-100
+              {% endif %}">
+        {% if s.is_active %}Deactivate{% else %}Activate{% endif %}
+      </button>
+    </form>
+
+    <!-- EDIT -->
+    <a href="{% url 'petadmin:editDaycarePlanAdmin' s.id %}"
+       class="px-3 py-1.5 text-sm rounded-lg
+              bg-indigo-50 text-indigo-600 hover:bg-indigo-100">
+      Edit
+    </a>
+
+    <!-- DELETE -->
+    <form method="POST"
+          action="{% url 'petadmin:deleteDaycarePlanAdmin' s.id %}"
+          onsubmit="return confirm('Delete this daycare plan?');">
+      {% csrf_token %}
+      <button type="submit"
+              class="px-3 py-1.5 text-sm rounded-lg
+                     bg-red-50 text-red-600 hover:bg-red-100">
+        Delete
+      </button>
+    </form>
+
+  </div>
+</td>
+</tr>
       {% empty %}
-      <tr><td colspan="4" class="py-6 text-center text-gray-400">No daycare plans added</td></tr>
+      <tr>
+       <td colspan="5" class="py-8 text-center text-gray-400">
+  No daycare plans added
+</td>
+      </tr>
       {% endfor %}
     </tbody>
   </table>

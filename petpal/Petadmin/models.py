@@ -19,12 +19,15 @@ class GroomingService(models.Model):
     def __str__(self):
         return self.name
 
-
 class DaycarePlan(models.Model):
     name = models.CharField(max_length=100)
-    price = models.PositiveIntegerField()
-    duration_days = models.PositiveIntegerField(help_text="Number of days")
+    price = models.DecimalField(max_digits=8, decimal_places=2)
+
+    # ✅ REQUIRED FIELDS (you were missing these)
+    duration_days = models.PositiveIntegerField()
     is_active = models.BooleanField(default=True)
 
+    description = models.TextField(blank=True)
+
     def __str__(self):
-        return f"{self.name} ({self.duration_days} days)"
+        return self.name

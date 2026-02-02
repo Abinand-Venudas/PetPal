@@ -219,11 +219,16 @@
       <div class="card-head">
         <div class="card-title">{{ b.doctor.name }}</div>
         <div class="status 
-          {% if b.status == 'Approved' %}success
-          {% elif b.status == 'pending' or b.status == 'Pending' %}pending
-          {% else %}cancel{% endif %}">
-          {{ b.status|upper }}
-        </div>
+  {% if b.status|lower == 'approved' %}
+    success
+  {% elif b.status|lower == 'pending' %}
+    pending
+  {% else %}
+    cancel
+  {% endif %}">
+  {{ b.status|upper }}
+</div>
+
       </div>
 
       <div class="info">
@@ -237,7 +242,9 @@
         </div>
         <div>
           <div class="label">Issue</div>
-          <div class="value">{{ b.reason|default:"General Consultation"|truncatechars:25 }}</div>
+        <div class="value">
+  {{ b.issue|default:"General Consultation"|truncatechars:25 }}
+        </div>
         </div>
         <div>
           <div class="label">Type</div>

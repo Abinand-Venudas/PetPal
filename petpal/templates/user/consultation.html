@@ -1,303 +1,551 @@
 {% extends "user/base.html" %}
 {% load static %}
 
-{% block title %}PetPal — Premium Consultation{% endblock %}
+{% block title %}Pawfect — Book Consultation{% endblock %}
 
 {% block extra_css %}
 <style>
-/* ================= VIDEO BACKGROUND ================= */
-.video-bg{
-  position:fixed;
-  inset:0;
-  width:100vw;
-  height:100vh;
-  overflow:hidden;
-  z-index:-10;
-}
-.video-bg video{
-  width:100%;
-  height:100%;
-  object-fit:cover;
-}
-.video-bg::after{
-  content:"";
-  position:absolute;
-  inset:0;
-  background:linear-gradient(180deg,rgba(255,255,255,0.55),rgba(255,255,255,0.8));
-}
-.dark .video-bg::after{
-  background:linear-gradient(180deg,rgba(2,6,23,0.75),rgba(2,6,23,0.9));
+/* ================= VARIABLES ================= */
+:root{
+  --accent:#6366f1;
+  --accent-soft:rgba(99,102,241,.1);
+  --accent-glow:rgba(99,102,241,.35);
+
+  --bg-page:#f8fafc;
+  --surface:#ffffff;
+  --surface-soft:#f9fafb;
+
+  --text-main:#0f172a;
+  --text-muted:#64748b;
+
+  --border-light:#e2e8f0;
+
+  --radius-xl:28px;
+  --radius-md:16px;
+
+  --shadow-soft:0 12px 40px -12px rgba(0,0,0,.12);
+  --transition:all .25s ease;
 }
 
-/* Ensure page content scrolls above video */
-body{
-  position:relative;
+/* ================= DARK MODE ================= */
+.dark{
+  --bg-page:#020617;
+  --surface:#0f172a;
+  --surface-soft:#0b1220;
+
+  --text-main:#f8fafc;
+  --text-muted:#94a3b8;
+
+  --border-light:#1e293b;
 }
 
-/* ================= INPUT ================= */
-.input{
-  width:100%;
-  padding:16px 48px 16px 18px;
+/* ================= PAGE ================= */
+.page-container{
+  max-width:1000px;
+  margin:0 auto;
+  padding:60px 24px 200px;
+}
+
+/* ================= SECTION ================= */
+.section-wrapper{
+  background:var(--surface);
+  border:1px solid var(--border-light);
+  border-radius:var(--radius-xl);
+  padding:42px;
+  margin-bottom:44px;
+  box-shadow:var(--shadow-soft);
+}
+
+/* ================= SECTION HEADER ================= */
+.section-head{
+  margin-bottom:28px;
+}
+
+.section-head span{
+  font-size:.75rem;
+  font-weight:700;
+  letter-spacing:.08em;
+  color:var(--accent);
+  text-transform:uppercase;
+}
+
+.section-head h2{
+  font-size:1.4rem;
+  margin-top:6px;
+  color:var(--text-main);
+}
+
+.section-head p{
+  margin-top:6px;
+  color:var(--text-muted);
+  font-size:.95rem;
+}
+
+/* ================= DOCTORS ================= */
+.doc-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+  gap:24px;
+}
+
+.doc-card{
+  background:var(--surface-soft);
   border-radius:18px;
-  border:1.5px solid #e5e7eb;
-  background:#fff;
-  color:#111827;
-}
-.dark .input{
-  background:rgba(15,23,42,.95);
-  border-color:#334155;
-  color:#f8fafc;
-}
-.dark .input::placeholder{color:#94a3b8;}
-
-/* ================= ICON INPUT ================= */
-.input-wrapper{position:relative;}
-.input-icon{
-  position:absolute;
-  right:16px;
-  top:50%;
-  transform:translateY(-50%);
-  font-size:18px;
+  padding:20px;
+  display:flex;
+  gap:18px;
+  align-items:center;
+  border:2px solid transparent;
   cursor:pointer;
-  z-index:10;
-  color:#6d28d9;
-  pointer-events:auto;
-  transition:all .25s ease;
+  transition:var(--transition);
 }
-.input-icon:hover{color:#ec4899;}
-.dark .input-icon{color:#f8fafc !important;opacity:0.95;}
-.dark .input-icon:hover{color:#f472b6 !important;}
 
-.input-wrapper:focus-within .input-icon{
-  color:#ec4899;
-  text-shadow:0 0 8px rgba(236,72,153,.6);
+.doc-card:hover{
+  transform:translateY(-4px);
 }
-.dark .input-wrapper:focus-within .input-icon{
-  color:#f472b6;
-  text-shadow:0 0 10px rgba(244,114,182,.8);
+
+.doc-card.active{
+  border-color:var(--accent);
+  background:linear-gradient(to right,var(--accent-soft),transparent);
+}
+
+.doc-avatar{
+  width:72px;
+  height:72px;
+  border-radius:16px;
+  object-fit:cover;
+  background:#c7d2fe;
+}
+
+/* ================= AVAILABILITY ================= */
+.availability-header{
+  display:none;
+  margin-bottom:24px;
+  padding:22px;
+  border-radius:18px;
+  background:linear-gradient(135deg,rgba(99,102,241,.15),rgba(236,72,153,.15));
+  border:1px solid var(--border-light);
+}
+
+.availability-header.active:hover{
+  transform:translateY(-3px);
+}
+
+/* ================= DATE & TIME ================= */
+.date-time-container{
+  display:grid;
+  grid-template-columns:1fr 1.5fr;
+  gap:32px;
+}
+
+@media(max-width:768px){
+  .date-time-container{grid-template-columns:1fr}
+}
+
+input[type="date"]{
+  width:100%;
+  padding:16px;
+  border-radius:14px;
+  background:var(--surface);
+  border:1px solid var(--border-light);
+  color:var(--text-main);
+  font-weight:600;
 }
 
 input[type="date"]::-webkit-calendar-picker-indicator{
-  opacity:0;
-  display:none;
-}
-
-/* ================= DOCTOR CARD ================= */
-.doc-card{
   cursor:pointer;
-  padding:18px;
-  border-radius:26px;
-  background:white;
-  border:1px solid #eef2ff;
-  transition:.35s;
-  text-align:center;
-}
-.dark .doc-card{
-  background:rgba(30,41,59,.9);
-  border:1px solid rgba(255,255,255,.08);
-}
-.doc-card:hover{transform:translateY(-8px);}
-.dark .doc-card h3{color:#f8fafc;}
-.dark .doc-card p{color:#cbd5f5;}
-
-input[type="radio"]{display:none}
-input[type="radio"]:checked + .doc-card{
-  border-color:#7c3aed;
-  box-shadow:0 35px 70px rgba(124,58,237,.35);
 }
 
-/* ================= BUTTON ================= */
-.primary-btn{
-  background:#6d28d9;
-  color:white;
-  border-radius:18px;
-  padding:18px;
+/* ================= SLOTS ================= */
+.slots-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(90px,1fr));
+  gap:12px;
+}
+
+.slot-btn{
+  padding:12px 0;
+  border-radius:12px;
+  background:var(--surface);
+  border:1px solid var(--border-light);
   font-weight:600;
+  cursor:pointer;
 }
-.primary-btn:disabled{
-  opacity:0.6;
+
+.slot-btn:hover:not(:disabled){
+  border-color:var(--accent);
+  color:var(--accent);
+}
+
+.slot-btn.active{
+  background:var(--accent);
+  color:#fff;
+  border-color:var(--accent);
+}
+
+.slot-btn:disabled{
+  opacity:.35;
   cursor:not-allowed;
 }
 
-/* ================= DISABLED DAY STYLE ================= */
-.input.disabled-day{
-  border-color:#ef4444 !important;
-  box-shadow:0 0 0 3px rgba(239,68,68,.25);
+/* ================= PATIENT INTAKE ================= */
+.intake-card{
+  background:var(--surface-soft);
+  border:1px solid var(--border-light);
+  border-radius:20px;
+  padding:28px;
 }
-.dark .input.disabled-day{
-  border-color:#f87171 !important;
-  box-shadow:0 0 0 3px rgba(248,113,113,.35);
+
+.form-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:22px;
+}
+
+@media(max-width:600px){
+  .form-grid{grid-template-columns:1fr}
+}
+
+.form-field{
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+}
+
+.form-field label{
+  font-size:.85rem;
+  font-weight:600;
+  color:var(--text-muted);
+}
+
+.form-field input,
+.form-field textarea{
+  padding:14px;
+  border-radius:14px;
+  background:var(--surface);
+  border:1px solid var(--border-light);
+  color:var(--text-main);
+  font-weight:600;
+}
+
+.form-field textarea{
+  min-height:120px;
+  resize:none;
+}
+
+/* ================= ACTION BAR ================= */
+.action-bar{
+  position:fixed;
+  bottom:24px;
+  left:50%;
+  transform:translateX(-50%);
+  background:#020617;
+  border-radius:999px;
+  padding:10px 10px 10px 28px;
+  display:flex;
+  gap:28px;
+  color:#fff;
+  box-shadow:0 20px 50px rgba(0,0,0,.5);
+}
+
+.btn-book{
+  background:#fff;
+  color:#020617;
+  border:none;
+  padding:14px 42px;
+  border-radius:999px;
+  font-weight:800;
+  cursor:pointer;
+}
+
+.btn-book:disabled{
+  opacity:.5;
+  cursor:not-allowed;
 }
 </style>
 {% endblock %}
 
 {% block content %}
-
-<!-- ===== FULLSCREEN VIDEO BACKGROUND ===== -->
-<div class="video-bg">
-  <video autoplay muted loop playsinline>
-    <source src="{% static 'img/vet.MP4' %}" type="video/mp4">
-  </video>
-</div>
-
-<section class="max-w-7xl mx-auto px-6 pt-28 text-center relative z-10">
-  <h1 class="text-6xl font-extrabold">Veterinary Consultation</h1>
-  <p class="mt-4 text-lg max-w-2xl mx-auto">Premium care from certified professionals</p>
-</section>
-
-<section class="px-6 md:px-20 py-20 relative z-10">
-  <div class="glass max-w-5xl mx-auto p-14">
-
-<!-- ================= LOGIN NOTICE ================= -->
-{% if not request.session.user_id %}
-<div class="mb-10 p-6 rounded-2xl bg-yellow-50 border border-yellow-200 text-yellow-800 text-center">
-  <p class="text-lg font-semibold">You can explore this page without logging in.</p>
-  <p class="mt-2">To book a consultation, please log in.</p>
-  <a href="{% url 'petapp:login' %}" class="inline-block mt-4 px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition">
-    Login to Continue
-  </a>
-</div>
-{% endif %}
-
-<form method="post">
+<div class="page-container">
+<form method="POST">
 {% csrf_token %}
 
-<!-- PET INFO -->
-<div class="mb-16">
-  <h2 class="text-3xl font-bold mb-6">Pet Information</h2>
-  <div class="grid md:grid-cols-3 gap-6">
-    <input class="input" name="pet_name" placeholder="Pet Name" required>
-    <select class="input" name="pet_type">
-      <option>Dog</option><option>Cat</option><option>Other</option>
-    </select>
-    <input class="input" type="number" name="age" placeholder="Age" required>
-  </div>
-  <textarea class="input mt-6" rows="3" name="issue" placeholder="Describe the issue" required></textarea>
-</div>
+<input type="hidden" id="doctorId" name="doctor_id">
+<input type="hidden" id="bookingDate" name="date">
+<input type="hidden" id="bookingTime" name="time">
 
-<!-- DOCTOR SELECTION -->
-<div class="mb-16">
-  <h2 class="text-3xl font-bold mb-6">Select a Doctor</h2>
-  <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
-    {% for d in dc %}
-    <label>
-      <input type="radio" name="doctor_id" value="{{ d.id }}" required>
-      <div class="doc-card">
-        {% if d.image %}
-          <img src="{{ d.image.url }}" class="w-full h-44 object-cover rounded-2xl">
-        {% else %}
-          <img src="https://images.unsplash.com/photo-1607746882042-944635dfe10e"
-               class="w-full h-44 object-cover rounded-2xl">
-        {% endif %}
-        <h3 class="mt-4 text-lg font-semibold">Dr. {{ d.name }}</h3>
-        <p class="text-sm text-gray-500 dark:text-gray-400">
-          {{ d.specialization }} · {{ d.experience }} yrs
-        </p>
+<!-- STEP 01 -->
+<div class="section-wrapper">
+  <div class="section-head">
+    <span>Step 01</span>
+    <h2>Select a Specialist</h2>
+    <p>Choose the veterinarian best suited for your pet’s condition</p>
+  </div>
+
+  <div class="doc-grid">
+    {% for doctor in dc %}
+    <div class="doc-card"
+      onclick="selectDoctor(this,'{{ doctor.id }}','{{ doctor.name }}','{{ doctor.specialization|default:"Veterinarian" }}','{{ doctor.experience|default:"0" }}')">
+      {% if doctor.image %}
+        <img src="{{ doctor.image.url }}" class="doc-avatar">
+      {% else %}
+        <div class="doc-avatar"></div>
+      {% endif %}
+      <div>
+        <strong>Dr. {{ doctor.name }}</strong><br>
+        <small>{{ doctor.specialization|default:"Veterinarian" }}</small>
       </div>
-    </label>
+    </div>
     {% endfor %}
   </div>
 </div>
 
-<!-- SCHEDULE -->
-<div class="mb-16">
-  <h2 class="text-3xl font-bold mb-6">Schedule</h2>
-  <div class="grid md:grid-cols-2 gap-6">
-
-    <div class="input-wrapper">
-      <input type="date" id="consultDate" name="date" class="input" required>
-      <i class="fa-solid fa-calendar-days input-icon"
-         onclick="document.getElementById('consultDate').showPicker()"></i>
-    </div>
-
-    <div class="input-wrapper">
-      <select id="consultTime" name="time" class="input" required>
-        <option value="">Select Time</option>
-      </select>
-      <i class="fa-solid fa-clock input-icon"></i>
-    </div>
-
+<!-- STEP 02 -->
+<div class="section-wrapper">
+  <div class="section-head">
+    <span>Step 02</span>
+    <h2>Choose Date & Time</h2>
+    <p>Select an available appointment slot</p>
   </div>
-  <p class="text-sm text-gray-500 dark:text-gray-400 mt-3">
-    Fully booked days are highlighted. Only available slots are shown.
-  </p>
+
+  <div class="availability-header" id="doctorInfo">
+    <strong id="docName"></strong><br>
+    <span id="docMeta"></span>
+  </div>
+
+  <div class="date-time-container">
+<input
+  type="date"
+  id="dateInput"
+  required
+  oninput="handleDateChange(this.value)"
+>
+    <div class="slots-grid" id="slotGrid"></div>
+  </div>
 </div>
 
-<!-- ================= SUBMIT ================= -->
-{% if request.session.user_id %}
-  <button class="w-full primary-btn">Confirm Consultation</button>
-{% else %}
-  <button class="w-full primary-btn" disabled>Login to Book Consultation</button>
-{% endif %}
+<!-- STEP 03 -->
+<div class="section-wrapper">
+  <div class="section-head">
+    <span>Step 03</span>
+    <h2>Patient Intake</h2>
+    <p>Tell us about your pet and the issue</p>
+  </div>
+
+  <div class="intake-card">
+    <div class="form-grid">
+      <div class="form-field">
+        <label>Pet Name</label>
+        <input name="pet_name" required>
+      </div>
+      <div class="form-field">
+        <label>Pet Type</label>
+        <input name="pet_type" required>
+      </div>
+    </div>
+
+    <div class="form-field" style="margin-top:20px">
+      <label>Describe your pet’s issue</label>
+      <textarea name="reason" required></textarea>
+    </div>
+  </div>
+</div>
+
+<div class="action-bar">
+  <div>
+    <strong id="barDoc">Select doctor</strong><br>
+    <span id="barDate">Select date & time</span>
+  </div>
+<button class="btn-book" type="submit" disabled>
+  Confirm Consultation
+</button>
+</div>
 
 </form>
 </div>
-</section>
-
 {% endblock %}
-
 {% block extra_js %}
 <script>
-document.addEventListener("DOMContentLoaded", function () {
-
-  const dateInput = document.getElementById("consultDate");
-  const timeSelect = document.getElementById("consultTime");
-  const doctorRadios = document.querySelectorAll("input[name='doctor_id']");
-
-  const ALL_TIMES = [
-    "10:00","11:00","12:00","13:00","14:00",
-    "15:00","16:00","17:00","18:00",
-    "19:00","20:00","21:00","22:00"
-  ];
-
-  const today = new Date().toISOString().split("T")[0];
-  dateInput.setAttribute("min", today);
-
-  async function fetchBooked(date) {
-    const res = await fetch(`/api/booked-slots/?date=${date}`);
-    return await res.json();
+  window.addEventListener("beforeunload", () => {
+  if(state.doctor && state.date && state.time){
+    releaseSlot(state.time);
   }
-
-  async function updateTimeSlots() {
-    const date = dateInput.value;
-    const selectedDoctor = document.querySelector("input[name='doctor_id']:checked");
-
-    timeSelect.innerHTML = '<option value="">Select Time</option>';
-    dateInput.classList.remove("disabled-day");
-
-    if (!date || !selectedDoctor) return;
-
-    const bookedData = await fetchBooked(date);
-    const doctorId = selectedDoctor.value;
-    const booked = bookedData[doctorId] || [];
-
-    let available = false;
-
-    ALL_TIMES.forEach(t => {
-      if (!booked.includes(t)) {
-        const opt = document.createElement("option");
-        opt.value = t;
-        opt.textContent = t;
-        timeSelect.appendChild(opt);
-        available = true;
-      }
-    });
-
-    if (!available) {
-      const opt = document.createElement("option");
-      opt.value = "";
-      opt.textContent = "No slots available";
-      opt.disabled = true;
-      timeSelect.appendChild(opt);
-      dateInput.classList.add("disabled-day");
-    }
-  }
-
-  dateInput.addEventListener("change", updateTimeSlots);
-  doctorRadios.forEach(radio => {
-    radio.addEventListener("change", updateTimeSlots);
-  });
-
 });
+
+let state = { doctor:null, date:null, time:null };
+let bookedSlots = {};   // 🔒 holds backend data
+
+const slots = [
+ "08:00","08:30","09:00","09:30","10:00","10:30",
+ "11:00","11:30","14:00","14:30","15:00","15:30",
+ "16:00","16:30","17:00","18:00"
+];
+
+const slotGrid  = document.getElementById("slotGrid");
+const btn       = document.querySelector(".btn-book");
+const dateInput = document.getElementById("dateInput");
+
+const TODAY = new Date().toISOString().split("T")[0];
+dateInput.min = TODAY;
+
+/* ================= DOCTOR ================= */
+function selectDoctor(el,id,name,spec,exp){
+  document.querySelectorAll(".doc-card").forEach(c=>c.classList.remove("active"));
+  el.classList.add("active");
+
+  doctorId.value = id;
+  state.doctor = id;   // 🔥 store doctor ID, not name
+
+  doctorInfo.style.display = "block";
+  doctorInfo.classList.add("active");
+  docName.innerText = "Dr. " + name;
+  docMeta.innerText = `${spec} • ${exp} years experience`;
+
+  if(state.date){
+    fetchBookedSlots();   // 🔥 refetch when doctor changes
+  }
+
+  updateUI();
+}
+
+/* ================= DATE ================= */
+function handleDateChange(value){
+  if(value < TODAY){
+    dateInput.value = TODAY;
+    value = TODAY;
+  }
+
+  state.date = value;
+  bookingDate.value = value;
+
+  fetchBookedSlots();   // 🔥 fetch slots from backend
+}
+
+/* ================= FETCH BOOKED SLOTS ================= */
+function fetchBookedSlots(){
+  slotGrid.innerHTML = "<p style='opacity:.6'>Loading slots…</p>";
+
+  fetch(`/api/booked-slots/?date=${state.date}`)
+    .then(res => res.json())
+    .then(data => {
+      bookedSlots = data;   // { doctor_id: [times] }
+      renderSlots();
+      updateUI();
+    })
+    .catch(err => {
+      console.error("Slot fetch failed", err);
+      slotGrid.innerHTML = "<p>Error loading slots</p>";
+    });
+}
+
+/* ================= RENDER SLOTS ================= */
+function renderSlots(){
+  slotGrid.innerHTML = "";
+  state.time = null;
+  bookingTime.value = "";
+
+  const now = new Date();
+  const doctorBooked = bookedSlots[state.doctor] || [];
+
+  slots.forEach(t=>{
+    const b = document.createElement("button");
+    b.type = "button";
+    b.className = "slot-btn";
+    b.innerText = t;
+
+    const slotTime = new Date(state.date + "T" + t);
+
+    /* ⛔ Past time */
+    if(state.date === TODAY && slotTime <= now){
+      b.disabled = true;
+    }
+
+    /* ⛔ Already booked */
+    if(doctorBooked.includes(t)){
+      b.disabled = true;
+      b.style.opacity = "0.35";
+    }
+
+    b.onclick = ()=>{
+  if(b.disabled) return;
+
+  /* 🔓 Release previous lock */
+  if(state.time){
+    releaseSlot(state.time);
+  }
+
+  /* 🔐 Lock this slot */
+  lockSlot(t, b);
+};
+
+
+    slotGrid.appendChild(b);
+  });
+}
+
+/* ================= LOCK SLOT ================= */
+function lockSlot(time, button){
+  fetch("/api/lock-slot/", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "X-CSRFToken": getCSRFToken()
+    },
+    body: JSON.stringify({
+      doctor_id: state.doctor,
+      date: state.date,
+      time: time
+    })
+  })
+  .then(res => res.json())
+  .then(data => {
+    if(!data.success){
+      alert(data.message || "Slot unavailable");
+      fetchBookedSlots(); // refresh grid
+      return;
+    }
+
+    document.querySelectorAll(".slot-btn").forEach(x=>x.classList.remove("active"));
+    button.classList.add("active");
+
+    state.time = time;
+    bookingTime.value = time;
+
+    updateUI();
+  });
+}
+
+/* ================= RELEASE SLOT ================= */
+function releaseSlot(time){
+  fetch("/api/release-slot/", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "X-CSRFToken": getCSRFToken()
+    },
+    body: JSON.stringify({
+      doctor_id: state.doctor,
+      date: state.date,
+      time: time
+    })
+  });
+}
+
+/* ================= CSRF ================= */
+function getCSRFToken(){
+  return document.querySelector("[name=csrfmiddlewaretoken]").value;
+}
+
+
+/* ================= ACTION BAR ================= */
+function updateUI(){
+  barDoc.innerText = state.doctor ? "Doctor selected" : "Select doctor";
+  barDate.innerText =
+    state.date && state.time
+      ? `${state.date} @ ${state.time}`
+      : "Select date & time";
+
+  btn.disabled = !(state.doctor && state.date && state.time);
+}
 </script>
 {% endblock %}
