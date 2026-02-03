@@ -11,7 +11,13 @@ class GroomingServiceForm(forms.ModelForm):
 class DaycarePlanForm(forms.ModelForm):
     class Meta:
         model = DaycarePlan
-        fields = ["name", "price", "duration_days", "description", "is_active"]
+        fields = [
+            "name",
+            "price_per_hour",
+            "max_days",
+            "description",
+            "is_active",
+        ]
 
 class ServiceForm(forms.ModelForm):
     class Meta:

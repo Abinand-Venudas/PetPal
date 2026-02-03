@@ -66,5 +66,17 @@ urlpatterns = [
     views.toggleDaycarePlanStatusAdmin,
     name="toggleDaycarePlanStatusAdmin"
 ),
+# ================= DOCTOR AVAILABILITY =================
+path(
+    "doctor/<int:id>/force-online/",
+    views.forceDoctorOnline,
+    name="forceDoctorOnline"
+),
+path(
+    "doctor/<int:id>/force-offline/",
+    views.forceDoctorOffline,
+    name="forceDoctorOffline"
+),
+
 
 ]

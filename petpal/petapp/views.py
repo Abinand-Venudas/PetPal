@@ -467,30 +467,30 @@ def grooming_invoice_pdf(request, id):
 # ================== DAYCARE ==================
 
 def daycare(request):
-    """
-    Daycare booking page
-    Stores form data & forces login if needed
-    """
+
+    plans = DaycarePlan.objects.filter(is_active=True)
 
     if request.method == "POST":
 
-        # Store form data temporarily
         request.session["daycare_form"] = {
             "pet_name": request.POST.get("pet_name"),
             "pet_type": request.POST.get("pet_type"),
+            "days": int(request.POST.get("days")),
             "date": request.POST.get("date"),
-            "time": request.POST.get("time"),
+            "start_time": request.POST.get("start_time"),
+            "plan": request.POST.get("plan"),
+            "total_cost": request.POST.get("total_cost"),
         }
 
-        # Force login
         if "user_id" not in request.session:
             messages.info(request, "Please login to continue booking.")
             return redirect("petapp:login")
 
         return redirect("petapp:daycare_confirm")
 
-    return render(request, "user/daycare.html")
-
+    return render(request, "user/daycare.html", {
+        "plans": plans
+    })
 
 def daycare_confirm(request):
     """

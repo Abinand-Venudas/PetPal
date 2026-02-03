@@ -48,6 +48,10 @@ def volunteerSignup(request):
 
     return render(request, "volunteer/volunteerSignup.html")
 
+# ---------------- VOLUNTEER APPLY ----------------
+def volunteerApply(request):
+    return render(request, "volunteer/volunteerApply.html")
+
 
 # ---------------- LOGIN ----------------
 def volunteerLogin(request):

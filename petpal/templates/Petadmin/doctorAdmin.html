@@ -7,46 +7,46 @@
 
 <h1 class="text-4xl font-extrabold mb-6">Doctor Availability</h1>
 <p class="text-gray-500 mb-10">
-  Live availability based on doctor check-in / check-out
+  Live availability based on doctor check-in / check-out (Admin Override Enabled)
 </p>
 
-<!-- SEARCH -->
+<!-- SORTING -->
 <form method="get" class="mb-10 flex flex-wrap gap-4">
-  <input
-    type="text"
-    name="q"
-    value="{{ query }}"
-    placeholder="Search by name, specialization or city"
-    class="px-4 py-3 rounded-xl border w-full md:w-96"
-  >
-
   <select
-    name="availability"
-    class="px-4 py-3 rounded-xl border"
+    name="sort"
+    class="px-4 py-3 rounded-xl border w-full md:w-72"
+    onchange="this.form.submit()"
   >
-    <option value="">All Doctors</option>
-    <option value="available" {% if availability == "available" %}selected{% endif %}>
-      Available
+    <option value="">Sort Doctors</option>
+    <option value="name" {% if sort == "name" %}selected{% endif %}>Name (A–Z)</option>
+    <option value="city" {% if sort == "city" %}selected{% endif %}>City</option>
+    <option value="specialization" {% if sort == "specialization" %}selected{% endif %}>
+      Specialization
     </option>
-    <option value="offline" {% if availability == "offline" %}selected{% endif %}>
-      Offline
+    <option value="available" {% if sort == "available" %}selected{% endif %}>
+      Availability
     </option>
   </select>
-
-  <button
-    type="submit"
-    class="px-6 py-3 rounded-xl bg-indigo-600 text-white font-semibold"
-  >
-    Search
-  </button>
 </form>
 
 <!-- DOCTORS GRID -->
 <div class="grid md:grid-cols-3 gap-6">
 
 {% for doctor in doctors %}
-<div class="bg-white p-6 rounded-2xl shadow">
+<div class="bg-white p-6 rounded-2xl shadow relative">
 
+  <!-- STATUS BADGE -->
+  {% if doctor.is_available %}
+    <span class="absolute top-4 right-4 px-3 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-700">
+      Online
+    </span>
+  {% else %}
+    <span class="absolute top-4 right-4 px-3 py-1 rounded-full text-xs font-semibold bg-gray-200 text-gray-700">
+      Offline
+    </span>
+  {% endif %}
+
+  <!-- PROFILE -->
   <div class="flex items-center gap-4 mb-4">
     {% if doctor.image %}
       <img src="{{ doctor.image.url }}" class="w-14 h-14 rounded-full object-cover">
@@ -55,25 +55,42 @@
     {% endif %}
 
     <div>
-      <h3 class="font-semibold">Dr. {{ doctor.name }}</h3>
+      <h3 class="font-semibold text-lg">Dr. {{ doctor.name }}</h3>
       <p class="text-sm text-gray-500">{{ doctor.specialization }}</p>
     </div>
   </div>
 
-  <p class="text-sm text-gray-600 mb-4">
+  <!-- DETAILS -->
+  <p class="text-sm text-gray-600 mb-5">
     🏥 {{ doctor.clinic }} <br>
     📍 {{ doctor.city }}
   </p>
 
+  <!-- FORCE ONLINE / OFFLINE -->
+  <div class="flex gap-2 mb-4">
+    <a href="{% url 'petadmin:forceDoctorOnline' doctor.id %}"
+       class="flex-1 text-center py-2 rounded-xl text-sm font-semibold
+       bg-green-100 text-green-700 hover:bg-green-200">
+      Force Online
+    </a>
+
+    <a href="{% url 'petadmin:forceDoctorOffline' doctor.id %}"
+       class="flex-1 text-center py-2 rounded-xl text-sm font-semibold
+       bg-gray-200 text-gray-700 hover:bg-gray-300">
+      Force Offline
+    </a>
+  </div>
+
+  <!-- ACTIONS -->
   <div class="flex gap-3">
     <a href="{% url 'petadmin:doctorDetailsAdmin' doctor.id %}"
-       class="flex-1 text-center py-2 rounded-xl bg-indigo-100 text-indigo-700">
+       class="flex-1 text-center py-2 rounded-xl bg-indigo-100 text-indigo-700 font-medium">
       View Profile
     </a>
 
     <a href="{% url 'petadmin:deleteDoctor' doctor.id %}"
-       onclick="return confirm('Are you sure?')"
-       class="flex-1 text-center py-2 rounded-xl bg-red-100 text-red-700">
+       onclick="return confirm('Are you sure you want to remove this doctor?')"
+       class="flex-1 text-center py-2 rounded-xl bg-red-100 text-red-700 font-medium">
       Remove
     </a>
   </div>

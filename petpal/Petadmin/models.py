@@ -21,12 +21,9 @@ class GroomingService(models.Model):
 
 class DaycarePlan(models.Model):
     name = models.CharField(max_length=100)
-    price = models.DecimalField(max_digits=8, decimal_places=2)
-
-    # ✅ REQUIRED FIELDS (you were missing these)
-    duration_days = models.PositiveIntegerField()
+    price_per_hour = models.DecimalField(max_digits=6, decimal_places=2)
+    max_days = models.PositiveIntegerField(default=30)
     is_active = models.BooleanField(default=True)
-
     description = models.TextField(blank=True)
 
     def __str__(self):

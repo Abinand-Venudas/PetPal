@@ -21,7 +21,7 @@ urlpatterns = [
     path("notification/read/<int:id>/", views.mark_notification_read, name="mark_notification_read"),
 
     path('profile/', views.volunteerProfile, name='volunteerProfile'),
-path('change-password/', views.volunteerChangePassword, name='volunteerChangePassword'),
-path('logout/', views.volunteerLogout, name='volunteerLogout'),
-
+    path('change-password/', views.volunteerChangePassword, name='volunteerChangePassword'),
+    path('logout/', views.volunteerLogout, name='volunteerLogout'),
+    path("apply/", views.volunteerApply, name="apply"),
 ]

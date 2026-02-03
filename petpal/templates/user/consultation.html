@@ -89,6 +89,7 @@
 }
 
 .doc-card{
+  position:relative;
   background:var(--surface-soft);
   border-radius:18px;
   padding:20px;
@@ -117,6 +118,19 @@
   background:#c7d2fe;
 }
 
+/* ================= AVAILABILITY BADGE ================= */
+.doc-status{
+  position:absolute;
+  top:14px;
+  right:14px;
+  font-size:.7rem;
+  font-weight:800;
+  padding:6px 12px;
+  border-radius:999px;
+  background:#dcfce7;
+  color:#166534;
+}
+
 /* ================= AVAILABILITY ================= */
 .availability-header{
   display:none;
@@ -125,10 +139,6 @@
   border-radius:18px;
   background:linear-gradient(135deg,rgba(99,102,241,.15),rgba(236,72,153,.15));
   border:1px solid var(--border-light);
-}
-
-.availability-header.active:hover{
-  transform:translateY(-3px);
 }
 
 /* ================= DATE & TIME ================= */
@@ -152,10 +162,6 @@ input[type="date"]{
   font-weight:600;
 }
 
-input[type="date"]::-webkit-calendar-picker-indicator{
-  cursor:pointer;
-}
-
 /* ================= SLOTS ================= */
 .slots-grid{
   display:grid;
@@ -172,11 +178,6 @@ input[type="date"]::-webkit-calendar-picker-indicator{
   cursor:pointer;
 }
 
-.slot-btn:hover:not(:disabled){
-  border-color:var(--accent);
-  color:var(--accent);
-}
-
 .slot-btn.active{
   background:var(--accent);
   color:#fff;
@@ -188,7 +189,35 @@ input[type="date"]::-webkit-calendar-picker-indicator{
   cursor:not-allowed;
 }
 
-/* ================= PATIENT INTAKE ================= */
+/* ================= ACTION BAR ================= */
+.action-bar{
+  position:fixed;
+  bottom:24px;
+  left:50%;
+  transform:translateX(-50%);
+  background:#020617;
+  border-radius:999px;
+  padding:10px 10px 10px 28px;
+  display:flex;
+  gap:28px;
+  color:#fff;
+}
+
+.btn-book{
+  background:#fff;
+  color:#020617;
+  border:none;
+  padding:14px 42px;
+  border-radius:999px;
+  font-weight:800;
+  cursor:pointer;
+}
+
+.btn-book:disabled{
+  opacity:.5;
+}
+/* ================= STEP 03 FIX ================= */
+
 .intake-card{
   background:var(--surface-soft);
   border:1px solid var(--border-light);
@@ -203,13 +232,19 @@ input[type="date"]::-webkit-calendar-picker-indicator{
 }
 
 @media(max-width:600px){
-  .form-grid{grid-template-columns:1fr}
+  .form-grid{
+    grid-template-columns:1fr;
+  }
 }
 
 .form-field{
   display:flex;
   flex-direction:column;
   gap:6px;
+}
+
+.form-field.full-width{
+  margin-top:20px;
 }
 
 .form-field label{
@@ -233,35 +268,6 @@ input[type="date"]::-webkit-calendar-picker-indicator{
   resize:none;
 }
 
-/* ================= ACTION BAR ================= */
-.action-bar{
-  position:fixed;
-  bottom:24px;
-  left:50%;
-  transform:translateX(-50%);
-  background:#020617;
-  border-radius:999px;
-  padding:10px 10px 10px 28px;
-  display:flex;
-  gap:28px;
-  color:#fff;
-  box-shadow:0 20px 50px rgba(0,0,0,.5);
-}
-
-.btn-book{
-  background:#fff;
-  color:#020617;
-  border:none;
-  padding:14px 42px;
-  border-radius:999px;
-  font-weight:800;
-  cursor:pointer;
-}
-
-.btn-book:disabled{
-  opacity:.5;
-  cursor:not-allowed;
-}
 </style>
 {% endblock %}
 
@@ -279,24 +285,34 @@ input[type="date"]::-webkit-calendar-picker-indicator{
   <div class="section-head">
     <span>Step 01</span>
     <h2>Select a Specialist</h2>
-    <p>Choose the veterinarian best suited for your pet’s condition</p>
+    <p>Only doctors who are currently checked-in are shown</p>
   </div>
 
   <div class="doc-grid">
+
     {% for doctor in dc %}
-    <div class="doc-card"
-      onclick="selectDoctor(this,'{{ doctor.id }}','{{ doctor.name }}','{{ doctor.specialization|default:"Veterinarian" }}','{{ doctor.experience|default:"0" }}')">
-      {% if doctor.image %}
-        <img src="{{ doctor.image.url }}" class="doc-avatar">
-      {% else %}
-        <div class="doc-avatar"></div>
-      {% endif %}
-      <div>
-        <strong>Dr. {{ doctor.name }}</strong><br>
-        <small>{{ doctor.specialization|default:"Veterinarian" }}</small>
+      {% if doctor.is_available %}
+      <div class="doc-card"
+        onclick="selectDoctor(this,'{{ doctor.id }}','{{ doctor.name }}','{{ doctor.specialization|default:"Veterinarian" }}','{{ doctor.experience|default:"0" }}')">
+
+        <span class="doc-status">Available</span>
+
+        {% if doctor.image %}
+          <img src="{{ doctor.image.url }}" class="doc-avatar">
+        {% else %}
+          <div class="doc-avatar"></div>
+        {% endif %}
+
+        <div>
+          <strong>Dr. {{ doctor.name }}</strong><br>
+          <small>{{ doctor.specialization|default:"Veterinarian" }}</small>
+        </div>
       </div>
-    </div>
+      {% endif %}
+    {% empty %}
+      <p style="opacity:.6">No doctors are currently available.</p>
     {% endfor %}
+
   </div>
 </div>
 
@@ -314,12 +330,7 @@ input[type="date"]::-webkit-calendar-picker-indicator{
   </div>
 
   <div class="date-time-container">
-<input
-  type="date"
-  id="dateInput"
-  required
-  oninput="handleDateChange(this.value)"
->
+    <input type="date" id="dateInput" required oninput="handleDateChange(this.value)">
     <div class="slots-grid" id="slotGrid"></div>
   </div>
 </div>
@@ -338,32 +349,36 @@ input[type="date"]::-webkit-calendar-picker-indicator{
         <label>Pet Name</label>
         <input name="pet_name" required>
       </div>
+
       <div class="form-field">
         <label>Pet Type</label>
         <input name="pet_type" required>
       </div>
     </div>
 
-    <div class="form-field" style="margin-top:20px">
+    <div class="form-field full-width">
       <label>Describe your pet’s issue</label>
       <textarea name="reason" required></textarea>
     </div>
   </div>
 </div>
 
+<!-- ACTION BAR -->
+
 <div class="action-bar">
   <div>
     <strong id="barDoc">Select doctor</strong><br>
     <span id="barDate">Select date & time</span>
   </div>
-<button class="btn-book" type="submit" disabled>
-  Confirm Consultation
-</button>
+  <button class="btn-book" type="submit" disabled>
+    Confirm Consultation
+  </button>
 </div>
 
 </form>
 </div>
 {% endblock %}
+
 {% block extra_js %}
 <script>
   window.addEventListener("beforeunload", () => {

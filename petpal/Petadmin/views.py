@@ -159,6 +159,22 @@ def doctorDetailsAdmin(request, id):
     doctor = get_object_or_404(doctor_registration, id=id)
     return render(request, "petadmin/doctorDetailsAdmin.html", {"doctor": doctor})
 
+def forceDoctorOnline(request, id):
+    doctor = get_object_or_404(doctor_registration, id=id)
+    doctor.is_available = True
+    doctor.save(update_fields=["is_available"])
+
+    messages.success(request, f"Dr. {doctor.name} is now forced ONLINE")
+    return redirect("petadmin:doctorAdmin")
+
+
+def forceDoctorOffline(request, id):
+    doctor = get_object_or_404(doctor_registration, id=id)
+    doctor.is_available = False
+    doctor.save(update_fields=["is_available"])
+
+    messages.warning(request, f"Dr. {doctor.name} is now forced OFFLINE")
+    return redirect("petadmin:doctorAdmin")
 
 # ================== VOLUNTEERS ==================
 
@@ -433,7 +449,7 @@ def addGroomingServiceAdmin(request):
         messages.success(request, "Grooming service added successfully")
         return redirect("petadmin:groomingServicesAdmin")
 
-    return render(request, "petadmin/services/service_form.html", {
+    return render(request, "petadmin/addServiceAdmin.html", {
         "form": form,
         "title": "Add Grooming Service"
     })
@@ -581,26 +597,46 @@ def editDaycarePlanAdmin(request, id):
 
     if request.method == "POST":
         name = request.POST.get("name", "").strip()
-        price = request.POST.get("price", "").strip()
-        duration = request.POST.get("duration_days", "").strip()
+        price_per_hour = request.POST.get("price_per_hour", "").strip()
+        max_days = request.POST.get("max_days", "").strip()
         description = request.POST.get("description", "")
         is_active = request.POST.get("is_active") == "on"
 
-        # 🔒 Validation
-        if not name or not price or not duration:
+        # 🔒 VALIDATION
+        if not name or not price_per_hour or not max_days:
             messages.error(request, "Please fill all required fields.")
-            return render(request, "Petadmin/editDaycarePlanAdmin.html", {"plan": plan})
+            return render(
+                request,
+                "Petadmin/editDaycarePlanAdmin.html",
+                {"plan": plan},
+            )
 
         try:
-            price = Decimal(price)
+            price_per_hour = Decimal(price_per_hour)
         except InvalidOperation:
-            messages.error(request, "Price must be a valid number.")
-            return render(request, "Petadmin/editDaycarePlanAdmin.html", {"plan": plan})
+            messages.error(request, "Price per hour must be a valid number.")
+            return render(
+                request,
+                "Petadmin/editDaycarePlanAdmin.html",
+                {"plan": plan},
+            )
 
-        # ✅ Save safely
+        try:
+            max_days = int(max_days)
+            if max_days < 1:
+                raise ValueError
+        except ValueError:
+            messages.error(request, "Maximum days must be a positive number.")
+            return render(
+                request,
+                "Petadmin/editDaycarePlanAdmin.html",
+                {"plan": plan},
+            )
+
+        # ✅ SAVE (NEW MODEL FIELDS)
         plan.name = name
-        plan.price = price
-        plan.duration_days = duration
+        plan.price_per_hour = price_per_hour
+        plan.max_days = max_days
         plan.description = description
         plan.is_active = is_active
         plan.save()
@@ -608,7 +644,11 @@ def editDaycarePlanAdmin(request, id):
         messages.success(request, "Daycare plan updated successfully.")
         return redirect("petadmin:daycarePlansAdmin")
 
-    return render(request, "Petadmin/editDaycarePlanAdmin.html", {"plan": plan})
+    return render(
+        request,
+        "Petadmin/editDaycarePlanAdmin.html",
+        {"plan": plan},
+    )
 
 # ===============================
 # DELETE DAYCARE PLAN (ADMIN)
