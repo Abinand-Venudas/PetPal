@@ -164,7 +164,7 @@ body{
 
       {% else %}
       <!-- NOT REQUESTED YET -->
-      <form method="POST" action="{% url 'petapp:adoptPet' pet.id %}" class="space-y-6">
+<form method="POST" action="{% url 'petapp:adopt_pet' pet.id %}">
         {% csrf_token %}
 
         <div>

@@ -1,0 +1,111 @@
+{% extends "petadmin/baseAdmin.html" %}
+{% block content %}
+
+<div class="max-w-6xl mx-auto space-y-6">
+
+  <!-- HEADER -->
+  <div>
+    <h1 class="text-3xl font-bold text-gray-800">Adoption Requests</h1>
+    <p class="text-gray-500">Review and manage all pet adoption requests</p>
+  </div>
+
+  <!-- FILTER BAR -->
+  <form method="get" class="bg-white rounded-2xl shadow p-6 flex gap-4 items-end">
+    <div>
+      <label class="block text-sm font-semibold text-gray-600 mb-1">User</label>
+      <select name="user" class="border rounded-lg px-4 py-2">
+        <option value="">All Users</option>
+        {% for u in users %}
+          <option value="{{ u.id }}" {% if selected_user == u.id|stringformat:"s" %}selected{% endif %}>
+            {{ u.name }}
+          </option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <div>
+      <label class="block text-sm font-semibold text-gray-600 mb-1">Status</label>
+      <select name="status" class="border rounded-lg px-4 py-2">
+        <option value="">All Status</option>
+        <option value="Pending">Pending</option>
+        <option value="Approved">Approved</option>
+        <option value="Visited">Visited</option>
+        <option value="Rejected">Rejected</option>
+      </select>
+    </div>
+
+    <button class="px-6 py-2 bg-indigo-600 text-white rounded-lg font-semibold">
+      Apply Filters
+    </button>
+
+    <a href="{% url 'petadmin:adminAdoptions' %}"
+       class="px-6 py-2 border rounded-lg font-semibold text-gray-700">
+      Reset
+    </a>
+  </form>
+
+  <!-- TABLE -->
+  <div class="bg-white rounded-2xl shadow overflow-hidden">
+    <table class="w-full text-sm">
+      <thead class="bg-gray-50 text-gray-600 uppercase text-xs">
+        <tr>
+          <th class="px-6 py-4 text-left">User</th>
+          <th class="px-6 py-4 text-left">Pet</th>
+          <th class="px-6 py-4 text-left">Status</th>
+          <th class="px-6 py-4 text-right">Actions</th>
+        </tr>
+      </thead>
+
+      <tbody class="divide-y">
+        {% for a in adoptions %}
+        <tr class="hover:bg-gray-50">
+          <td class="px-6 py-4 font-medium">{{ a.user.name }}</td>
+          <td class="px-6 py-4">{{ a.pet.name }}</td>
+
+          <td class="px-6 py-4">
+            {% if a.status == "Approved" %}
+              <span class="px-3 py-1 rounded-full bg-green-100 text-green-700">Approved</span>
+            {% elif a.status == "Pending" %}
+              <span class="px-3 py-1 rounded-full bg-yellow-100 text-yellow-700">Pending</span>
+            {% elif a.status == "Visited" %}
+              <span class="px-3 py-1 rounded-full bg-blue-100 text-blue-700">Visited</span>
+            {% else %}
+              <span class="px-3 py-1 rounded-full bg-red-100 text-red-700">Rejected</span>
+            {% endif %}
+          </td>
+
+          <td class="px-6 py-4 text-right flex gap-3 justify-end">
+
+            <!-- VIEW -->
+            <a href="{% url 'petadmin:adminAdoptionView' a.id %}"
+               class="px-4 py-2 bg-indigo-600 text-white rounded-lg font-semibold">
+              View
+            </a>
+
+            <!-- DELETE -->
+            <form method="post"
+                  action="{% url 'petadmin:deleteAdoptionRequest' a.id %}"
+                  onsubmit="return confirm('This will permanently delete the adoption request. Continue?');">
+              {% csrf_token %}
+              <button
+                class="px-4 py-2 bg-red-600 text-white rounded-lg font-semibold">
+                Delete
+              </button>
+            </form>
+
+          </td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="4" class="px-6 py-10 text-center text-gray-500">
+            No adoption requests found.
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+</div>
+
+{% endblock %}

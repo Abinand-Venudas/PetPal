@@ -16,7 +16,7 @@ from .models import DaycarePlan
 from .forms import DaycarePlanForm
 from django.views.decorators.http import require_POST
 from decimal import Decimal, InvalidOperation
-
+from django.utils.timezone import now
 # ================== AUTH ==================
 
 def loginAdmin(request):
@@ -39,7 +39,7 @@ def loginAdmin(request):
         except Pro_Admin.DoesNotExist:
             messages.error(request, "Invalid email or password")
 
-    return render(request, "petadmin/loginAdmin.html")
+    return render(request, "Petadmin/loginAdmin.html")
 
 
 def logoutAdmin(request):
@@ -85,7 +85,7 @@ def homeAdmin(request):
 
     return render(
         request,
-        "petadmin/homeAdmin.html",
+        "Petadmin/homeAdmin.html",
         {
             "pets": pets,
             "doctor_count": doctor_count,
@@ -104,6 +104,7 @@ def doctorAdmin(request):
 
     doctors = doctor_registration.objects.all()
 
+    # 🔍 SEARCH
     query = request.GET.get("q", "")
     if query:
         doctors = doctors.filter(
@@ -112,6 +113,7 @@ def doctorAdmin(request):
             Q(city__icontains=query)
         )
 
+    # ✅ AVAILABILITY FILTER (THIS IS THE PART YOU ASKED ABOUT)
     availability = request.GET.get("availability", "")
     if availability == "available":
         doctors = doctors.filter(is_available=True)
@@ -145,8 +147,12 @@ def toggleDoctorAvailability(request, id):
         return redirect("petadmin:loginAdmin")
 
     doctor = get_object_or_404(doctor_registration, id=id)
-    doctor.is_available = not doctor.is_available
-    doctor.save()
+
+    doctor.is_active = not doctor.is_active
+    doctor.is_available = doctor.is_active
+    doctor.is_checkout = not doctor.is_active
+
+    doctor.save(update_fields=["is_active", "is_available", "is_checkout"])
 
     messages.success(request, f"{doctor.name} availability updated")
     return redirect("petadmin:doctorAdmin")
@@ -161,20 +167,29 @@ def doctorDetailsAdmin(request, id):
 
 def forceDoctorOnline(request, id):
     doctor = get_object_or_404(doctor_registration, id=id)
-    doctor.is_available = True
-    doctor.save(update_fields=["is_available"])
 
-    messages.success(request, f"Dr. {doctor.name} is now forced ONLINE")
+    doctor.is_active = True          # ✅ MASTER FLAG
+    doctor.is_available = True       # 🔄 SYNC
+    doctor.is_checkout = False
+
+    doctor.save(update_fields=["is_active", "is_available", "is_checkout"])
+
+    messages.success(request, f"Dr. {doctor.name} is now ONLINE")
     return redirect("petadmin:doctorAdmin")
 
 
 def forceDoctorOffline(request, id):
     doctor = get_object_or_404(doctor_registration, id=id)
-    doctor.is_available = False
-    doctor.save(update_fields=["is_available"])
 
-    messages.warning(request, f"Dr. {doctor.name} is now forced OFFLINE")
+    doctor.is_active = False         # ✅ MASTER FLAG
+    doctor.is_available = False      # 🔄 SYNC
+    doctor.is_checkout = True
+
+    doctor.save(update_fields=["is_active", "is_available", "is_checkout"])
+
+    messages.warning(request, f"Dr. {doctor.name} is now OFFLINE")
     return redirect("petadmin:doctorAdmin")
+
 
 # ================== VOLUNTEERS ==================
 
@@ -191,10 +206,46 @@ def toggleVolunteerAvailability(request, id):
         return redirect("petadmin:loginAdmin")
 
     volunteer = get_object_or_404(volunteer_registration, id=id)
-    volunteer.is_available = not volunteer.is_available
-    volunteer.save()
 
-    messages.success(request, "Volunteer availability updated")
+    # ❌ Block availability change if volunteer is disabled
+    if not volunteer.is_active:
+        messages.error(request, "Cannot change availability of a disabled volunteer.")
+        return redirect("petadmin:volunteerAdmin")
+
+    volunteer.is_available = not volunteer.is_available
+    volunteer.save(update_fields=["is_available"])
+
+    messages.success(request, "Volunteer availability updated.")
+    return redirect("petadmin:volunteerAdmin")
+
+
+def toggleVolunteerStatus(request, id):
+    if "admin_id" not in request.session:
+        return redirect("petadmin:loginAdmin")
+
+    volunteer = get_object_or_404(volunteer_registration, id=id)
+
+    volunteer.is_active = not volunteer.is_active
+
+    # 🔒 If disabling → force offline
+    if not volunteer.is_active:
+        volunteer.is_available = False
+
+    volunteer.save(update_fields=["is_active", "is_available"])
+
+    status = "disabled" if not volunteer.is_active else "enabled"
+    messages.success(request, f"Volunteer account {status} successfully.")
+    return redirect("petadmin:volunteerAdmin")
+
+
+def deleteVolunteer(request, id):
+    if "admin_id" not in request.session:
+        return redirect("petadmin:loginAdmin")
+
+    volunteer = get_object_or_404(volunteer_registration, id=id)
+    volunteer.delete()
+
+    messages.warning(request, "Volunteer removed permanently.")
     return redirect("petadmin:volunteerAdmin")
 
 
@@ -309,28 +360,29 @@ def addPetAdmin(request):
     return render(request, "petadmin/addPetAdmin.html")
 
 
-def editPetAdmin(request, id):
-    if "admin_id" not in request.session:
-        return redirect("petadmin:loginAdmin")
-
-    pet = get_object_or_404(Pet, id=id)
+def editPetAdmin(request, pet_id):
+    pet = get_object_or_404(Pet, id=pet_id)
+    adoption = AdoptionRequest.objects.filter(pet=pet).first()
 
     if request.method == "POST":
         pet.name = request.POST.get("name")
         pet.pet_type = request.POST.get("pet_type")
         pet.age = request.POST.get("age")
         pet.description = request.POST.get("description")
-        pet.vaccinated = request.POST.get("vaccinated") == "on"
-        # pet.status = request.POST.get("status")
+        pet.status = request.POST.get("status")  # 🔥 IMPORTANT
+        pet.vaccinated = "vaccinated" in request.POST
 
-        if request.FILES.get("image"):
-            pet.image = request.FILES.get("image")
+        if "image" in request.FILES:
+            pet.image = request.FILES["image"]
 
         pet.save()
-        messages.success(request, "Pet updated successfully")
         return redirect("petadmin:adoptionPetsAdmin")
 
-    return render(request, "petadmin/editPetAdmin.html", {"pet": pet})
+    return render(request, "petadmin/editPetAdmin.html", {
+        "pet": pet,
+        "adoption": adoption,
+    })
+
 
 def deletePetAdmin(request, id):
     if "admin_id" not in request.session:
@@ -363,49 +415,48 @@ def adoption_requests(request):
     })
 
 
+
 def update_adoption_status(request, id, status):
     if "admin_id" not in request.session:
         return redirect("petadmin:loginAdmin")
 
     adoption = get_object_or_404(AdoptionRequest, id=id)
 
-    # Security validation
-    if status not in ["Approved", "Rejected", "Pending"]:
+    if status not in ["Approved", "Rejected", "Visited"]:
         messages.error(request, "Invalid status")
         return redirect("petadmin:adminAdoptions")
 
     adoption.status = status
+
+    # ✅ Safety: ensure visit_date exists
+    if status in ["Approved", "Visited"] and not adoption.visit_date:
+        adoption.visit_date = now().date()
+
     adoption.save()
+    messages.success(request, f"Marked as {status}")
 
-    messages.success(request, f"Adoption request {status} successfully.")
+    return redirect("petadmin:adminAdoptionView", id=id)
 
-    # ✅ correct redirect
-    return redirect("petadmin:adminAdoptions")
 
 def adminAdoptions(request):
-    if "admin_id" not in request.session:
-        return redirect("petadmin:loginAdmin")
-
-    user_id = request.GET.get("user")
-    status = request.GET.get("status")
-
+    users = user_registration.objects.all()
     adoptions = AdoptionRequest.objects.select_related("user", "pet")
 
-    # Filters
-    if user_id:
-        adoptions = adoptions.filter(user_id=user_id)
+    selected_user = request.GET.get("user")
+    status = request.GET.get("status")
+
+    if selected_user:
+        adoptions = adoptions.filter(user_id=selected_user)
 
     if status:
         adoptions = adoptions.filter(status=status)
 
-    adoptions = adoptions.order_by("-id")
-
-    return render(request, "petadmin/adoptions_list.html", {
-        "adoptions": adoptions,
-        "users": user_registration.objects.all(),
-        "selected_user": user_id,
-        "selected_status": status,
-    })
+    return render(request, "Petadmin/adoptions_list.html", {
+    "adoptions": adoptions,
+    "users": users,
+    "selected_user": selected_user,
+    "selected_status": status,
+})
 
 
 def adminAdoptionView(request, id):
@@ -417,9 +468,21 @@ def adminAdoptionView(request, id):
         id=id
     )
 
-    return render(request, "petadmin/adoption_view.html", {
-        "adoption": adoption
-    })
+    return render(request, "Petadmin/adminAdoptionView.html", {
+    "adoption": adoption
+})
+
+
+@require_POST
+def deleteAdoptionRequest(request, id):
+    if "admin_id" not in request.session:
+        return redirect("petadmin:loginAdmin")
+
+    adoption = get_object_or_404(AdoptionRequest, id=id)
+    adoption.delete()
+
+    messages.success(request, "Adoption request deleted successfully.")
+    return redirect("petadmin:adminAdoptions")
 
 
 # ================== SERVICES ==================

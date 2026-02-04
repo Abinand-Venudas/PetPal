@@ -273,7 +273,7 @@ input[type="date"]{
 
 {% block content %}
 <div class="page-container">
-<form method="POST">
+<form method="POST" action="{% url 'petapp:bookAppointment' %}">
 {% csrf_token %}
 
 <input type="hidden" id="doctorId" name="doctor_id">

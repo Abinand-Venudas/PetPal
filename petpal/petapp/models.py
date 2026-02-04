@@ -53,7 +53,12 @@ class AdoptionRequest(models.Model):
 
     status = models.CharField(
         max_length=20,
-        choices=[("Pending", "Pending"), ("Approved", "Approved"), ("Rejected", "Rejected")],
+        choices=[
+            ("Pending", "Pending"),
+            ("Approved", "Approved"),
+            ("Rejected", "Rejected"),
+            ("Visited", "Visited"),
+        ],
         default="Pending"
     )
 
@@ -62,6 +67,7 @@ class AdoptionRequest(models.Model):
 
     def __str__(self):
         return f"{self.user.name} → {self.pet.name} ({self.status})"
+
 
 
 # =========================

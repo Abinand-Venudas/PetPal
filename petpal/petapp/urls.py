@@ -24,7 +24,7 @@ urlpatterns = [
 
     # Pet
     path("pet/<int:pet_id>/", views.petDetails, name="petDetails"),
-    path("adopt/<int:pet_id>/", views.adoptPet, name="adoptPet"),
+path("adopt/<int:pet_id>/", views.adopt_pet, name="adopt_pet"),
 
     # Success
     path("consultation/success/<int:id>/", views.consultationSuccess, name="consultationSuccess"),
@@ -45,5 +45,6 @@ path("grooming/rebook/<int:id>/", views.rebook_grooming, name="rebook_grooming")
 path("grooming/invoice/<int:id>/", views.grooming_invoice_pdf, name="grooming_invoice"),
 # Grooming Actions
 path("grooming/rebook/<int:id>/", views.rebook_grooming, name="rebook_grooming"),
+ path("book-appointment/", views.bookAppointment, name="bookAppointment"),
 
 ]

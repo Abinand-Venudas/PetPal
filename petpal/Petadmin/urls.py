@@ -32,7 +32,11 @@ urlpatterns = [
     # ================= ADOPTION PETS =================
     path("adoption/pets/", views.adoptionPetsAdmin, name="adoptionPetsAdmin"),
     path("adoption/pets/add/", views.addPetAdmin, name="addPetAdmin"),
-    path("adoption/pets/edit/<int:id>/", views.editPetAdmin, name="editPetAdmin"),
+    path(
+    "adoption/pets/edit/<int:pet_id>/",
+    views.editPetAdmin,
+    name="editPetAdmin"
+),
     path("adoption/pets/delete/<int:id>/", views.deletePetAdmin, name="deletePetAdmin"),
 
     # ================= CONSULTATIONS =================
@@ -42,6 +46,7 @@ urlpatterns = [
     path("adoptions/", views.adminAdoptions, name="adminAdoptions"),
     path("adoptions/view/<int:id>/", views.adminAdoptionView, name="adminAdoptionView"),
     path("adoptions/update/<int:id>/<str:status>/", views.update_adoption_status, name="update_adoption_status"),
+    path( "adoptions/delete/<int:id>/",views.deleteAdoptionRequest,name="deleteAdoptionRequest"),
 
     # ================= GROOMING BOOKINGS =================
     path("grooming/bookings/", views.adminGroomingBookings, name="adminGroomingBookings"),
@@ -61,22 +66,13 @@ urlpatterns = [
     path("services/daycare/add/", views.addDaycarePlanAdmin, name="addDaycarePlanAdmin"),
     path("services/daycare/edit/<int:id>/",views.editDaycarePlanAdmin,name="editDaycarePlanAdmin"),
     path("services/daycare/delete/<int:id>/",views.deleteDaycarePlanAdmin,name="deleteDaycarePlanAdmin"),
-    path(
-    "services/daycare/toggle/<int:id>/",
-    views.toggleDaycarePlanStatusAdmin,
-    name="toggleDaycarePlanStatusAdmin"
-),
+    path("services/daycare/toggle/<int:id>/",views.toggleDaycarePlanStatusAdmin,name="toggleDaycarePlanStatusAdmin"),
+
+
 # ================= DOCTOR AVAILABILITY =================
-path(
-    "doctor/<int:id>/force-online/",
-    views.forceDoctorOnline,
-    name="forceDoctorOnline"
-),
-path(
-    "doctor/<int:id>/force-offline/",
-    views.forceDoctorOffline,
-    name="forceDoctorOffline"
-),
-
-
+    path("doctor/<int:id>/force-online/",views.forceDoctorOnline,name="forceDoctorOnline"),
+    path("doctor/<int:id>/force-offline/",views.forceDoctorOffline,name="forceDoctorOffline"),
+    path("volunteer/delete/<int:id>/",views.deleteVolunteer,name="deleteVolunteer"),
+    path("volunteer/status/<int:id>/", views.toggleVolunteerStatus, name="toggleVolunteerStatus"),
+    
 ]

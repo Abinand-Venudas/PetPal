@@ -143,21 +143,29 @@ body{
         View
       </a>
 
-      {% if pet.id in requested_pets %}
-      <button disabled
-        class="w-1/2 py-3 text-center bg-gray-300 text-gray-600 rounded-xl font-semibold cursor-not-allowed">
-        Requested
-      </button>
+      {% if pet.status != "available" %}
+        <button disabled
+          class="w-1/2 py-3 bg-gray-300 text-gray-600 rounded-xl font-semibold cursor-not-allowed">
+          Locked
+        </button>
+
+      {% elif pet.id in requested_pets %}
+        <button disabled
+          class="w-1/2 py-3 bg-gray-300 text-gray-600 rounded-xl font-semibold cursor-not-allowed">
+          Requested
+        </button>
+
       {% else %}
-      <button
-        onclick="openAdoptModal('{{ pet.id }}')"
-        class="adopt-btn w-1/2 py-3 text-center bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-semibold">
-        Adopt
-      </button>
+        <button
+          onclick="openAdoptModal('{{ pet.id }}')"
+          class="adopt-btn w-1/2 py-3 text-center bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-semibold">
+          Adopt
+        </button>
       {% endif %}
     </div>
   </div>
 </div>
+
 {% empty %}
 <p class="text-center col-span-3 text-gray-500 text-lg">
   No pets available for adoption right now 🐾
@@ -175,14 +183,15 @@ body{
       {% csrf_token %}
 
       <label class="block mb-2 font-semibold text-gray-700">Adoption Date</label>
- <input type="date" name="visit_date" id="adoptionDate"
-       class="w-full px-4 py-3 border rounded-xl mb-5" required>
-
+      <input type="date" name="visit_date"
+             class="w-full px-4 py-3 border rounded-xl mb-5" required>
 
       <label class="block mb-2 font-semibold text-gray-700">Preferred Time (10AM – 10PM)</label>
-      <select name="adoption_time" id="adoptionTime"
+      <select name="adoption_time"
               class="w-full px-4 py-3 border rounded-xl mb-6" required>
         <option value="">Select a time slot</option>
+        {% for h in "10,11,12,13,14,15,16,17,18,19,20,21"|cut:"," %}
+        {% endfor %}
       </select>
 
       <div class="flex justify-end gap-4">
@@ -215,45 +224,6 @@ function openAdoptModal(petId){
 function closeModal(){
     document.getElementById("adoptModal").style.display = "none";
 }
-
-/* ===== Disable Past Dates, Sundays & Holidays + Time Slots ===== */
-document.addEventListener("DOMContentLoaded", function(){
-    const dateInput = document.getElementById("adoptionDate");
-    const timeSelect = document.getElementById("adoptionTime");
-
-    const today = new Date();
-    dateInput.min = today.toISOString().split("T")[0];
-
-    const holidays = ["2026-01-26","2026-08-15","2026-10-02","2026-12-25"];
-
-    dateInput.addEventListener("change", function(){
-        const selected = new Date(this.value);
-        const formatted = this.value;
-
-        if (selected.getDay() === 0){
-            alert("Adoptions are not available on Sundays.");
-            this.value = "";
-            return;
-        }
-
-        if (holidays.includes(formatted)){
-            alert("This date is a holiday. Please choose another date.");
-            this.value = "";
-            return;
-        }
-    });
-
-    timeSelect.innerHTML = '<option value="">Select a time slot</option>';
-    for(let h=10; h<=22; h++){
-        let start = (h>12?h-12:h)+":00 "+(h>=12?"PM":"AM");
-        let endH = h+1;
-        let end = (endH>12?endH-12:endH)+":00 "+(endH>=12?"PM":"AM");
-        let opt = document.createElement("option");
-        opt.value = start+" - "+end;
-        opt.textContent = start+" - "+end;
-        timeSelect.appendChild(opt);
-    }
-});
 </script>
 
 {% endblock %}

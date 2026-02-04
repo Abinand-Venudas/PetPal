@@ -80,15 +80,22 @@ def updateAppointment(request, appointment_id, status):
 
 def doctoractive(request):
     doctor = doctor_registration.objects.get(id=request.session["doctor_id"])
+
     doctor.is_active = True
+    doctor.is_available = True
     doctor.is_checkout = False
-    doctor.save()
+
+    doctor.save(update_fields=["is_active", "is_available", "is_checkout"])
     return redirect("doctor:doctorHome")
 
 
 def doctorcheckout(request):
     doctor = doctor_registration.objects.get(id=request.session["doctor_id"])
+
     doctor.is_active = False
+    doctor.is_available = False
     doctor.is_checkout = True
-    doctor.save()
+
+    doctor.save(update_fields=["is_active", "is_available", "is_checkout"])
     return redirect("doctor:doctorHome")
+

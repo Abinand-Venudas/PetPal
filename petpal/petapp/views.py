@@ -179,6 +179,30 @@ def my_bookings(request):
         "grooming_bookings": grooming_bookings,
     })
 
+def bookAppointment(request):
+    if not request.session.get("user_id"):
+        return redirect("petapp:login")
+
+    user = user_registration.objects.get(id=request.session["user_id"])
+
+    if request.method == "POST":
+        doctor_id = request.POST.get("doctor_id")  # VERY IMPORTANT
+
+        doctor = doctor_registration.objects.get(id=doctor_id)
+
+    appointment = Appointment.objects.create(
+    user=user,
+    doctor=doctor,
+    pet_name=request.POST.get("pet_name"),
+    pet_type=request.POST.get("pet_type"),
+    reason=request.POST.get("reason"),
+    date=request.POST.get("date"),
+    time=request.POST.get("time"),
+    status="pending"
+)
+
+    return redirect("petapp:consultationSuccess", id=appointment.id)
+
 # ================== GROOMING ==================
 def grooming(request):
     if not request.session.get("user_id"):
@@ -835,24 +859,72 @@ def release_slot(request):
 
 # ================== ADOPTION ==================
 def adoptionlist(request):
-    pets = Pet.objects.all()
-    return render(request, "user/adoptionlist.html", {"pets": pets})
+    # 🔒 only show available pets
+    pets = Pet.objects.filter(status="available")
+
+    requested_pets = []
+
+    if request.session.get("user_id"):
+        user_id = request.session["user_id"]
+        requested_pets = AdoptionRequest.objects.filter(
+            user_id=user_id
+        ).values_list("pet_id", flat=True)
+
+    return render(request, "user/adoptionlist.html", {
+        "pets": pets,
+        "requested_pets": requested_pets,
+    })
 
 
 def petDetails(request, pet_id):
     pet = get_object_or_404(Pet, id=pet_id)
-    return render(request, "user/petDetails.html", {"pet": pet})
+
+    adoption = None  # 👈 IMPORTANT
+
+    if request.session.get("user_id"):
+        user_id = request.session["user_id"]
+
+        adoption = AdoptionRequest.objects.filter(
+            user_id=user_id,
+            pet=pet
+        ).first()  # returns object or None
+
+    return render(request, "user/petDetails.html", {
+        "pet": pet,
+        "adoption": adoption,  # 👈 THIS fixes everything
+    })
 
 
-def adoptPet(request, pet_id):
-    if "user_id" not in request.session:
+def adopt_pet(request, pet_id):
+    if not request.session.get("user_id"):
         return redirect("petapp:login")
 
+    user_id = request.session["user_id"]
     pet = get_object_or_404(Pet, id=pet_id)
-    user = user_registration.objects.get(id=request.session["user_id"])
 
-    adoption = AdoptionRequest.objects.create(user=user, pet=pet)
-    return redirect("petapp:adoptionSuccess", id=adoption.id)
+    # 🔒 BLOCK if pet is NOT available
+    if pet.status != "available":
+        messages.error(request, "This pet is no longer available for adoption.")
+        return redirect("petapp:petDetails", pet_id=pet.id)
+
+    # 🔒 BLOCK duplicate request
+    if AdoptionRequest.objects.filter(user_id=user_id, pet=pet).exists():
+        messages.warning(request, "You have already requested this pet.")
+        return redirect("petapp:petDetails", pet_id=pet.id)
+
+    if request.method == "POST":
+        AdoptionRequest.objects.create(
+            user_id=user_id,
+            pet=pet,
+            visit_date=request.POST.get("visit_date"),
+            adoption_time=request.POST.get("adoption_time"),
+            status="pending"
+        )
+
+        messages.success(request, "Adoption request sent successfully!")
+        return redirect("petapp:petDetails", pet_id=pet.id)
+
+    return redirect("petapp:petDetails", pet_id=pet.id)
 
 
 def adoptionSuccess(request, id):
@@ -902,23 +974,23 @@ def consultation(request):
     return render(request, "user/consultation.html", {"dc": dc})
 
 
-
 def consultationSuccess(request, id):
-    if "user_id" not in request.session:
+    # Ensure user is logged in
+    if not request.session.get("user_id"):
         return redirect("petapp:login")
 
+    user = user_registration.objects.get(id=request.session["user_id"])
+
+    # Fetch ONLY this user's appointment
     consultation = get_object_or_404(
-        Consultation,
+        Appointment,
         id=id,
-        user_id=request.session["user_id"]
+        user=user
     )
 
-    return render(
-        request,
-        "user/consultationSuccess.html",
-        {"consultation": consultation}
-    )
-
+    return render(request, "user/consultationSuccess.html", {
+        "consultation": consultation
+    })
 
 
 # ================= PDF =================
@@ -938,3 +1010,20 @@ def download_booking_pdf(request, booking_id):
     p.save()
 
     return response
+
+
+def adoptionProgress(request):
+    if not request.session.get("user_id"):
+        return redirect("petapp:login")
+
+    adoption = (
+        AdoptionRequest.objects
+        .filter(user_id=request.session["user_id"])
+        .select_related("pet")
+        .order_by("-created_at")
+        .first()
+    )
+
+    return render(request, "petapp/adoptionProgress.html", {
+        "adoption": adoption
+    })

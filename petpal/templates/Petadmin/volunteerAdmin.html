@@ -5,66 +5,184 @@
 
 {% block content %}
 
-<h1 class="text-4xl font-extrabold mb-8">Volunteer Availability</h1>
+<!-- PAGE HEADER -->
+<div class="mb-10">
+  <h1 class="text-4xl font-extrabold text-slate-900">Volunteer Availability</h1>
+  <p class="text-slate-500 mt-2">
+    Manage volunteer online and offline status in real time
+  </p>
+</div>
 
-<!-- AVAILABLE -->
-<h2 class="text-2xl font-bold text-green-600 mb-4">Available</h2>
-
-<div class="grid md:grid-cols-3 gap-6 mb-12">
-{% for volunteer in volunteers %}
-{% if volunteer.is_available %}
-<div class="bg-white p-6 rounded-2xl shadow">
-
-  <div class="flex items-center justify-between mb-4">
-    <div>
-      <h3 class="font-semibold">{{ volunteer.name }}</h3>
-      <p class="text-sm text-gray-500">{{ volunteer.skills }}</p>
-    </div>
-
-    <a href="{% url 'petadmin:toggleVolunteerAvailability' volunteer.id %}"
-       class="text-xs px-3 py-1 rounded-full bg-red-100 text-red-700 hover:bg-red-200">
-      Force Offline
-    </a>
+<!-- ================= AVAILABLE VOLUNTEERS ================= -->
+<div class="mb-14">
+  <div class="flex items-center gap-3 mb-6">
+    <span class="w-2 h-2 rounded-full bg-green-500"></span>
+    <h2 class="text-2xl font-semibold text-slate-800">Available Volunteers</h2>
   </div>
 
-  <p class="text-sm text-gray-600">
-    📍 {{ volunteer.address }} <br>
-    📞 {{ volunteer.phone }}
-  </p>
+  <div class="grid md:grid-cols-3 gap-6">
+  {% for volunteer in volunteers %}
+  {% if volunteer.is_available %}
+    <div class="bg-white p-6 rounded-2xl shadow border border-slate-100">
 
-</div>
-{% endif %}
-{% endfor %}
-</div>
+      <!-- HEADER -->
+      <div class="flex items-center justify-between mb-5">
+        <div>
+          <h3 class="font-semibold text-lg text-slate-900">
+            {{ volunteer.name }}
+          </h3>
+          <p class="text-sm text-slate-500">
+            {{ volunteer.skills }}
+          </p>
+        </div>
 
-<!-- OFFLINE -->
-<h2 class="text-2xl font-bold text-gray-600 mb-4">Not Available</h2>
+        <!-- STATUS BADGE -->
+        {% if not volunteer.is_active %}
+          <span class="px-3 py-1 rounded-full text-xs font-semibold
+                       bg-yellow-100 text-yellow-700">
+            Disabled
+          </span>
+        {% else %}
+          <span class="px-3 py-1 rounded-full text-xs font-semibold
+                       bg-green-100 text-green-700">
+            Available
+          </span>
+        {% endif %}
+      </div>
 
-<div class="grid md:grid-cols-3 gap-6">
-{% for volunteer in volunteers %}
-{% if not volunteer.is_available %}
-<div class="bg-white p-6 rounded-2xl shadow opacity-80">
+      <!-- DETAILS -->
+      <div class="text-sm text-slate-600 space-y-1 mb-6">
+        <div>📍 {{ volunteer.address }}</div>
+        <div>📞 {{ volunteer.phone }}</div>
+      </div>
 
-  <div class="flex items-center justify-between mb-4">
-    <div>
-      <h3 class="font-semibold">{{ volunteer.name }}</h3>
-      <p class="text-sm text-gray-500">{{ volunteer.skills }}</p>
+      <!-- ACTIONS -->
+      <div class="space-y-3">
+
+        <!-- PRIMARY -->
+        <a href="{% url 'petadmin:toggleVolunteerAvailability' volunteer.id %}"
+           class="block text-center py-2 rounded-xl text-sm font-semibold
+                  bg-red-100 text-red-700 hover:bg-red-200 transition">
+          Force Offline
+        </a>
+
+        <!-- SECONDARY -->
+        <div class="flex gap-3">
+
+          {% if volunteer.is_active %}
+            <a href="{% url 'petadmin:toggleVolunteerStatus' volunteer.id %}"
+               class="flex-1 text-center py-2 rounded-xl text-sm font-medium
+                      border border-yellow-300 text-yellow-700 hover:bg-yellow-50 transition">
+              Disable
+            </a>
+          {% else %}
+            <a href="{% url 'petadmin:toggleVolunteerStatus' volunteer.id %}"
+               class="flex-1 text-center py-2 rounded-xl text-sm font-medium
+                      border border-green-300 text-green-700 hover:bg-green-50 transition">
+              Enable
+            </a>
+          {% endif %}
+
+          <a href="{% url 'petadmin:deleteVolunteer' volunteer.id %}"
+             onclick="return confirm('This will permanently remove the volunteer. Continue?')"
+             class="flex-1 text-center py-2 rounded-xl text-sm font-medium
+                    border border-red-300 text-red-600 hover:bg-red-50 transition">
+            Remove
+          </a>
+
+        </div>
+      </div>
+
     </div>
+  {% endif %}
+  {% endfor %}
+  </div>
+</div>
 
-    <a href="{% url 'petadmin:toggleVolunteerAvailability' volunteer.id %}"
-       class="text-xs px-3 py-1 rounded-full bg-green-100 text-green-700 hover:bg-green-200">
-      Force Available
-    </a>
+<!-- ================= OFFLINE VOLUNTEERS ================= -->
+<div>
+  <div class="flex items-center gap-3 mb-6">
+    <span class="w-2 h-2 rounded-full bg-gray-400"></span>
+    <h2 class="text-2xl font-semibold text-slate-800">Offline Volunteers</h2>
   </div>
 
-  <p class="text-sm text-gray-600">
-    📍 {{ volunteer.address }} <br>
-    📞 {{ volunteer.phone }}
-  </p>
+  <div class="grid md:grid-cols-3 gap-6">
+  {% for volunteer in volunteers %}
+  {% if not volunteer.is_available %}
+    <div class="bg-white p-6 rounded-2xl shadow border border-slate-100 opacity-90">
 
-</div>
-{% endif %}
-{% endfor %}
+      <!-- HEADER -->
+      <div class="flex items-center justify-between mb-5">
+        <div>
+          <h3 class="font-semibold text-lg text-slate-900">
+            {{ volunteer.name }}
+          </h3>
+          <p class="text-sm text-slate-500">
+            {{ volunteer.skills }}
+          </p>
+        </div>
+
+        <!-- STATUS BADGE -->
+        {% if not volunteer.is_active %}
+          <span class="px-3 py-1 rounded-full text-xs font-semibold
+                       bg-yellow-100 text-yellow-700">
+            Disabled
+          </span>
+        {% else %}
+          <span class="px-3 py-1 rounded-full text-xs font-semibold
+                       bg-gray-200 text-gray-700">
+            Offline
+          </span>
+        {% endif %}
+      </div>
+
+      <!-- DETAILS -->
+      <div class="text-sm text-slate-600 space-y-1 mb-6">
+        <div>📍 {{ volunteer.address }}</div>
+        <div>📞 {{ volunteer.phone }}</div>
+      </div>
+
+      <!-- ACTIONS -->
+      <div class="space-y-3">
+
+        <!-- PRIMARY -->
+        <a href="{% url 'petadmin:toggleVolunteerAvailability' volunteer.id %}"
+           class="block text-center py-2 rounded-xl text-sm font-semibold
+                  bg-green-100 text-green-700 hover:bg-green-200 transition">
+          Force Available
+        </a>
+
+        <!-- SECONDARY -->
+        <div class="flex gap-3">
+
+          {% if volunteer.is_active %}
+            <a href="{% url 'petadmin:toggleVolunteerStatus' volunteer.id %}"
+               class="flex-1 text-center py-2 rounded-xl text-sm font-medium
+                      border border-yellow-300 text-yellow-700 hover:bg-yellow-50 transition">
+              Disable
+            </a>
+          {% else %}
+            <a href="{% url 'petadmin:toggleVolunteerStatus' volunteer.id %}"
+               class="flex-1 text-center py-2 rounded-xl text-sm font-medium
+                      border border-green-300 text-green-700 hover:bg-green-50 transition">
+              Enable
+            </a>
+          {% endif %}
+
+          <a href="{% url 'petadmin:deleteVolunteer' volunteer.id %}"
+             onclick="return confirm('This will permanently remove the volunteer. Continue?')"
+             class="flex-1 text-center py-2 rounded-xl text-sm font-medium
+                    border border-red-300 text-red-600 hover:bg-red-50 transition">
+            Remove
+          </a>
+
+        </div>
+      </div>
+
+    </div>
+  {% endif %}
+  {% endfor %}
+  </div>
 </div>
 
 {% endblock %}

@@ -6,10 +6,16 @@ class volunteer_registration(models.Model):
     name = models.CharField(max_length=100)
     email = models.EmailField(unique=True)
     password = models.CharField(max_length=255)  # hashed
-    proof = models.FileField(upload_to='volunteer_docs', default=True)
-    phone = models.CharField(max_length=15, default='True')
-    skills = models.CharField(max_length=30, default='True')
-    address = models.TextField(default='True')
+    proof = models.FileField(upload_to='volunteer_docs', null=True, blank=True)
+
+    phone = models.CharField(max_length=15)
+    skills = models.CharField(max_length=30)
+    address = models.TextField()
+
+    # ✅ ACCOUNT STATUS (ADMIN CONTROL)
+    is_active = models.BooleanField(default=True)
+
+    # ✅ WORK STATUS (ONLINE / OFFLINE)
     is_available = models.BooleanField(default=False)
 
     def __str__(self):
