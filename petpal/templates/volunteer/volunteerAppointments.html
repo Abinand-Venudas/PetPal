@@ -2,112 +2,118 @@
 
 {% block title %}Appointments{% endblock %}
 {% block header_title %}Appointments{% endblock %}
-{% block header_subtitle %}Professional Task & Schedule Management{% endblock %}
+{% block header_subtitle %}Assigned Grooming Services{% endblock %}
 
 {% block content %}
 
-<!-- PAGE HEADER -->
 <div class="mb-10">
-    <h1 class="text-3xl font-extrabold text-slate-800">Appointments & Tasks</h1>
+    <h1 class="text-3xl font-extrabold text-slate-800">My Appointments</h1>
     <p class="text-slate-500 mt-2 max-w-2xl">
-        View, manage, and track all assigned volunteer tasks and scheduled responsibilities
-        in a structured professional workflow.
+        Detailed grooming appointments assigned to you by the admin.
     </p>
 </div>
 
-<!-- FILTER BAR -->
-<div class="glass-card rounded-2xl p-6 mb-10">
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <input type="text" placeholder="Search tasks..."
-               class="px-4 py-3 rounded-xl border focus:ring-2 focus:ring-indigo-500 outline-none">
+{% if tasks %}
 
-        <select class="px-4 py-3 rounded-xl border focus:ring-2 focus:ring-indigo-500 outline-none">
-            <option>Status</option>
-            <option>Upcoming</option>
-            <option>Completed</option>
-        </select>
+<div class="space-y-8">
 
-        <select class="px-4 py-3 rounded-xl border focus:ring-2 focus:ring-indigo-500 outline-none">
-            <option>Location</option>
-            <option>Shelter</option>
-            <option>Clinic</option>
-            <option>Rescue Center</option>
-        </select>
-
-        <button class="px-6 py-3 bg-indigo-600 text-white rounded-xl font-semibold hover:bg-indigo-700 transition">
-            Apply Filters
-        </button>
-    </div>
-</div>
-
-<!-- TASK GRID -->
-<div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-
-{% for task in tasks %}
-<div class="glass-card rounded-3xl p-8 hover:shadow-xl transition">
+{% for a in tasks %}
+<div class="glass-card rounded-3xl p-8">
 
     <!-- HEADER -->
     <div class="flex justify-between items-start mb-6">
         <div>
-            <h3 class="text-xl font-bold text-slate-800">{{ task.title }}</h3>
-            <p class="text-sm text-gray-500 mt-1">Professional Care Task</p>
+            <h2 class="text-xl font-bold text-indigo-700">
+                🐾 Grooming Appointment
+            </h2>
+            <p class="text-sm text-gray-500 mt-1">
+                Owner: {{ a.user.name }}
+            </p>
         </div>
 
-        <span class="px-4 py-1 rounded-full text-sm font-semibold
-            {% if task.status == 'completed' %}
-                bg-green-100 text-green-700
-            {% else %}
-                bg-indigo-100 text-indigo-700
-            {% endif %}
-        ">
-            {{ task.status|title }}
-        </span>
+        {% if a.status == "Completed" %}
+            <span class="px-4 py-1 rounded-full text-sm font-semibold
+                         bg-green-100 text-green-700">
+                ✔ Completed
+            </span>
+        {% else %}
+            <span class="px-4 py-1 rounded-full text-sm font-semibold
+                         bg-blue-100 text-blue-700">
+                Assigned
+            </span>
+        {% endif %}
     </div>
 
-    <!-- BODY -->
-    <div class="space-y-4">
+    <!-- DETAILS -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
 
-        <div class="flex items-center gap-4 p-4 bg-slate-50 rounded-xl">
-            <span class="text-xl">🕒</span>
-            <div>
-                <p class="text-sm text-gray-500">Schedule</p>
-                <p class="font-semibold">{{ task.task_time|date:"d M Y • h:i A" }}</p>
-            </div>
+        <div>
+            <p class="text-xs text-gray-500 uppercase">Date</p>
+            <p class="font-semibold mt-1">
+                📅 {{ a.date|date:"M d, Y" }}
+            </p>
         </div>
 
-        <div class="flex items-center gap-4 p-4 bg-slate-50 rounded-xl">
-            <span class="text-xl">📍</span>
-            <div>
-                <p class="text-sm text-gray-500">Location</p>
-                <p class="font-semibold">{{ task.location }}</p>
-            </div>
+        <div>
+            <p class="text-xs text-gray-500 uppercase">Time</p>
+            <p class="font-semibold mt-1">
+                ⏰ {{ a.start_time|time:"h:i A" }} – {{ a.end_time|time:"h:i A" }}
+            </p>
         </div>
 
-        <div class="flex items-center gap-4 p-4 bg-slate-50 rounded-xl">
-            <span class="text-xl">👤</span>
-            <div>
-                <p class="text-sm text-gray-500">Assigned Volunteer</p>
-                <p class="font-semibold">{{ request.session.volunteer_name }}</p>
-            </div>
+        <div>
+            <p class="text-xs text-gray-500 uppercase">Service</p>
+            <p class="font-semibold mt-1">
+                ✂ {{ a.service_type|default:"Grooming" }}
+            </p>
+        </div>
+
+        <div>
+            <p class="text-xs text-gray-500 uppercase">Location</p>
+            <p class="font-semibold mt-1">
+                📍 PetPal Center
+            </p>
         </div>
 
     </div>
 
-    <!-- FOOTER -->
-    <div class="mt-8 flex justify-between items-center">
-        <p class="text-xs text-gray-400">System Generated Task</p>
-        <button class="px-6 py-2 bg-slate-800 text-white rounded-xl text-sm hover:bg-black transition">
-            View Details
-        </button>
+    <!-- ACTION AREA -->
+    <div class="mt-6 pt-6 border-t flex justify-between items-center">
+
+        <div class="text-sm text-gray-500">
+            Assigned by Admin • {{ a.created_at|date:"M d, Y" }}
+        </div>
+
+        {% if a.status == "Assigned" %}
+        <form method="post"
+              action="{% url 'volunteer:markAppointmentCompleted' a.id %}">
+            {% csrf_token %}
+            <button
+                class="px-6 py-2 rounded-xl bg-indigo-600 text-white
+                       font-semibold hover:bg-indigo-700 transition">
+                ✔ Complete Appointment
+            </button>
+        </form>
+        {% else %}
+        <div class="text-sm font-semibold text-green-600">
+            Appointment successfully completed
+        </div>
+        {% endif %}
+
     </div>
 
-</div>
-{% empty %}
-<div class="col-span-full text-center py-24 text-gray-500">
-    No appointments scheduled
 </div>
 {% endfor %}
 
 </div>
+
+{% else %}
+
+<div class="text-center py-32 text-gray-500">
+    <p class="text-xl font-semibold">No Appointments Assigned</p>
+    <p class="mt-2">You’ll see grooming details here once assigned.</p>
+</div>
+
+{% endif %}
 
 {% endblock %}

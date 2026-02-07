@@ -5,17 +5,14 @@ from django.utils import timezone
 class volunteer_registration(models.Model):
     name = models.CharField(max_length=100)
     email = models.EmailField(unique=True)
-    password = models.CharField(max_length=255)  # hashed
+    password = models.CharField(max_length=255)
     proof = models.FileField(upload_to='volunteer_docs', null=True, blank=True)
 
     phone = models.CharField(max_length=15)
     skills = models.CharField(max_length=30)
     address = models.TextField()
 
-    # ✅ ACCOUNT STATUS (ADMIN CONTROL)
     is_active = models.BooleanField(default=True)
-
-    # ✅ WORK STATUS (ONLINE / OFFLINE)
     is_available = models.BooleanField(default=False)
 
     def __str__(self):
@@ -23,10 +20,7 @@ class volunteer_registration(models.Model):
 
 
 class VolunteerAttendance(models.Model):
-    volunteer = models.ForeignKey(
-        volunteer_registration,
-        on_delete=models.CASCADE
-    )
+    volunteer = models.ForeignKey(volunteer_registration, on_delete=models.CASCADE)
     check_in = models.DateTimeField(default=timezone.now)
     check_out = models.DateTimeField(null=True, blank=True)
 
@@ -36,21 +30,17 @@ class VolunteerAttendance(models.Model):
             return round(delta.total_seconds() / 3600, 2)
         return 0
 
-    def __str__(self):
-        return f"{self.volunteer.name} | {self.check_in}"
 
 class VolunteerTask(models.Model):
     volunteer = models.ForeignKey(volunteer_registration, on_delete=models.CASCADE)
     title = models.CharField(max_length=200)
     location = models.CharField(max_length=200)
     task_time = models.DateTimeField()
-    status = models.CharField(max_length=30, choices=[
-        ('upcoming', 'Upcoming'),
-        ('completed', 'Completed')
-    ], default='upcoming')
-
-    def __str__(self):
-        return f"{self.title} - {self.volunteer.name}"
+    status = models.CharField(
+        max_length=30,
+        choices=[('upcoming', 'Upcoming'), ('completed', 'Completed')],
+        default='upcoming'
+    )
 
 
 class VolunteerPet(models.Model):
@@ -59,8 +49,6 @@ class VolunteerPet(models.Model):
     species = models.CharField(max_length=50)
     assigned_on = models.DateField(auto_now_add=True)
 
-    def __str__(self):
-        return self.pet_name
 
 class VolunteerNotification(models.Model):
     volunteer = models.ForeignKey(
@@ -68,14 +56,10 @@ class VolunteerNotification(models.Model):
         on_delete=models.CASCADE,
         related_name="notifications"
     )
-
     title = models.CharField(max_length=200)
     message = models.TextField()
-
     is_read = models.BooleanField(default=False)
-
     created_at = models.DateTimeField(auto_now_add=True)
-
     link = models.CharField(max_length=300, blank=True, null=True)
 
     def __str__(self):

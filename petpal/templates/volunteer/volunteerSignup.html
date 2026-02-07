@@ -100,7 +100,7 @@
                 <form method="POST" enctype="multipart/form-data" class="space-y-6">
                     {% csrf_token %}
                     {% for msg in messages %}
-                        <h3>{{ msg }}</h3>
+                        <h3 class="text-center text-red-500">{{ msg }}</h3>
                     {% endfor %}
 
                     <!-- Name -->
@@ -108,8 +108,7 @@
                         <label class="text-gray-700 font-medium text-sm">Full Name</label>
                         <input type="text" name="vname" required
                             class="w-full mt-1 px-4 py-3 rounded-xl bg-gray-100 border border-gray-300
-                            focus:ring-2 focus:ring-indigo-400 outline-none"
-                            placeholder="Enter full name">
+                            focus:ring-2 focus:ring-indigo-400 outline-none">
                     </div>
 
                     <!-- Email -->
@@ -117,8 +116,7 @@
                         <label class="text-gray-700 font-medium text-sm">Email</label>
                         <input type="email" name="vemail" required
                             class="w-full mt-1 px-4 py-3 rounded-xl bg-gray-100 border border-gray-300
-                            focus:ring-2 focus:ring-indigo-400 outline-none"
-                            placeholder="Enter email">
+                            focus:ring-2 focus:ring-indigo-400 outline-none">
                     </div>
 
                     <!-- Phone -->
@@ -126,8 +124,7 @@
                         <label class="text-gray-700 font-medium text-sm">Phone Number</label>
                         <input type="text" name="phone" required
                             class="w-full mt-1 px-4 py-3 rounded-xl bg-gray-100 border border-gray-300
-                            focus:ring-2 focus:ring-indigo-400 outline-none"
-                            placeholder="Enter phone number">
+                            focus:ring-2 focus:ring-indigo-400 outline-none">
                     </div>
 
                     <!-- Address -->
@@ -135,8 +132,7 @@
                         <label class="text-gray-700 font-medium text-sm">Address</label>
                         <textarea name="vaddress" rows="2" required
                             class="w-full mt-1 px-4 py-3 rounded-xl bg-gray-100 border border-gray-300
-                            focus:ring-2 focus:ring-indigo-400 outline-none"
-                            placeholder="Enter address"></textarea>
+                            focus:ring-2 focus:ring-indigo-400 outline-none"></textarea>
                     </div>
 
                     <!-- Skills -->
@@ -153,12 +149,19 @@
                         </select>
                     </div>
 
-                    <!-- File Proof -->
+                    <!-- File Proof + Preview -->
                     <div>
                         <label class="text-gray-700 font-medium text-sm">Add Proof</label>
-                        <input type="file" name="vfile" required
+                        <input type="file" name="vfile" id="proofInput" accept="image/*" required
                             class="w-full mt-1 px-4 py-3 rounded-xl bg-gray-100 border border-gray-300
                             focus:ring-2 focus:ring-indigo-400 outline-none">
+
+                        <!-- Image Preview -->
+                        <div id="previewBox" class="mt-4 hidden">
+                            <p class="text-sm text-gray-600 mb-2">Preview:</p>
+                            <img id="imagePreview"
+                                 class="w-full h-48 object-cover rounded-xl border shadow-lg fade-in">
+                        </div>
                     </div>
 
                     <!-- Password -->
@@ -166,8 +169,7 @@
                         <label class="text-gray-700 font-medium text-sm">Create Password</label>
                         <input type="password" name="vpassword" required
                             class="w-full mt-1 px-4 py-3 rounded-xl bg-gray-100 border border-gray-300
-                            focus:ring-2 focus:ring-indigo-400 outline-none"
-                            placeholder="Create password">
+                            focus:ring-2 focus:ring-indigo-400 outline-none">
                     </div>
 
                     <!-- Confirm Password -->
@@ -175,8 +177,7 @@
                         <label class="text-gray-700 font-medium text-sm">Confirm Password</label>
                         <input type="password" name="vcpassword" required
                             class="w-full mt-1 px-4 py-3 rounded-xl bg-gray-100 border border-gray-300
-                            focus:ring-2 focus:ring-indigo-400 outline-none"
-                            placeholder="Confirm password">
+                            focus:ring-2 focus:ring-indigo-400 outline-none">
                     </div>
 
                     <!-- Signup Button -->
@@ -186,7 +187,6 @@
                         Create Volunteer Account
                     </button>
 
-                    <!-- Already have account -->
                     <p class="text-center text-sm mt-4 text-gray-600">
                         Already a volunteer?
                         <a href="{% url 'volunteer:volunteerLogin' %}" class="text-indigo-700 hover:underline font-medium">
@@ -214,6 +214,25 @@ function verifyCode(){
         error.classList.remove("hidden");
     }
 }
+
+/* ================= IMAGE PREVIEW ================= */
+document.getElementById("proofInput").addEventListener("change", function (e) {
+    const file = e.target.files[0];
+    const previewBox = document.getElementById("previewBox");
+    const previewImg = document.getElementById("imagePreview");
+
+    if (file && file.type.startsWith("image/")) {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+            previewImg.src = e.target.result;
+            previewBox.classList.remove("hidden");
+        };
+        reader.readAsDataURL(file);
+    } else {
+        previewBox.classList.add("hidden");
+        previewImg.src = "";
+    }
+});
 </script>
 
 </body>

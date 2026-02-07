@@ -6,7 +6,6 @@
 
 {% block content %}
 
-<!-- HEADER -->
 <div class="mb-10">
     <h1 class="text-3xl font-extrabold text-slate-800">System Notifications</h1>
     <p class="text-slate-500 mt-2 max-w-2xl">
@@ -14,38 +13,38 @@
     </p>
 </div>
 
-<!-- NOTIFICATION PANEL -->
 <div class="space-y-6">
 
 {% for n in notes %}
-<div class="glass-card rounded-2xl p-6 flex justify-between items-start hover:shadow-xl transition">
+<a href="{% url 'volunteer:volunteerTasks' %}"
+   class="block glass-card rounded-2xl p-6 hover:shadow-xl transition">
 
-    <div class="flex gap-5">
+    <div class="flex justify-between items-start">
 
-        <div class="w-12 h-12 rounded-full bg-indigo-100 flex items-center justify-center text-xl">
-            🔔
+        <div class="flex gap-5">
+            <div class="w-12 h-12 rounded-full bg-indigo-100 flex items-center justify-center text-xl">
+                🔔
+            </div>
+
+            <div>
+                <p class="font-semibold text-slate-800">
+                    {{ n.message }}
+                </p>
+                <p class="text-xs text-gray-500 mt-2">
+                    {{ n.created_at|timesince }} ago • Admin Assignment
+                </p>
+            </div>
         </div>
 
-        <div>
-            <p class="font-semibold text-slate-800 leading-relaxed">
-                {{ n.message }}
-            </p>
-            <p class="text-xs text-gray-500 mt-2">
-                {{ n.created_at|timesince }} ago • System Notification
-            </p>
-        </div>
-
-    </div>
-
-    <div class="flex flex-col items-end">
         {% if not n.is_read %}
         <span class="px-3 py-1 bg-red-100 text-red-700 rounded-full text-xs font-semibold">
             New
         </span>
         {% endif %}
+
     </div>
 
-</div>
+</a>
 {% empty %}
 <div class="text-center py-24 text-gray-500">
     No notifications available

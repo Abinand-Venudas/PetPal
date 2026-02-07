@@ -14,7 +14,6 @@
     <style>
         * { font-family: 'Inter', sans-serif; }
 
-        /* ---------- CARDS ---------- */
         .glass-card{
             background: rgba(255,255,255,.85);
             backdrop-filter: blur(18px);
@@ -26,7 +25,6 @@
             box-shadow: 0 15px 45px rgba(0,0,0,.08);
         }
 
-        /* ---------- SIDEBAR LINKS ---------- */
         .sidebar-link{
             display:flex;
             align-items:center;
@@ -35,31 +33,19 @@
             border-radius:9999px;
             font-weight:500;
             color:#475569;
-            transition:
-                background-color .25s ease,
-                color .25s ease,
-                transform .25s ease;
+            transition:.25s ease;
         }
 
-        /* Hover ONLY for inactive items */
         .sidebar-link:not(.sidebar-active):hover{
             background:#EEF2FF;
             color:#4338CA;
             transform: translateX(4px);
         }
 
-        /* ---------- ACTIVE CAPSULE ---------- */
         .sidebar-active{
             background: linear-gradient(135deg, #4F46E5, #6366F1);
-            color:#ffffff !important;
+            color:#fff !important;
             font-weight:600;
-            box-shadow: 0 10px 28px rgba(79,70,229,.35);
-        }
-
-        /* Disable hover effects on active */
-        .sidebar-active:hover{
-            background: linear-gradient(135deg, #4F46E5, #6366F1);
-            transform: none;
             box-shadow: 0 10px 28px rgba(79,70,229,.35);
         }
     </style>
@@ -69,121 +55,74 @@
 
 <div class="flex min-h-screen">
 
-    <!-- ================= SIDEBAR ================= -->
-    <aside class="w-80 bg-white soft-shadow hidden lg:flex flex-col z-10">
+    <!-- SIDEBAR -->
+    <aside class="w-80 bg-white soft-shadow hidden lg:flex flex-col">
 
-        <!-- LOGO -->
         <div class="p-8 border-b">
-            <h1 class="text-2xl font-extrabold text-indigo-700 tracking-tight">
-                PetPal Care
-            </h1>
-            <p class="text-sm text-gray-500 mt-1">
-                Volunteer Management System
-            </p>
+            <h1 class="text-2xl font-extrabold text-indigo-700">PetPal Care</h1>
+            <p class="text-sm text-gray-500 mt-1">Volunteer Management System</p>
         </div>
 
-        <!-- NAV -->
         <nav class="flex-1 p-6 space-y-3">
 
             <a href="{% url 'volunteer:volunteerHome' %}"
                class="sidebar-link {% if request.resolver_match.url_name == 'volunteerHome' %}sidebar-active{% endif %}">
-                <span class="text-xl">🏠</span>
-                <span>Dashboard</span>
+                🏠 Dashboard
             </a>
 
             <a href="{% url 'volunteer:volunteerAppointments' %}"
                class="sidebar-link {% if request.resolver_match.url_name == 'volunteerAppointments' %}sidebar-active{% endif %}">
-                <span class="text-xl">📅</span>
-                <span>Appointments</span>
+                📅 Appointments
             </a>
 
             <a href="{% url 'volunteer:volunteerPets' %}"
                class="sidebar-link {% if request.resolver_match.url_name == 'volunteerPets' %}sidebar-active{% endif %}">
-                <span class="text-xl">🐾</span>
-                <span>My Pets</span>
+                🐾 My Pets
             </a>
 
             <a href="{% url 'volunteer:volunteerAttendance' %}"
                class="sidebar-link {% if request.resolver_match.url_name == 'volunteerAttendance' %}sidebar-active{% endif %}">
-                <span class="text-xl">⏱</span>
-                <span>Attendance</span>
+                ⏱ Attendance
             </a>
 
+            <!-- 🔔 NOTIFICATIONS WITH BADGE -->
             <a href="{% url 'volunteer:volunteerNotification' %}"
                class="sidebar-link {% if request.resolver_match.url_name == 'volunteerNotification' %}sidebar-active{% endif %}">
-                <span class="text-xl">🔔</span>
-                <span>Notifications</span>
+
+                <span class="relative">
+                    🔔
+                    <span id="notifBadge"
+                          class="hidden absolute -top-2 -right-2
+                                 bg-red-600 text-white text-[10px]
+                                 px-2 py-0.5 rounded-full font-bold">
+                        0
+                    </span>
+                </span>
+                Notifications
             </a>
 
         </nav>
 
-        <!-- FOOTER USER -->
         <div class="p-6 border-t">
             <div class="glass-card rounded-2xl p-4">
-                <p class="text-xs text-gray-500 uppercase tracking-wide">
-                    Logged in as
-                </p>
-                <p class="font-semibold text-gray-800 mt-1">
-                    {{ request.session.volunteer_name }}
-                </p>
-                <p class="text-xs text-gray-500">
-                    {{ request.session.volunteer_email }}
-                </p>
+                <p class="text-xs text-gray-500 uppercase">Logged in as</p>
+                <p class="font-semibold">{{ request.session.volunteer_name }}</p>
+                <p class="text-xs text-gray-500">{{ request.session.volunteer_email }}</p>
             </div>
         </div>
 
     </aside>
 
-    <!-- ================= MAIN ================= -->
-    <main class="flex-1 relative overflow-y-auto">
+    <!-- MAIN -->
+    <main class="flex-1 overflow-y-auto">
 
-        <!-- HEADER -->
-        <header class="bg-white soft-shadow p-6 flex justify-between items-center sticky top-0 z-30">
+        <header class="bg-white soft-shadow p-6 flex justify-between items-center sticky top-0">
             <div>
-                <h2 class="text-lg font-semibold text-gray-800">
-                    {% block header_title %}{% endblock %}
-                </h2>
-                <p class="text-xs text-gray-500">
-                    {% block header_subtitle %}{% endblock %}
-                </p>
-            </div>
-
-            <!-- PROFILE -->
-            <div class="relative">
-                <button id="profileBtn"
-                        class="flex items-center gap-2 px-3 py-2 rounded-full bg-white border hover:shadow-md transition">
-                    <div class="w-8 h-8 rounded-full bg-indigo-600 flex items-center justify-center text-white font-semibold">
-                        {{ request.session.volunteer_name|first }}
-                    </div>
-                    <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                              d="M19 9l-7 7-7-7"/>
-                    </svg>
-                </button>
-
-                <div id="profileMenu"
-                     class="hidden absolute right-0 mt-3 w-64 rounded-xl bg-white border shadow-xl z-40">
-                    <div class="px-5 py-4 border-b bg-slate-50">
-                        <p class="font-semibold">{{ request.session.volunteer_name }}</p>
-                        <p class="text-xs text-gray-500">{{ request.session.volunteer_email }}</p>
-                    </div>
-                    <a href="{% url 'volunteer:volunteerProfile' %}" class="block px-5 py-3 text-sm hover:bg-slate-100">
-                        My Profile
-                    </a>
-                    <a href="{% url 'volunteer:volunteerChangePassword' %}" class="block px-5 py-3 text-sm hover:bg-slate-100">
-                        Change Password
-                    </a>
-                    <div class="border-t">
-                        <a href="{% url 'volunteer:volunteerLogout' %}"
-                           class="block px-5 py-3 text-sm text-red-600 hover:bg-red-50">
-                            Logout
-                        </a>
-                    </div>
-                </div>
+                <h2 class="text-lg font-semibold">{% block header_title %}{% endblock %}</h2>
+                <p class="text-xs text-gray-500">{% block header_subtitle %}{% endblock %}</p>
             </div>
         </header>
 
-        <!-- CONTENT -->
         <section class="p-10">
             {% block content %}{% endblock %}
         </section>
@@ -192,17 +131,26 @@
 
 </div>
 
-<!-- DROPDOWN JS -->
+<!-- 🔔 LIVE NOTIFICATION SCRIPT -->
 <script>
-    const btn = document.getElementById("profileBtn");
-    const menu = document.getElementById("profileMenu");
+function updateNotificationBadge(){
+    fetch("/volunteer/notifications/count/")
+        .then(res => res.json())
+        .then(data => {
+            const badge = document.getElementById("notifBadge");
+            if (!badge) return;
 
-    btn.onclick = e => {
-        e.stopPropagation();
-        menu.classList.toggle("hidden");
-    };
-    document.onclick = () => menu.classList.add("hidden");
-    document.onkeydown = e => e.key === "Escape" && menu.classList.add("hidden");
+            if (data.count > 0) {
+                badge.textContent = data.count;
+                badge.classList.remove("hidden");
+            } else {
+                badge.classList.add("hidden");
+            }
+        });
+}
+
+updateNotificationBadge();
+setInterval(updateNotificationBadge, 4000);
 </script>
 
 </body>

@@ -6,6 +6,24 @@
 
 {% block content %}
 
+<!-- ================= NOTIFICATION ALERT ================= -->
+{% if notifications > 0 %}
+<div class="mb-10 bg-indigo-600 text-white p-6 rounded-2xl shadow-lg flex justify-between items-center">
+    <div>
+        <p class="text-lg font-semibold">
+            🔔 You have {{ notifications }} new assignment{{ notifications|pluralize }}
+        </p>
+        <p class="text-sm opacity-90 mt-1">
+            Please review your assigned tasks.
+        </p>
+    </div>
+    <a href="{% url 'volunteer:volunteerNotification' %}"
+       class="px-5 py-2 bg-white text-indigo-700 rounded-xl font-semibold hover:bg-slate-100 transition">
+        View
+    </a>
+</div>
+{% endif %}
+
 <!-- ================= PAGE HEADER ================= -->
 <div class="flex flex-col xl:flex-row justify-between items-start xl:items-center mb-12 gap-6">
 
@@ -40,50 +58,32 @@
 <!-- ================= KPI SECTION ================= -->
 <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-8 mb-16">
 
-    <!-- TOTAL WORKING TIME -->
     <div class="glass-card rounded-3xl p-8">
-        <p class="text-sm text-gray-500 uppercase tracking-wide">
-            Total Working Time
-        </p>
+        <p class="text-sm text-gray-500 uppercase tracking-wide">Total Working Time</p>
         <p class="text-4xl font-extrabold text-indigo-700 mt-3">
             {{ hours_completed }}
         </p>
-        <p class="text-xs text-gray-400 mt-2">
-            Cumulative time across all completed shifts
-        </p>
+        <p class="text-xs text-gray-400 mt-2">Cumulative time across all completed shifts</p>
     </div>
 
-    <!-- PETS ASSISTED -->
     <div class="glass-card rounded-3xl p-8">
-        <p class="text-sm text-gray-500 uppercase tracking-wide">
-            Pets Assisted
-        </p>
+        <p class="text-sm text-gray-500 uppercase tracking-wide">Pets Assisted</p>
         <p class="text-4xl font-extrabold text-indigo-700 mt-3">
             {{ pets_helped }}
         </p>
-        <p class="text-xs text-gray-400 mt-2">
-            Care assignments completed
-        </p>
+        <p class="text-xs text-gray-400 mt-2">Care assignments completed</p>
     </div>
 
-    <!-- UPCOMING TASKS -->
     <div class="glass-card rounded-3xl p-8">
-        <p class="text-sm text-gray-500 uppercase tracking-wide">
-            Upcoming Tasks
-        </p>
+        <p class="text-sm text-gray-500 uppercase tracking-wide">Upcoming Tasks</p>
         <p class="text-4xl font-extrabold text-indigo-700 mt-3">
             {{ upcoming_tasks }}
         </p>
-        <p class="text-xs text-gray-400 mt-2">
-            Scheduled responsibilities
-        </p>
+        <p class="text-xs text-gray-400 mt-2">Scheduled responsibilities</p>
     </div>
 
-    <!-- STATUS -->
     <div class="glass-card rounded-3xl p-8">
-        <p class="text-sm text-gray-500 uppercase tracking-wide">
-            Current Status
-        </p>
+        <p class="text-sm text-gray-500 uppercase tracking-wide">Current Status</p>
         <p class="text-xl font-bold mt-4">
             {% if checked_in %}
                 <span class="inline-flex items-center gap-2 text-green-600">
@@ -97,9 +97,7 @@
                 </span>
             {% endif %}
         </p>
-        <p class="text-xs text-gray-400 mt-2">
-            Live system status
-        </p>
+        <p class="text-xs text-gray-400 mt-2">Live system status</p>
     </div>
 
 </div>
@@ -111,9 +109,7 @@
     <div class="xl:col-span-2 glass-card rounded-3xl p-10">
 
         <div class="mb-8">
-            <h2 class="text-2xl font-bold text-slate-800">
-                Today's Schedule
-            </h2>
+            <h2 class="text-2xl font-bold text-slate-800">Today's Schedule</h2>
             <p class="text-sm text-gray-500 mt-1">
                 Assigned duties and care activities for today
             </p>
@@ -158,30 +154,20 @@
         <div class="space-y-6">
 
             <div class="p-4 bg-slate-50 rounded-xl">
-                <p class="text-xs text-gray-500 uppercase tracking-wide">
-                    Availability
-                </p>
+                <p class="text-xs text-gray-500 uppercase tracking-wide">Availability</p>
                 <p class="font-semibold mt-1">
                     {% if checked_in %} On Duty {% else %} Off Duty {% endif %}
                 </p>
             </div>
 
             <div class="p-4 bg-slate-50 rounded-xl">
-                <p class="text-xs text-gray-500 uppercase tracking-wide">
-                    Role
-                </p>
-                <p class="font-semibold mt-1">
-                    Volunteer Care Specialist
-                </p>
+                <p class="text-xs text-gray-500 uppercase tracking-wide">Role</p>
+                <p class="font-semibold mt-1">Volunteer Care Specialist</p>
             </div>
 
             <div class="p-4 bg-slate-50 rounded-xl">
-                <p class="text-xs text-gray-500 uppercase tracking-wide">
-                    System Access
-                </p>
-                <p class="font-semibold mt-1">
-                    Standard Access Level
-                </p>
+                <p class="text-xs text-gray-500 uppercase tracking-wide">System Access</p>
+                <p class="font-semibold mt-1">Standard Access Level</p>
             </div>
 
             <p class="text-xs text-gray-400 leading-relaxed pt-4">

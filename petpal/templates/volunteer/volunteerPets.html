@@ -6,7 +6,6 @@
 
 {% block content %}
 
-<!-- HEADER -->
 <div class="mb-10">
     <h1 class="text-3xl font-extrabold text-slate-800">My Assigned Pets</h1>
     <p class="text-slate-500 mt-2 max-w-2xl">
@@ -14,18 +13,15 @@
     </p>
 </div>
 
-<!-- GRID -->
 <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-10">
 
 {% for pet in pets %}
 <div class="glass-card rounded-3xl p-8 text-center hover:shadow-xl transition">
 
-    <!-- ICON -->
     <div class="w-24 h-24 mx-auto rounded-full bg-indigo-100 flex items-center justify-center text-5xl mb-6">
         🐾
     </div>
 
-    <!-- DETAILS -->
     <h3 class="text-xl font-bold text-slate-800">{{ pet.pet_name }}</h3>
     <p class="text-sm text-gray-500 mt-1">{{ pet.species }}</p>
 
@@ -37,8 +33,8 @@
         </div>
 
         <div class="flex justify-between p-3 bg-slate-50 rounded-xl">
-            <span class="text-sm text-gray-500">Care Level</span>
-            <span class="font-semibold">Standard</span>
+            <span class="text-sm text-gray-500">Assigned By</span>
+            <span class="font-semibold">Admin</span>
         </div>
 
         <div class="flex justify-between p-3 bg-slate-50 rounded-xl">
@@ -48,7 +44,6 @@
 
     </div>
 
-    <!-- ACTION -->
     <div class="mt-8">
         <button class="w-full py-3 rounded-xl bg-indigo-600 text-white font-semibold hover:bg-indigo-700 transition">
             View Care Profile

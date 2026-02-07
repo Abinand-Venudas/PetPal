@@ -26,7 +26,6 @@ from django.http import Http404
 from .models import Consultation
 
 
-
 # ================= HOME =================
 def home(request):
     username = request.session.get("username")
