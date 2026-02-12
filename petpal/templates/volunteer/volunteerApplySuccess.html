@@ -1,0 +1,162 @@
+{% extends "user/base.html" %}
+{% load static %}
+
+{% block title %}Application Submitted | PetPal{% endblock %}
+
+{% block extra_css %}
+<style>
+/* ================= PAGE ================= */
+.success-page{
+  min-height:80vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:80px 24px;
+}
+
+/* ================= CARD ================= */
+.success-card{
+  max-width:720px;
+  background:var(--surface, #ffffff);
+  border:1px solid var(--border-light, #e5e7eb);
+  border-radius:28px;
+  padding:64px 48px;
+  text-align:center;
+  box-shadow:0 30px 60px -25px rgba(0,0,0,.2);
+}
+
+/* ================= ICON ================= */
+.success-icon{
+  width:96px;
+  height:96px;
+  margin:0 auto 28px;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:linear-gradient(135deg,#4f46e5,#22c55e);
+  color:#fff;
+  font-size:42px;
+  font-weight:900;
+}
+
+/* ================= TEXT ================= */
+.success-card h1{
+  font-size:2.2rem;
+  font-weight:900;
+  margin-bottom:14px;
+}
+
+.success-card p{
+  font-size:1rem;
+  color:#64748b;
+  margin-bottom:28px;
+  line-height:1.6;
+}
+
+/* ================= INFO BOX ================= */
+.success-info{
+  background:#f8fafc;
+  border:1px dashed #c7d2fe;
+  border-radius:18px;
+  padding:20px;
+  font-size:.95rem;
+  color:#475569;
+  margin-bottom:36px;
+}
+
+/* ================= ACTION ================= */
+.success-actions{
+  display:flex;
+  justify-content:center;
+  gap:16px;
+  flex-wrap:wrap;
+}
+
+.success-btn{
+  padding:14px 36px;
+  border-radius:999px;
+  font-weight:800;
+  border:none;
+  cursor:pointer;
+  transition:.3s;
+}
+
+.primary{
+  background:linear-gradient(135deg,#4f46e5,#ec4899);
+  color:#fff;
+}
+
+.secondary{
+  background:#eef2ff;
+  color:#4f46e5;
+}
+
+.success-btn:hover{
+  transform:translateY(-2px);
+  box-shadow:0 16px 40px rgba(79,70,229,.35);
+}
+
+/* ================= DARK MODE ================= */
+.dark .success-card{
+  background:#0f172a;
+  border-color:#1e293b;
+}
+
+.dark .success-card p{
+  color:#94a3b8;
+}
+
+.dark .success-info{
+  background:#020617;
+  border-color:#1e293b;
+  color:#cbd5f5;
+}
+
+.dark .secondary{
+  background:#1e293b;
+  color:#e0e7ff;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+
+<div class="success-page">
+
+  <div class="success-card">
+
+    <div class="success-icon">✓</div>
+
+    <h1>Application Submitted!</h1>
+
+    <p>
+      Thank you for applying to become a <strong>PetPal Volunteer</strong>.
+      Your application has been successfully received.
+    </p>
+
+    <div class="success-info">
+      🕒 Our team will review your details.<br>
+      📩 If approved, you’ll receive an <strong>authorization code</strong> via email.
+    </div>
+
+    <div class="success-actions">
+<div class="success-actions">
+  <a href="/" class="success-btn secondary">
+    Go to Home
+  </a>
+
+  <a href="{% url 'volunteer:volunteerSignup' %}" class="success-btn secondary">
+  Go to Sign Up
+</a>
+
+</div>
+
+
+    </div>
+
+  </div>
+
+</div>
+
+{% endblock %}

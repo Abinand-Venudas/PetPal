@@ -24,6 +24,11 @@ urlpatterns = [
     path('change-password/', views.volunteerChangePassword, name='volunteerChangePassword'),
     path('logout/', views.volunteerLogout, name='volunteerLogout'),
     path("apply/", views.volunteerApply, name="apply"),
+    path("apply/success/", views.volunteerApplySuccess, name="apply_success"),
     path("notifications/count/",views.notification_count_api,name="notification_count_api"),
     path("appointments/complete/<int:booking_id>/", views.markAppointmentCompleted, name="markAppointmentCompleted"),
+
+    # volunteer/urls.py
+    path("verify-code/", views.verify_code, name="verify_code"),
+
 ]

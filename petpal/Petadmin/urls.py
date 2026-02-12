@@ -74,5 +74,9 @@ urlpatterns = [
     path("doctor/<int:id>/force-offline/",views.forceDoctorOffline,name="forceDoctorOffline"),
     path("volunteer/delete/<int:id>/",views.deleteVolunteer,name="deleteVolunteer"),
     path("volunteer/status/<int:id>/", views.toggleVolunteerStatus, name="toggleVolunteerStatus"),
-    
+
+    # ================= VOLUNTEER APPLICATIONS =================
+    path("volunteer/applications/",views.volunteerApplicationsAdmin,name="volunteerApplicationsAdmin"),
+    path("volunteer/applications/approve/<int:id>/",views.approveVolunteerApplicationAdmin,name="approveVolunteerApplicationAdmin"),
+    path("volunteer/applications/reject/<int:id>/",views.rejectVolunteerApplicationAdmin,name="rejectVolunteerApplicationAdmin"),  
 ]

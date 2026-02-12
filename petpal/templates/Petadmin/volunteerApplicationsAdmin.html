@@ -1,0 +1,90 @@
+{% extends "Petadmin/baseadmin.html" %}
+
+{% block title %}Volunteer Applications{% endblock %}
+
+{% block content %}
+<div class="p-6">
+
+  <h1 class="text-3xl font-extrabold mb-6">
+    Volunteer Applications
+  </h1>
+
+  <div class="overflow-x-auto bg-white rounded-xl shadow">
+
+    <table class="min-w-full text-sm">
+      <thead class="bg-gray-100">
+        <tr>
+          <th class="p-4 text-left">Name</th>
+          <th class="p-4">Email</th>
+          <th class="p-4">City</th>
+          <th class="p-4">Interests</th>
+          <th class="p-4">Proof</th>
+          <th class="p-4">Status</th>
+          <th class="p-4">Action</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        {% for app in applications %}
+        <tr class="border-t">
+
+          <td class="p-4 font-semibold">{{ app.name }}</td>
+          <td class="p-4">{{ app.email }}</td>
+          <td class="p-4">{{ app.city }}</td>
+          <td class="p-4">{{ app.interest }}</td>
+
+         <td class="p-4">
+  {% if app.proof %}
+    <a href="{{ app.proof.url }}" target="_blank"
+       class="text-indigo-600 underline">
+      View Proof
+    </a>
+  {% else %}
+    <span class="text-gray-400 italic">No proof uploaded</span>
+  {% endif %}
+</td>
+
+
+          <td class="p-4">
+            {% if app.status == "Pending" %}
+              <span class="text-yellow-600 font-bold">Pending</span>
+            {% elif app.status == "Approved" %}
+              <span class="text-green-600 font-bold">Approved</span><br>
+              <small class="text-xs">Code: {{ app.authorization_code }}</small>
+            {% else %}
+              <span class="text-red-600 font-bold">Rejected</span>
+            {% endif %}
+          </td>
+
+          <td class="p-4">
+            {% if app.status == "Pending" %}
+              <a href="{% url 'petadmin:approveVolunteerApplicationAdmin' app.id %}"
+                 class="px-4 py-2 bg-green-600 text-white rounded text-xs">
+                Approve
+              </a>
+
+              <a href="{% url 'petadmin:rejectVolunteerApplicationAdmin' app.id %}"
+                 class="px-4 py-2 bg-red-600 text-white rounded text-xs ml-2">
+                Reject
+              </a>
+            {% else %}
+              —
+            {% endif %}
+          </td>
+
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="7" class="p-6 text-center text-gray-500">
+            No volunteer applications found.
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+
+    </table>
+
+  </div>
+
+</div>
+{% endblock %}

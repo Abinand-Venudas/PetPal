@@ -1,0 +1,33 @@
+{% extends "user/base.html" %}
+{% block title %}Verify Authorization Code{% endblock %}
+
+{% block content %}
+<div class="min-h-[80vh] flex items-center justify-center">
+
+  <div class="bg-white p-10 rounded-3xl shadow-xl w-full max-w-md text-center">
+
+    <h2 class="text-2xl font-extrabold mb-4">
+      Enter Authorization Code
+    </h2>
+
+    {% for msg in messages %}
+      <p class="text-red-500 mb-3">{{ msg }}</p>
+    {% endfor %}
+
+    <form method="post">
+      {% csrf_token %}
+      <input
+        name="code"
+        required
+        placeholder="Authorization Code"
+        class="w-full p-4 border rounded-xl text-center tracking-widest mb-4"
+      >
+      <button class="w-full py-3 rounded-full bg-indigo-600 text-white font-bold">
+        Verify & Continue
+      </button>
+    </form>
+
+  </div>
+
+</div>
+{% endblock %}

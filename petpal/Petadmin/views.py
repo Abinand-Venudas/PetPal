@@ -17,6 +17,11 @@ from .forms import DaycarePlanForm
 from django.views.decorators.http import require_POST
 from decimal import Decimal, InvalidOperation
 from django.utils.timezone import now
+from volunteer.models import VolunteerApplication
+import random
+import string
+from django.core.mail import send_mail
+
 # ================== AUTH ==================
 
 def loginAdmin(request):
@@ -734,3 +739,68 @@ def toggleDaycarePlanStatusAdmin(request, id):
     messages.success(request, f"Daycare plan {status} successfully.")
 
     return redirect("petadmin:daycarePlansAdmin")
+
+# ================== VOLUNTEER APPLICATIONS ==================
+
+def volunteerApplicationsAdmin(request):
+    if "admin_id" not in request.session:
+        return redirect("petadmin:loginAdmin")
+
+    applications = VolunteerApplication.objects.all().order_by("-applied_at")
+
+    return render(
+        request,
+        "Petadmin/volunteerApplicationsAdmin.html",
+        {"applications": applications}
+    )
+
+
+def approveVolunteerApplicationAdmin(request, id):
+    if "admin_id" not in request.session:
+        return redirect("petadmin:loginAdmin")
+
+    application = get_object_or_404(VolunteerApplication, id=id)
+
+    if application.status != "Pending":
+        messages.warning(request, "Application already processed.")
+        return redirect("petadmin:volunteerApplicationsAdmin")
+
+    application.status = "Approved"
+    application.generate_code()
+    application.save()
+
+    send_mail(
+        subject="PetPal Volunteer Authorization Code",
+        message=(
+            f"Hi {application.name},\n\n"
+            f"Your volunteer application has been approved.\n\n"
+            f"Authorization Code: {application.authorization_code}\n"
+            f"This code is valid for 24 hours.\n\n"
+            f"Visit PetPal to complete signup."
+        ),
+        from_email="petpal@support.com",
+        recipient_list=[application.email],
+        fail_silently=True,
+    )
+
+    messages.success(request, "Application approved and code sent.")
+    return redirect("petadmin:volunteerApplicationsAdmin")
+
+
+def rejectVolunteerApplicationAdmin(request, id):
+    if "admin_id" not in request.session:
+        return redirect("petadmin:loginAdmin")
+
+    application = get_object_or_404(VolunteerApplication, id=id)
+
+    if application.status != "Pending":
+        messages.warning(request, "Application already processed.")
+        return redirect("petadmin:volunteerApplicationsAdmin")
+
+    application.status = "Rejected"
+    application.authorization_code = None
+    application.code_used = False
+    application.save()
+
+    messages.success(request, "Application rejected.")
+    return redirect("petadmin:volunteerApplicationsAdmin")

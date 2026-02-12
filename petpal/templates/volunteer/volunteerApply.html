@@ -63,7 +63,7 @@
 .form-field{
   display:flex;
   flex-direction:column;
-  gap:6px;
+  gap:8px;
 }
 
 .form-field.full{
@@ -77,7 +77,6 @@
 }
 
 .form-field input,
-.form-field select,
 .form-field textarea{
   padding:14px 16px;
   border-radius:14px;
@@ -90,6 +89,42 @@
 .form-field textarea{
   min-height:130px;
   resize:none;
+}
+
+/* ================= CHECKBOX GROUP ================= */
+.checkbox-group{
+  display:grid;
+  grid-template-columns:repeat(auto-fit, minmax(220px, 1fr));
+  gap:14px;
+  margin-top:6px;
+}
+
+.checkbox-item{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:14px 16px;
+  border-radius:14px;
+  border:1px solid #e5e7eb;
+  background:#f8fafc;
+  cursor:pointer;
+  transition:.25s;
+}
+
+.checkbox-item input{
+  width:18px;
+  height:18px;
+}
+
+.checkbox-item:hover{
+  border-color:#6366f1;
+  background:#eef2ff;
+}
+
+/* ================= FILE ================= */
+.file-hint{
+  font-size:.8rem;
+  color:#64748b;
 }
 
 /* ================= ACTION ================= */
@@ -130,7 +165,8 @@
 }
 
 .dark .apply-head p,
-.dark .apply-note{
+.dark .apply-note,
+.dark .file-hint{
   color:#94a3b8;
 }
 
@@ -139,11 +175,20 @@
 }
 
 .dark .form-field input,
-.dark .form-field select,
 .dark .form-field textarea{
   background:#020617;
   border-color:#1e293b;
   color:#f8fafc;
+}
+
+.dark .checkbox-item{
+  background:#020617;
+  border-color:#1e293b;
+}
+
+.dark .checkbox-item:hover{
+  background:#020617;
+  border-color:#6366f1;
 }
 </style>
 {% endblock %}
@@ -165,7 +210,7 @@
     </div>
 
     <!-- FORM -->
-    <form method="post">
+    <form method="post" enctype="multipart/form-data">
       {% csrf_token %}
 
       <div class="apply-form">
@@ -190,26 +235,48 @@
           <input type="text" name="city" placeholder="Your city" required>
         </div>
 
-        <div class="form-field">
-          <label>Area of Interest</label>
-          <select name="interest" required>
-            <option value="">Select an option</option>
-            <option>Pet Care</option>
-            <option>Medical Assistance</option>
-            <option>Adoption Support</option>
-            <option>Event Volunteering</option>
-            <option>Rescue Operations</option>
-          </select>
+        <!-- MULTI SELECT -->
+        <div class="form-field full">
+          <label>Areas of Interest (select one or more)</label>
+
+          <div class="checkbox-group">
+            <label class="checkbox-item">
+              <input type="checkbox" name="interest[]" value="Pet Care">
+              Pet Care
+            </label>
+
+            <label class="checkbox-item">
+              <input type="checkbox" name="interest[]" value="Medical Assistance">
+              Medical Assistance
+            </label>
+
+            <label class="checkbox-item">
+              <input type="checkbox" name="interest[]" value="Adoption Support">
+              Adoption Support
+            </label>
+
+            <label class="checkbox-item">
+              <input type="checkbox" name="interest[]" value="Event Volunteering">
+              Event Volunteering
+            </label>
+
+            <label class="checkbox-item">
+              <input type="checkbox" name="interest[]" value="Rescue Operations">
+              Rescue Operations
+            </label>
+          </div>
         </div>
 
         <div class="form-field">
           <label>Availability</label>
-          <select name="availability" required>
-            <option value="">Select availability</option>
-            <option>Weekdays</option>
-            <option>Weekends</option>
-            <option>Flexible</option>
-          </select>
+          <input type="text" name="availability" placeholder="Weekdays / Weekends / Flexible" required>
+        </div>
+
+        <!-- PROOF -->
+        <div class="form-field">
+          <label>Proof / ID Document (Mandatory)</label>
+          <input type="file" name="proof" required>
+          <span class="file-hint">Upload ID, certificate, or relevant proof (PDF / Image)</span>
         </div>
 
         <div class="form-field full">

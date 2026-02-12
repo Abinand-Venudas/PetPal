@@ -1,3 +1,5 @@
+from datetime import timedelta
+import uuid
 from django.db import models
 from django.utils import timezone
 
@@ -64,3 +66,40 @@ class VolunteerNotification(models.Model):
 
     def __str__(self):
         return f"{self.volunteer.name} - {self.title}"
+    
+
+class VolunteerApplication(models.Model):
+    STATUS_CHOICES = [
+        ("Pending", "Pending"),
+        ("Approved", "Approved"),
+        ("Rejected", "Rejected"),
+    ]
+
+    name = models.CharField(max_length=100)
+    email = models.EmailField()
+    phone = models.CharField(max_length=15, blank=True)
+
+    city = models.CharField(max_length=100)
+    interest = models.CharField(max_length=255)   # multiple interests (comma separated)
+    availability = models.CharField(max_length=50)
+    reason = models.TextField()
+
+    proof = models.FileField(upload_to="volunteer_proofs/")
+
+    status = models.CharField(
+        max_length=20,
+        choices=STATUS_CHOICES,
+        default="Pending"
+    )
+
+    authorization_code = models.CharField(
+        max_length=12,
+        blank=True,
+        null=True
+    )
+
+    applied_at = models.DateTimeField(auto_now_add=True)
+
+    def generate_code(self):
+        self.authorization_code = uuid.uuid4().hex[:10].upper()
+

@@ -106,6 +106,13 @@
         <i data-lucide="calendar"></i><span>Grooming Bookings</span>
       </a>
 
+      <a href="{% url 'petadmin:volunteerApplicationsAdmin' %}"
+   class="{% if '/petadmin/volunteer/applications/' in request.path %}active{% endif %}">
+  <i data-lucide="file-check"></i>
+  <span>Volunteer Applications</span>
+</a>
+
+
       <a href="{% url 'petadmin:userAdmin' %}"
          class="{% if '/petadmin/users/' in request.path %}active{% endif %}">
         <i data-lucide="users"></i><span>Users</span>

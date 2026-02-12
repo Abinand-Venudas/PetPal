@@ -1,3 +1,5 @@
+from email.mime import application
+from urllib import request
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.utils import timezone
@@ -10,8 +12,10 @@ from .models import (
     VolunteerAttendance,
     VolunteerTask,
     VolunteerPet,
-    VolunteerNotification
+    VolunteerNotification,
+    VolunteerApplication,   # ✅ ADD THIS
 )
+
 
 from petapp.models import GroomingBooking
 from django.http import JsonResponse
@@ -33,6 +37,13 @@ def get_logged_volunteer(request):
 # SIGNUP
 # =========================================================
 def volunteerSignup(request):
+
+     # 🔒 Block access without verification
+    if not request.session.get("verified_volunteer_email"):
+        messages.error(request, "Please verify your authorization code first.")
+        return redirect("volunteer:verify_code")
+    
+    
     if request.method == "POST":
         vpassword = request.POST.get("vpassword")
         vcpassword = request.POST.get("vcpassword")
@@ -67,8 +78,104 @@ def volunteerSignup(request):
 # APPLY
 # =========================================================
 def volunteerApply(request):
+    if request.method == "POST":
+
+        # prevent duplicate applications
+        if VolunteerApplication.objects.filter(
+            email=request.POST.get("email"),
+            status="Pending"
+        ).exists():
+            messages.error(
+                request,
+                "You already have a pending volunteer application."
+            )
+            return redirect("volunteer:apply")
+
+        interests = request.POST.getlist("interest[]")
+
+        if not interests:
+            messages.error(
+                request,
+                "Please select at least one area of interest."
+            )
+            return redirect("volunteer:apply")
+
+        proof = request.FILES.get("proof")
+        if not proof:
+            messages.error(
+                request,
+                "Proof document is required."
+            )
+            return redirect("volunteer:apply")
+
+        VolunteerApplication.objects.create(
+            name=request.POST.get("name"),
+            email=request.POST.get("email"),
+            phone=request.POST.get("phone"),
+            city=request.POST.get("city"),
+            interest=",".join(interests),  # ✅ store multiple
+            availability=request.POST.get("availability"),
+            reason=request.POST.get("reason"),
+            proof=proof,
+        )
+
+        messages.success(
+            request,
+            "Your volunteer application has been submitted successfully."
+        )
+
+        return redirect("volunteer:apply_success")
+
     return render(request, "volunteer/volunteerApply.html")
 
+
+def volunteerApplySuccess(request):
+    return render(request, "volunteer/volunteerApplySuccess.html")
+
+
+def verify_code(request):
+    if request.method == "POST":
+        code = request.POST.get("code")
+
+        if not code:
+            messages.error(request, "Authorization code is required.")
+            return redirect("volunteer:verify_code")
+
+        application = VolunteerApplication.objects.filter(
+            authorization_code=code,
+            status="Approved"
+        ).first()
+
+        if not application:
+            messages.error(request, "Invalid or expired authorization code.")
+            return redirect("volunteer:verify_code")
+
+        # ✅ Save verification in session
+        request.session["verified_volunteer_email"] = application.email
+
+        messages.success(request, "Code verified successfully. Please complete signup.")
+        return redirect("volunteer:volunteerSignup")
+
+    return render(request, "volunteer/verifyCode.html")
+
+
+ADMIN_AUTH_CODE = "PETPAL-ADMIN-2025"  # only admin recruits
+
+def admin_volunteer_access(request):
+    if request.method == "POST":
+        code = request.POST.get("code")
+
+        if code != ADMIN_AUTH_CODE:
+            messages.error(request, "Invalid admin authorization code.")
+            return redirect("volunteer:admin_access")
+
+        # 🔓 Unlock signup
+        request.session["volunteer_signup_allowed"] = True
+        request.session["admin_recruited"] = True
+
+        return redirect("volunteer:volunteerSignup")
+
+    return render(request, "volunteer/adminAccess.html")
 
 # =========================================================
 # LOGIN / LOGOUT
